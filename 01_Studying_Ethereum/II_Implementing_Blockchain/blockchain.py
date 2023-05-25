@@ -35,6 +35,7 @@ class Blockchain(object):
         Once the hash of the previous block is found, the nonce for the block is needed to find, using the
         proof_of_work() method.
         """
+        self.nodes = set()  # For adding later all the connected nodes.
         self.chain = []  # Stores all the blocks in the entire blockchain
         self.current_transactions = []  # Temporarily stores the transactions for the current block
         # Create the genesis block with a specific fixed hash of previous block, genesis block starts with index 0.
@@ -43,6 +44,77 @@ class Blockchain(object):
             hash_of_previous_block=genesis_hash,
             nonce=self.proof_of_work(0, genesis_hash, [])
         )
+
+    def add_node(self, address):
+        """
+        Allows a new node to be added to the nodes member.
+        For example, if "http://192.168.0.5:5000" is passed to the method, the IP address and port number
+        "192.168.0.5:5000" will be added the nodes (set in __init__) member.
+        The url parse allows to dismantle an address to useful parts: http alone, "192.168.0.5" alone,
+        port "5000" alone, etc.
+        :param address:
+        :return:
+        """
+        parsed_url = urlparse(address)
+        self.nodes.add(parsed_url.netloc)
+        print(parsed_url.netloc)
+
+    def valid_chain(self, chain):
+        """
+        Validates that a given blockchain is valid by performing two checks:
+        1. Goes through each block in the blockchain and hashes each block and verifies that the hash of each block
+            correctly recorded in the next block.
+        2. Verifies that the nonce in each block is valid.
+        :param chain:
+        :return:
+        """
+        last_block = chain[0]  # The genesis block
+        current_index = 1  # Starts with the second block
+        while current_index < len(chain):
+            block = chain[current_index]
+            if block['hash_of_previous_block'] != self.hash_block(last_block):
+                return False
+            # Check for valid nonce
+            if not self.valid_proof(  # If valid proof method returns a false value.
+                    current_index,
+                    block['hash_of_previous_block'],
+                    block['transactions'],
+                    block['nonce']):
+                return False
+            # Move on to the next block on the chain
+            last_block = block
+            current_index += 1
+        # The chain is valid
+        return True
+
+    def update_blockchain(self):
+        """
+        Checks that the blockchain from neighboring nodes is valid and that the node with the longest valid chain is
+        the authoritative one; if another node with a valid blockchain is longer than the current one,
+        it will replace the current blockchain.
+        :return:
+        """
+        # Get the nodes around us that has been registered.
+        neighbours = self.nodes
+        new_chain = None
+        # For simplicity, look for chains longer than ours.
+        max_length = len(self.chain)
+        # Grab and verify the chains from all the nodes in our network.
+        for node in neighbours:
+            # Get the blockchain from the other nodes
+            response = requests.get(f'http://{node}/blockchain')
+            if response.status_code == 200:
+                length = response.json()['length']
+                chain = response.json()['chain']
+                # Check if the length is longer and the chain is valid.
+                if length > max_length and self.valid_chain(chain):
+                    max_length = length
+                    new_chain = chain
+        # Replace our chain if we discovered a new, valid chain longer than our
+        if new_chain:
+            self.chain = new_chain
+            return True
+        return False
 
     def proof_of_work(self, index, hash_of_previous_block, transactions):
         """
@@ -196,6 +268,47 @@ def new_transaction():
     }
 
     return jsonify(response, 201)
+
+
+@app.route('/nodes/add_nodes', methods=['POST'])
+def add_nodes():
+    """
+    Allows a node to register one or more neighboring nodes.
+    :return:
+    """
+    # Get the nodes passed in from the client.
+    values = request.get_json()
+    nodes = values.get('nodes')
+    if nodes is None:
+        return "Error: Missing node(s) info", 400
+    for node in nodes:
+        blockchain.add_node(node)
+    response = {
+        'message': 'New nodes added',
+        'nodes': list(blockchain.nodes)
+    }
+    return jsonify(response), 201
+
+
+@app.route('/nodes/sync', methods=['GET'])
+def sync():
+    """
+    Allows a node to synchronize its blockchain with its neighboring nodes.
+    :return:
+    """
+    updated = blockchain.update_blockchain()
+    if updated:
+        response = {
+            'message': 'The blockchain has been updated to the latest',
+            'blockchain': blockchain.chain
+        }
+    else:
+        response = {
+            'message': 'Our blockchain is the latest',
+            'blockchain': blockchain.chain
+        }
+
+    return jsonify(response), 200
 
 
 if __name__ == '__main__':
