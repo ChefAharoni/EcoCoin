@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div>
+      <a href="{{url_for('index')}}">Recipes</a>
+      |
+      <a href="{{url_for('about')}}">About</a>
+    </div>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>

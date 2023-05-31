@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Cooking By Myself</h1>
+  <p>Welcome to my cookbook. These are recipes I like.</p>
+  {% for id, name in template_recipes.items() %}
+    <p><a href="{{ url_for('recipe', id=id) }}">{{ name }}</a></p>
+  {% endfor %}
+
+  <form action="/" method="POST">
+    <h3>Add Recipe</h3>
+    <p>
+      <label for="recipe">Name:</label>
+      <input type="text" name="recipe"/>
+    </p>
+    <p>
+      <label for="description">Description:</label>
+      <textarea name="description"></textarea>
+    </p>
+    <p>
+      <label for="ingredients">Ingredients:</label>
+      <textarea name="ingredients"></textarea>
+    </p>
+    <p>
+      <label for="instructions">Instructions:</label>
+      <textarea name="instructions"></textarea>
+    </p>
+    <p><input type="submit" name="submit_recipe"/></p>
+  </form>
+{% endblock %}

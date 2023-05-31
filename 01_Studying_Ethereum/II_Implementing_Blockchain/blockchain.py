@@ -1,12 +1,12 @@
 import sys
 
-import hashlib  # To has using sha256
+import hashlib  # To hash using sha256
 import json
 
 from time import time  # For timestamping
 from uuid import uuid4
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 import requests
 from urllib.parse import urlparse
@@ -152,8 +152,8 @@ class Blockchain(object):
     def append_block(self, nonce, hash_of_previous_block):
         """
         Creates a new block and adds it to the blockchain.
-        :param nonce:
-        :param hash_of_previous_block:
+        :param nonce: Solved value that applies difficulty level.
+        :param hash_of_previous_block: Hash of the previous block.
         :return:
         """
         block = {
@@ -187,7 +187,7 @@ class Blockchain(object):
     def last_block(self):
         """
         Returns the last block in the blockchain.
-        :return:
+        :return: Last block in the blockchain.
         """
         return self.chain[-1]
 
@@ -211,7 +211,8 @@ def full_chain():
         'chain': blockchain.chain,
         'length': len(blockchain.chain)
     }
-    return jsonify(response), 200
+    # return jsonify(response), 200
+    return render_template('full_blockchain.html', t_response=response, s_code=200)
 
 
 # Creating a route to allow miners to mine a block so that it can be added to the blockchain.
@@ -240,7 +241,7 @@ def mine_block():
         'nonce': block['nonce'],
         'transactions': block['transactions']
     }
-    return jsonify(response), 200
+    return render_template('mine.html', t_response=response, s_code=200)
 
 
 @app.route('/transactions/new', methods=['POST'])
@@ -309,6 +310,11 @@ def sync():
         }
 
     return jsonify(response), 200
+
+
+@app.route('/')
+def index():
+    return render_template('index.html', node_id=node_identifier)
 
 
 if __name__ == '__main__':

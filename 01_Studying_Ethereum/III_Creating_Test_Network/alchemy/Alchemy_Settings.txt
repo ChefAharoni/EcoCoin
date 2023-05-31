@@ -1,0 +1,3 @@
+API_KEY=Z3uAhRhTlaj_mg7jlKh19DeMH-Ue3QKT
+HTPPS=https://eth-mainnet.g.alchemy.com/v2/Z3uAhRhTlaj_mg7jlKh19DeMH-Ue3QKT
+WEBSOCKETS=wss://eth-mainnet.g.alchemy.com/v2/Z3uAhRhTlaj_mg7jlKh19DeMH-Ue3QKT

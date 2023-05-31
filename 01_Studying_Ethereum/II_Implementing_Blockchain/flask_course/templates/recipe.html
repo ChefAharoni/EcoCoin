@@ -1,16 +1,31 @@
-<!DOCTYPE html>
-<html>
-  <body>
-    <a href="/">Back To Recipe List</a>
-    <h1>{{ template_recipe }}</h1>
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ template_recipe | title }}</h1>
+  
+  {% if template_description %}
     <p>{{ template_description }}</p>
-    <h3>Ingredients</h3>
-    <ul>
-      <!-- Ingredients list elements
-      should fill the <li> tags -->
-      <li>{{ template_ingredients[0] }}</li>
-      <li>{{ template_ingredients[1] }}</li>
-      <li>{{ template_ingredients[2] }}</li>
-    </ul>
-  </body>
-</html>
+  {%else%}
+    <p>A {{ template_recipe }} recipe.</p>
+  {% endif %}
+  
+  <h3>Ingredients - {{ template_ingredients | length}}</h3>
+  <ul>
+  {% for ingredient in template_ingredients %}
+    <li>{{ ingredient }}</li>
+  {% endfor %}
+  </ul>
+
+  <h3>Instructions</h3>
+  <ul>
+  {% for key, instruction in template_instructions|dictsort %}
+    <li>{{ instruction }}</li>
+  {% endfor %}
+  </ul>
+
+  <h3>Comments</h3>
+  <ul>
+  {% for comment in template_comments %}
+    <li>{{ comment }}</li>
+  {% endfor %}
+  </ul>
+{% endblock %}
