@@ -1,9 +1,0 @@
-    {% for k, v in t_response.items() %}
-    <p>{{k}}</p>
-        {% for block in k %}
-            {% for t, data in block.items() %}}
-    <p>{{t}}:{{data}}</p>
-        {% endfor %}
-        {% endfor %}}
-    <p>{{v}}</p>
-    {% endfor %}

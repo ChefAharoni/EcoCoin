@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+h1, h2, h3 {
+    font-family: Assistant;
+    text-align: center;
+    color: lightgreen;
+}
+
+p {
+    color: limegreen;
+    font-family: Assistant;
+}
+
+.highlight {
+    background-color: white;
+}
+
+body {
+    background-color: black;
+}
+
+head {
+    background-color: black;
+}
+
+#footer {
+    font-family: "Assistant";
+    background-color : gold;
+    line-height : 50px;
+    text-align : center;
+    vertical-align : middle;
+}

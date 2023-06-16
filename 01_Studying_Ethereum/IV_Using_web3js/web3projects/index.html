@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Educational Credentials Notarizer</h1>
+        <label for="document" class="col-lg-2 control-label">
+            Credential to store
+        </label>
+        <input id="document" type="text">
+        <button id="btnStore">Store</button>
+        <label for="document2" class="col-lg-2 control-label">
+            Check Credential
+        </label>
+        <input id="document2" type="text">
+        <button id="btnCheck">Check</button>
+        <label for="document2" class="col-lg-2 control-label">
+            Status
+        </label>
+        <h2 id="result"></h2>
+    </div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script>
+        async function loadWeb3() {
+            //---if MetaMask is available on your web browser---
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                //---connect to account---
+                const account = await window.ethereum.request(
+                    {method: 'eth_requestAccounts'});
+                console.log(account)
+            } else {
+                //---set the provider you want from Web3.providers---
+                web3 = new Web3(
+                    new Web3.providers.HttpProvider(
+                        "http://localhost:8545"));
+            }
+        }
+
+        //---load the smart contract---
+        async function loadContract() {
+            abi = [ { "anonymous": false, "inputs": [ { "indexed":
+                        false, "internalType": "address", "name": "from", "type":
+                        "address" }, { "indexed": false, "internalType": "string",
+                    "name": "document", "type": "string" }, { "indexed": false,
+                    "internalType": "uint256", "name": "blockNumber", "type":
+                        "uint256" } ], "name": "Result", "type": "event" },
+                { "inputs": [], "name": "cashOut", "outputs": [],
+                    "stateMutability": "nonpayable", "type": "function" }, {
+                    "inputs": [ { "internalType": "string", "name": "document",
+                        "type": "string" } ], "name": "checkEduCredentials", "outputs":
+                        [], "stateMutability": "payable", "type": "function" }, {
+                    "inputs": [], "name": "kill", "outputs": [], "stateMutability":
+                        "nonpayable", "type": "function" }, { "inputs": [ {
+                        "internalType": "string", "name": "document", "type":
+                            "string" } ], "name": "storeEduCredentials", "outputs": [],
+                    "stateMutability": "nonpayable", "type": "function" } ];
+            address = '0x3a16bD077f1BF9ddf38Ff76b78b9Fb4adB09D2bf'
+            return await new web3.eth.Contract(abi,address);
+        }
+        //---get the current account in MetaMask---
+        async function getCurrentAccount() {
+            const accounts = await web3.eth.getAccounts();
+            console.log(accounts)
+            return accounts[0];
+        }
+        async function load() {
+            await loadWeb3();
+            //---load the contract---
+            notarizer = await loadContract();
+            //---get the account---
+            const account = await getCurrentAccount();
+            //---handle the Result event fired by the smart contract---
+            notarizer.events.Result()
+                .on('data', function(event){
+                    if (event.returnValues[0] == account) {
+                        console.log(event.returnValues[0]);  // from
+                        console.log(event.returnValues[1]);  // text
+                        console.log(event.returnValues[2]);  // blocknumber
+                        //---if the blocknumber is 0, this means
+                        // credential is not found---
+                        if (event.returnValues[2] > 0) {
+                            $("#result").html("Credential is valid");
+                        } else {
+                            $("#result").html("Credential is NOT valid");
+                        }
+                    }
+                });
+
+            //---store the credential onto the blockchain---
+            // $("") selects the corresponding html element with the btnStore ID.
+            // .click(async function) attaches a click event handler to the selected button; when the button is clicked,
+            // the provided callback function is executed.
+            $("#btnStore").click(async function() {
+                notarizer.methods.storeEduCredentials($("#document").val()) // notarizer is the smart contract written
+                    // in solidity, loaded earlier; this line calls the storeEduCredentials method (function inside
+                    // class); #document is a call for html element id, here is credential to store text box.
+                    .send({from:account})
+                    .then(function (tx) {
+                        $("#result").html(tx.transactionHash);
+                    // .send({from:account}) sends a transaction to the Ethereum network to execute the storeEduCredentials method.
+                    // The {from:account} specifies the Ethereum account from which the transaction should be sent.
+                    // .then(function(tx) { ... }) attaches a callback function to handle the response of the transaction.
+                    // When the transaction is mined and confirmed on the blockchain, the callback function is executed.
+                    // Inside the callback function, tx represents the transaction object that contains information about the transaction, including the transactionHash.
+                    // $("#result").html(tx.transactionHash) sets the HTML content of the element with the id "result"
+                    // to the transaction hash (tx.transactionHash). This will display the transaction hash on the web page.
+                    });
+            });
+            //---check the credential on the blockchain---
+            $("#btnCheck").click(async function() {
+                notarizer.methods.checkEduCredentials($("#document2")
+                    .val())
+                    .send({from:account, value:1000});
+            });
+        }
+        load();
+    </script>
+</body>
+</html>

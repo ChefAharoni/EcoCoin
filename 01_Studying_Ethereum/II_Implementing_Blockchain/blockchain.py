@@ -317,6 +317,11 @@ def index():
     return render_template('index.html', node_id=node_identifier)
 
 
+@app.route('/about_me')
+def about_me():
+    return render_template('about_me.html')
+
+
 if __name__ == '__main__':
     # Testing the blockchain, allowing the user to run the API based on the specified port number.
     app.run(host='0.0.0.0', port=int(sys.argv[1]))
