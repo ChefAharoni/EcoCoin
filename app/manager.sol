@@ -1,21 +1,28 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
-
 import "./EcoToken.sol";
 
 contract management {
+    constructor() {
+        _addOwnerRole();
+    }
 
     // Later declare events here for listening.
 
     // Used to deploy roles of users and machines
     mapping (address => string) roles;
 
-    EcoCoin token = EcoCoin(address(0xd9145CCE52D386f254917e481eB44e9943F39138));  // Don't forget to update me!
-    address owner = token.getOwner();
+    EcoCoin token = EcoCoin(address(0xf2B1114C644cBb3fF63Bf1dD284c8Cd716e95BE9));  // Don't forget to update me!
+    address owner = token.getTokenOwner();
+
+    function _addOwnerRole() private {
+        // Called automatically when contract is deployed.
+        roles[owner] = "Owner";  // Add the owner of the token
+    }
 
     function _printOwner() public view returns (address) {
         // Prints the address of the token's owner.
-        return token.getOwner();
+        return token.getTokenOwner();
     }
 
     function getRole(address _userAddress) external view returns (string memory) {
@@ -23,10 +30,10 @@ contract management {
     }
 
     struct Requester {
-        uint ID;  // Starts at 1.
+        uint64 ID;  // Starts at 1; 64 bits to save on gas.
         string name;
         address rqAddress;
-        string role;
+        string role;  // Verifier / Shop
         bool status;  // Approve / denied.
     }
 
@@ -40,7 +47,7 @@ contract management {
     function requestRole(string memory _role, string memory _name) public returns (address, string memory) {
         // Add a check/modification so string will be lowercase.
         address _reqAddress = msg.sender;
-        uint _reqApprID = requests.length + 1;
+        uint64 _reqApprID = uint64(requests.length + 1);
         requests.push(Requester(_reqApprID, _name, _reqAddress, _role, false));
 
         requestedRoles[_reqAddress] = _role;
@@ -59,7 +66,7 @@ contract management {
 
 
     function _approveRole(uint _reqApprId, bool _decision) public returns (bool, string memory) {
-        require(msg.sender == owner, "Only the owner of thed coin can set roles! \n allowed address is ");
+        require(msg.sender == owner, "Only the owner of the coin can set roles! \n owner's address is ");
         // Click on 'requests' array button to see the request number, and approve by it.
         uint _reqIndex = _getIndexByID(_reqApprId);  // Get the index of the array using its ID.
         address _reqApprAddress = requests[_reqIndex].rqAddress;
@@ -73,7 +80,21 @@ contract management {
         }
     }
 
-    function getRole() public view returns (string memory) {
+    function _removeRole(uint _reqRmvId, bool _decision) public returns (bool, string memory) {
+        require(msg.sender == owner, "Only the owner of the coin can set roles! /n owner's address is ");
+        // Click on 'requests' array button to see the request number, and approve by it.
+        uint _reqRmvIndex = _getIndexByID(_reqRmvId); // Get the index of the array using its ID.
+        address _reqRmvAdress = requests[_reqRmvIndex].rqAddress;
+        if (_decision == false) {
+            requests[_reqRmvIndex].status = false;
+            roles[_reqRmvAdress] = "";
+            return (false, "Role removed.");
+        } else {
+            return (false, "Invalid command.");
+        }
+    }
+
+    function printRole() public view returns (string memory) {
         return roles[msg.sender];
     }
 
