@@ -4,28 +4,40 @@ import "./EcoToken.sol";
 
 contract management {
     constructor() {
+        // When contract called, set the owner role.
         _addOwnerRole();
     }
+
+    // EcoCoin token
+    EcoCoin token = EcoCoin(address(0x7EF2e0048f5bAeDe046f6BF797943daF4ED8CB47));  // Don't forget to update me!
 
     // Later declare events here for listening.
 
     // Used to deploy roles of users and machines
     mapping (address => string) roles;
 
-    EcoCoin token = EcoCoin(address(0xf2B1114C644cBb3fF63Bf1dD284c8Cd716e95BE9));  // Don't forget to update me!
     address owner = token.getTokenOwner();
+
+    // function setTokenContractAddress (address _address) external {
+    //     // Add here onlyOwner later instead of require
+
+    //     // Function enables to set the contracts' address from outside, so it can be constantly updated; rectricted to owners only.
+    //     require(msg.sender == owner, "Only the owner can set the contracts' address!");
+    //     token = EcoCoin(_address);
+    // }
 
     function _addOwnerRole() private {
         // Called automatically when contract is deployed.
         roles[owner] = "Owner";  // Add the owner of the token
     }
 
-    function _printOwner() public view returns (address) {
+    function printOwner() public view returns (address) {
         // Prints the address of the token's owner.
         return token.getTokenOwner();
     }
 
     function getRole(address _userAddress) external view returns (string memory) {
+        // Get the role of a specific user using his address.
         return roles[_userAddress];
     }
 
@@ -33,7 +45,7 @@ contract management {
         uint64 ID;  // Starts at 1; 64 bits to save on gas.
         string name;
         address rqAddress;
-        string role;  // Verifier / Shop
+        string role;  // Verifier / Owner / Redeemer
         bool status;  // Approve / denied.
     }
 

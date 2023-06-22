@@ -26,3 +26,8 @@ def manage():
     # This page should be available only to managers
     # Used for managing users, approving verifiers, shops, etc...
     return "../htmls/manage.html"
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
