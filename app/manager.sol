@@ -4,12 +4,12 @@ import "./EcoToken.sol";
 
 contract management {
     constructor() {
-        // When contract called, set the owner role.
+        // When contract called, set the owner role in the roles mapping.
         _addOwnerRole();
     }
 
     // EcoCoin token
-    EcoCoin token = EcoCoin(address(0x7EF2e0048f5bAeDe046f6BF797943daF4ED8CB47));  // Don't forget to update me!
+    EcoCoin token = EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8));  // Don't forget to update me!
 
     // Later declare events here for listening.
 
@@ -18,6 +18,7 @@ contract management {
 
     address owner = token.getTokenOwner();
 
+    // Implement this in the future - a smart way to add the address of the contract from the outside.
     // function setTokenContractAddress (address _address) external {
     //     // Add here onlyOwner later instead of require
 

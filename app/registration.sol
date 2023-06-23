@@ -4,22 +4,27 @@ import "./manager.sol";
 import "./EcoToken.sol";
 
 contract Registration {
-    EcoCoin token = EcoCoin(address(0x7EF2e0048f5bAeDe046f6BF797943daF4ED8CB47)); // Don't forget to update me!
-    management manage = management(address(0xDA0bab807633f07f013f94DD0E6A4F96F8742B53)); // Don't forget to update me!
+    EcoCoin token = EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
+    management manage = management(address(0xf8e81D47203A594245E36C48e151709F0C19fBe8)); // Don't forget to update me!
 
     address owner = token.getTokenOwner();
 
     // Later declare events here for listening.
 
-    // Address and name of shop
-    mapping (address => string) shopToName;
+    // Address and name of shop; only approved shops
+    mapping (address => string) shopAddrToName;
+
+    // Address and ID of shop; only approved shops
+    mapping (address => uint64) shopAddrToID;
 
     struct Shop {
-        uint64 shopID;
-        address shopAddress;
-        string shopName;  // Name of the shop
+        uint64 shopID;  // Starts from 1.
+        address shopAddress;  // Address of the shop.
+        string shopName;  // Name of the shop.
         string shopType;  // Coffeehouse / Clothes / Restaurant / etc...
         uint shopBalance;  // Balance of tokens.
+        uint256 requestedTokensToRedeem;  // Amount of tokens the recycler wishes to redeem. ----!!!---
+        uint256 redeemedTokens;  // Amount of tokens redeemed.   ---!!!---
         bool status;
     }
 
@@ -34,7 +39,7 @@ contract Registration {
         // Add a check/modification so string will be lowercase.
         address _shopAddress = msg.sender;
         uint64 _shopRegisterID = uint64(shops.length + 1);
-        shops.push(Shop(_shopRegisterID, _shopAddress, _name, _type, token.balanceOf(_shopAddress), false));
+        shops.push(Shop(_shopRegisterID, _shopAddress, _name, _type, token.balanceOf(_shopAddress), 0, 0, false));
 
         // requestedRoles[_shopAddress] = _role;  // Can I delete this?
         return (_shopAddress, _name, _type);
@@ -59,7 +64,8 @@ contract Registration {
         address _shopAddress = shops[_shopIndex].shopAddress;
         if (_decision == true) {
             shops[_shopIndex].status = true;
-            shopToName[_shopAddress] = shops[_shopIndex].shopName;
+            shopAddrToName[_shopAddress] = shops[_shopIndex].shopName;
+            shopAddrToID[_shopAddress] = shops[_shopIndex].shopID;
             return (true, "Approved!");
         } else {
             shops[_shopIndex].status = false;
@@ -74,7 +80,8 @@ contract Registration {
         address _reqRmvAddress = shops[_shopRmvIndex].shopAddress;
         if (_decision == false) {  // If the shop is removed
             shops[_shopRmvIndex].status = false;
-            shopToName[_reqRmvAddress] = "";
+            shopAddrToName[_reqRmvAddress] = "";
+            shopAddrToID[_reqRmvAddress] = 0;  // Zero will never be an ID since it starts from one.
             return (false, "Shop removed.");
         } else {
             return (false, "Invalid command.");
@@ -82,7 +89,7 @@ contract Registration {
     }
 
     function printShopName() public view returns (string memory) {
-        return shopToName[msg.sender];
+        return shopAddrToName[msg.sender];
     }
 
     function getShops() external view returns (Shop[] memory) {
@@ -92,6 +99,28 @@ contract Registration {
     function updateShopBalance(uint64 _shopIndex, address _shopAddress) external {
         // Updates the balance of a requested shop according to its balance as written in the blockchain.
         shops[_shopIndex].shopBalance = token.balanceOf(_shopAddress);
+    }
+
+    function _getShopName(address _shopAddress) public view returns (string memory) {
+        // Gets the shop's name by its address; used for checking if address is registered shop.
+        return shopAddrToName[_shopAddress];
+    }
+
+    function updateRequestedTokensToRedeem(uint256 _tokensToRedeemAmt) external returns (bool) {
+        // Updates the requested amount of tokens to redeem in the `shops` array.
+        // require(msg.sender == _recyAddr, "Only the owner of the account can request to redeem tokens!");  // Prevent users to modify other users' request to redeem tokens.
+        uint64 _shopIndex = shopAddrToID[msg.sender];  // This allows only to update only the functions caller's request of tokens.
+        shops[_shopIndex].requestedTokensToRedeem = _tokensToRedeemAmt;  // This will override any data currently there.
+        return true;
+    }
+
+    function updateRedeemedTokens(uint64 _shopIndex, uint256 _redeemedTokens) external returns (bool) {
+        string memory _role = manage.getRole(msg.sender);  // Get the role of the msg.sender.
+
+        // Updates the amount of redeemed tokens approved by the redeemer.
+        require(keccak256(abi.encodePacked(_role)) == keccak256(abi.encodePacked("Redeemer")), "Only a redeemer can approve a redemption!");  // Only allow a redeemer to approve redemption of tokens.
+        shops[_shopIndex].redeemedTokens = _redeemedTokens;  // This will override any data currently there.
+        return true;
     }
 
 }

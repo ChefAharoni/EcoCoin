@@ -4,8 +4,8 @@ import "./manager.sol";
 import "./EcoToken.sol";
 
 contract Depositor {
-    EcoCoin token = EcoCoin(address(0x7EF2e0048f5bAeDe046f6BF797943daF4ED8CB47));  // Don't forget to update me!
-    management manage = management(address(0xDA0bab807633f07f013f94DD0E6A4F96F8742B53));  // Don't forget to update me!
+    EcoCoin token = EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8));  // Don't forget to update me!
+    management manage = management(address(0xf8e81D47203A594245E36C48e151709F0C19fBe8));  // Don't forget to update me!
 
     address owner = token.getTokenOwner();
 
@@ -14,9 +14,9 @@ contract Depositor {
         string recyName;  // Name of recycler.
         address recyAddr;  // Address of recycler.
         uint64 bottlesDepo;  // Amount of bottles deposited.
-        uint256 recyBalance;  // Tokens balance of user
-        uint256 requestedTokensToRedeem;  // Amount of tokens the recycler wishes to redeem.
-        uint256 redeemedTokens;  // Amount of tokens redeemed.
+        uint256 recyBalance;  // Tokens balance of user.
+        // uint256 requestedTokensToRedeem;  // Amount of tokens the recycler wishes to redeem.
+        // uint256 redeemedTokens;  // Amount of tokens redeemed.
         bool status;  // Bottles approved or denied.
     }
 
@@ -29,7 +29,7 @@ contract Depositor {
         uint64 _recyID = uint64(greeners.length + 1);  // uint64 must be declared at the end because it is by default uint256.
         recyclerToID[_recyAddr] = _recyID;  // Add the ID of the recycler to associate with his address.
         //                      ID;    name;  address; bottles;   balance;   requested..Redeem; ;redeemedTokens;  status
-        greeners.push(Recylcer(_recyID, _name, _recyAddr, 0, token.balanceOf(_recyAddr), 0, 0, false));
+        greeners.push(Recylcer(_recyID, _name, _recyAddr, 0, token.balanceOf(_recyAddr), false));
     }
 
     modifier registered() {
@@ -123,16 +123,19 @@ contract Depositor {
         return greeners;
     }
 
-    function updateRequestedTokensToRedeem(uint64 _recyIndex, address _recyAddr, uint256 _tokensToRedeemAmt) external returns (bool) {
-        // Updates the requested amount of tokens to redeem in the `greeners` array.
-        require(msg.sender == _recyAddr, "Only the owner of the account can request to redeem tokens!");  // Prevent users to modify other users' request to redeem tokens.
-        greeners[_recyIndex].requestedTokensToRedeem = _tokensToRedeemAmt;
-        return true;
-    }
+    // function updateRequestedTokensToRedeem(uint256 _tokensToRedeemAmt) external returns (bool) {
+    //     // Updates the requested amount of tokens to redeem in the `greeners` array.
+    //     // require(msg.sender == _recyAddr, "Only the owner of the account can request to redeem tokens!");  // Prevent users to modify other users' request to redeem tokens.
+    //     uint64 _recyIndex = recyclerToID[msg.sender];  // This allows only to update only the functions caller's request of tokens.
+    //     greeners[_recyIndex].requestedTokensToRedeem = _tokensToRedeemAmt;  // This will override any data currently there.
+    //     return true;
+    // }
 
-    function updateRedeemedTokens(uint64 _recyIndex, uint256 _redeemedTokens, string memory _role) external {
-        // Updates the amount of redeemed tokens approved by the redeemer.
-        require(keccak256(abi.encodePacked(_role)) == keccak256(abi.encodePacked("Redeemer")), "Only a redeemer can approve a redemption!");  // Only allow a redeemer to approve redemption of tokens.
-        greeners[_recyIndex].redeemedTokens = _redeemedTokens;
-    }
+    // function updateRedeemedTokens(uint64 _recyIndex, uint256 _redeemedTokens) external {
+    //     string memory _role = manage.getRole(msg.sender);  // Get the role of the msg.sender;
+
+    //     // Updates the amount of redeemed tokens approved by the redeemer.
+    //     require(keccak256(abi.encodePacked(_role)) == keccak256(abi.encodePacked("Redeemer")), "Only a redeemer can approve a redemption!");  // Only allow a redeemer to approve redemption of tokens.
+    //     greeners[_recyIndex].redeemedTokens = _redeemedTokens;  // This will override any data currently there.
+    // }
 }

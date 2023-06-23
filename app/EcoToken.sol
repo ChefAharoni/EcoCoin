@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
 import "./openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+// import "./openzeppelin-contracts/contracts/access/Ownable.sol"; // Doesn't work for some reason, implement in the future.
 
 // "EcoCoin", "ECC"
-contract EcoCoin is ERC20{
+contract EcoCoin is ERC20 {
   // To set the tokenOwner of the token; used for managing roles.
   address tokenOwner = msg.sender;
 
@@ -14,7 +15,7 @@ contract EcoCoin is ERC20{
 
   modifier ownerOnly() {
     // Addition to function so only the tokenOwner can perform actions.
-    require(msg.sender == tokenOwner);
+    require(msg.sender == tokenOwner, "Only the owner of the token can perform this action!");
     _;
   }
 

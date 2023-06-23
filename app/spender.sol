@@ -6,9 +6,9 @@ import "./registration.sol";
 
 contract Spender {
     // When a recycler wishes to spend his tokens in a local shop: Cafe, Restaurant, Clothes store, etc...
-    EcoCoin token = EcoCoin(address(0x7EF2e0048f5bAeDe046f6BF797943daF4ED8CB47));  // Don't forget to update me!
-    Depositor deposition = Depositor(address(0xEc29164D68c4992cEdd1D386118A47143fdcF142));  // Don't forget to update me!
-    Registration shopReg = Registration(address(0xEf9f1ACE83dfbB8f559Da621f4aEA72C6EB10eBf)); // Don't forget to update me!
+    EcoCoin token = EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8));  // Don't forget to update me!
+    Depositor deposition = Depositor(address(0xD7ACd2a9FD159E69Bb102A1ca21C9a3e3A5F771B));  // Don't forget to update me!
+    Registration shopReg = Registration(address(0x9D7f74d0C41E726EC95884E0e97Fa6129e3b5E99)); // Don't forget to update me!
 
     function purchaseGoods(uint64 shopID, uint256 _spendAmount) public returns (bool){
         // In the front-end app, display all the approved shops with their IDs.
