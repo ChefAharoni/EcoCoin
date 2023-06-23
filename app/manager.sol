@@ -16,7 +16,7 @@ contract management {
     // Used to deploy roles of users and machines
     mapping (address => string) roles;
 
-    address owner = token.getTokenOwner();
+    address owner = token.getTokenOwner(); 
 
     // Implement this in the future - a smart way to add the address of the contract from the outside.
     // function setTokenContractAddress (address _address) external {
@@ -72,7 +72,7 @@ contract management {
         for (uint i = 0; i < requests.length; i++) {
             if (requests[i].ID == searchID) {
                 return i;
-            }
+            }                
         }
         revert("ID not found");
     }

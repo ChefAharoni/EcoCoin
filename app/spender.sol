@@ -18,7 +18,7 @@ contract Spender {
         uint _recyclerBalance = token.balanceOf(msg.sender);  // Get the balance of the spender (recycler).
 
         // Checks if the spender (recycler) has enough tokens in his account to spend.
-        require(_recyclerBalance >= _spendAmount,
+        require(_recyclerBalance >= _spendAmount, 
                 string(abi.encodePacked("Insufficient funds! You have " , _recyclerBalance, " tokens while at least ", _spendAmount, " is required.")));
         token.transferFunds(msg.sender, _shopAddress, _spendAmount);  // Transfer the tokens from the spender to the shop.
         shopReg.updateShopBalance(_shopIndex=_shopIndex, _shopAddress=_shopAddress);  // Updates the shopBalance of the shops array to the current balance of the shop.

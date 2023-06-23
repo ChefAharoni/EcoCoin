@@ -51,7 +51,7 @@ contract Redeemer {
             return false;
         }
     }
-
+    
     function BurnRedeemedTokens() public returns (bool, uint256) {
         // Because we want to keep the _burnTokens function available to the owner only, the burn of tokens must occur manually by the owner.
         address tokenOwner = token.getTokenOwner();  // Get the address of the token's owner.

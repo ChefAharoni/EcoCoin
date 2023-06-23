@@ -20,15 +20,15 @@ contract Depositor {
         bool status;  // Bottles approved or denied.
     }
 
-    Recylcer[] public greeners;
-    mapping (address => uint64) public recyclerBottles;  // Mapping of addresses and their deposited bottles; added only when their bottles are confirmed.
+    Recylcer[] public greeners; 
+    mapping (address => uint64) public recyclerBottles;  // Mapping of addresses and their deposited bottles; added only when their bottles are confirmed. 
     mapping (address => uint64) public recyclerToID;  // Mapping of addresses and their ID's.
 
     function registerRecycler(string memory _name) public {
         address _recyAddr = msg.sender;
         uint64 _recyID = uint64(greeners.length + 1);  // uint64 must be declared at the end because it is by default uint256.
         recyclerToID[_recyAddr] = _recyID;  // Add the ID of the recycler to associate with his address.
-        //                      ID;    name;  address; bottles;   balance;   requested..Redeem; ;redeemedTokens;  status
+        //                      ID;    name;  address; bottles;   balance;   requested..Redeem; ;redeemedTokens;  status 
         greeners.push(Recylcer(_recyID, _name, _recyAddr, 0, token.balanceOf(_recyAddr), false));
     }
 
@@ -84,8 +84,8 @@ contract Depositor {
         token.transferFunds(owner, _recyAddr, _bottlesToTokens);
 
         // The mint operation below raises an important question - if I mint the amount of tokens I spend, the value of the tokens keeps dropping, because the supply is bigger.
-        // but since there is not use for the tokens in exchange for cash, just for products - does it matter what their value is?
-        // The value of the token should be set by the state or the local municipality; some will exchange 2 tokens for coffee, some 4.
+        // but since there is not use for the tokens in exchange for cash, just for products - does it matter what their value is? 
+        // The value of the token should be set by the state or the local municipality; some will exchange 2 tokens for coffee, some 4. 
         // It all depends on how the acceptors of the bottles value the bottles.
         // Solution - burn tokens when redeeming.
         token.mintTokens(_bottlesToTokens);  // Mint the spent amount of tokens to the owner.
@@ -103,7 +103,7 @@ contract Depositor {
     for (uint64 i = 0; i < greeners.length; i++) {
         if (greeners[i].ID == searchID) {
             return i;
-            }
+            }                
         }
     revert("ID not found");
     }

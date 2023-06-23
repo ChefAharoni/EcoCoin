@@ -51,7 +51,7 @@ contract Registration {
         for (uint64 i = 0; i < shops.length; i++) {
             if (shops[i].shopID == searchID) {
                 return i;
-            }
+            }                
         }
         revert("ID not found");
     }
