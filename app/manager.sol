@@ -9,14 +9,15 @@ contract management {
     }
 
     // EcoCoin token
-    EcoCoin token = EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8));  // Don't forget to update me!
+    EcoCoin token =
+        EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
 
     // Later declare events here for listening.
 
     // Used to deploy roles of users and machines
-    mapping (address => string) roles;
+    mapping(address => string) roles;
 
-    address owner = token.getTokenOwner(); 
+    address owner = token.getTokenOwner();
 
     // Implement this in the future - a smart way to add the address of the contract from the outside.
     // function setTokenContractAddress (address _address) external {
@@ -29,7 +30,7 @@ contract management {
 
     function _addOwnerRole() private {
         // Called automatically when contract is deployed.
-        roles[owner] = "Owner";  // Add the owner of the token
+        roles[owner] = "Owner"; // Add the owner of the token
     }
 
     function printOwner() public view returns (address) {
@@ -37,27 +38,31 @@ contract management {
         return token.getTokenOwner();
     }
 
-    function getRole(address _userAddress) external view returns (string memory) {
+    function getRole(
+        address _userAddress
+    ) external view returns (string memory) {
         // Get the role of a specific user using his address.
         return roles[_userAddress];
     }
 
     struct Requester {
-        uint64 ID;  // Starts at 1; 64 bits to save on gas.
+        uint64 ID; // Starts at 1; 64 bits to save on gas.
         string name;
         address rqAddress;
-        string role;  // Verifier / Owner / Redeemer
-        bool status;  // Approve / denied.
+        string role; // Verifier / Owner / Redeemer
+        bool status; // Approve / denied.
     }
 
     // Array of all requests based on the Requester struct.
     Requester[] public requests;
 
     // mapping of requesters' addresses and their request in string; i.e. (0X1234..., "verifier").
-    mapping (address => string) requestedRoles;
+    mapping(address => string) requestedRoles;
 
-
-    function requestRole(string memory _role, string memory _name) public returns (address, string memory) {
+    function requestRole(
+        string memory _role,
+        string memory _name
+    ) public returns (address, string memory) {
         // Add a check/modification so string will be lowercase.
         address _reqAddress = msg.sender;
         uint64 _reqApprID = uint64(requests.length + 1);
@@ -72,16 +77,21 @@ contract management {
         for (uint i = 0; i < requests.length; i++) {
             if (requests[i].ID == searchID) {
                 return i;
-            }                
+            }
         }
         revert("ID not found");
     }
 
-
-    function _approveRole(uint _reqApprId, bool _decision) public returns (bool, string memory) {
-        require(msg.sender == owner, "Only the owner of the coin can set roles! \n owner's address is ");
+    function _approveRole(
+        uint _reqApprId,
+        bool _decision
+    ) public returns (bool, string memory) {
+        require(
+            msg.sender == owner,
+            "Only the owner of the coin can set roles! \n owner's address is "
+        );
         // Click on 'requests' array button to see the request number, and approve by it.
-        uint _reqIndex = _getIndexByID(_reqApprId);  // Get the index of the array using its ID.
+        uint _reqIndex = _getIndexByID(_reqApprId); // Get the index of the array using its ID.
         address _reqApprAddress = requests[_reqIndex].rqAddress;
         if (_decision == true) {
             requests[_reqIndex].status = true;
@@ -93,8 +103,14 @@ contract management {
         }
     }
 
-    function _removeRole(uint _reqRmvId, bool _decision) public returns (bool, string memory) {
-        require(msg.sender == owner, "Only the owner of the coin can set roles! /n owner's address is ");
+    function _removeRole(
+        uint _reqRmvId,
+        bool _decision
+    ) public returns (bool, string memory) {
+        require(
+            msg.sender == owner,
+            "Only the owner of the coin can set roles! /n owner's address is "
+        );
         // Click on 'requests' array button to see the request number, and approve by it.
         uint _reqRmvIndex = _getIndexByID(_reqRmvId); // Get the index of the array using its ID.
         address _reqRmvAdress = requests[_reqRmvIndex].rqAddress;
@@ -110,5 +126,4 @@ contract management {
     function printRole() public view returns (string memory) {
         return roles[msg.sender];
     }
-
- }
+}
