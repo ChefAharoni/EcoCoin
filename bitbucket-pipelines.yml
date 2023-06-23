@@ -5,4 +5,4 @@ pipelines:
   default:
     - step:
         script:
-          - git push --mirror git@github.com:ChefAharoni/EcoCoin
+          - git push --mirror git@github.com:ChefAharoni/EcoCoin.git
