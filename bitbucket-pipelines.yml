@@ -7,4 +7,5 @@ pipelines:
           enabled: false
         script:
           - git clone --bare git@bitbucket.org:aa-lsue/ecocoin.git
+          - cd ecocoin
           - git push --mirror git@github.com:ChefAharoni/EcoCoin.git
