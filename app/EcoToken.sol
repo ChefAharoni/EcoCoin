@@ -52,11 +52,11 @@ contract EcoCoin is ERC20 {
 
     constructor() ERC20("EcoCoin", "ECC") {
         // These actions are executed immediately when the contract is deployed.
-
         // ERC20 tokens by default have 18 decimals
         // number of tokens minted = n * 10^18
-        uint256 n = 1000; // Number of tokens to create to the contract deployer.
-        _mint(msg.sender, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places; here I changed it to 0 so there won't be any decimals.
+        // Update - do not mint any tokens at start.
+        // uint256 n = 1000; // Number of tokens to create to the contract deployer.
+        // _mint(msg.sender, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places; here I changed it to 0 so there won't be any decimals.
     }
 
     /**
@@ -94,7 +94,7 @@ contract EcoCoin is ERC20 {
     }
 
     /**
-     * @notice  Overriding the decimals function from the ERC20 contract.
+     * @notice  Overriding the decimals function from the ERC20 contract, setting the decimals of the token to zero (0).
      * @return  uint8  Amount of decimals used for the token.
      */
     function decimals() public pure override returns (uint8) {

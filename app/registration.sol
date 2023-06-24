@@ -33,7 +33,7 @@ contract Registration {
     // Array of all shops using the Shop struct
     Shop[] public shops;
 
-    // mapping of requesters' addresses and their request in string; i.e. (0X1234..., "verifier").
+    // mapping of Rolers' addresses and their request in string; i.e. (0X1234..., "verifier").
     // mapping (address => string) requestedRoles;
 
     function registerShop(

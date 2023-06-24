@@ -21,31 +21,46 @@ contract management {
 
     // Implement this in the future - a smart way to add the address of the contract from the outside.
     // function setTokenContractAddress (address _address) external {
-    //     // Add here onlyOwner later instead of require
+    // Add here onlyOwner later instead of require
 
-    //     // Function enables to set the contracts' address from outside, so it can be constantly updated; rectricted to owners only.
+    // Function enables to set the contracts' address from outside, so it can be constantly updated; rectricted to owners only.
     //     require(msg.sender == owner, "Only the owner can set the contracts' address!");
     //     token = EcoCoin(_address);
     // }
 
+    /**
+     * @notice  Aadds the role of the owner.
+     * @dev Called automatically when contract is called.
+     */
     function _addOwnerRole() private {
-        // Called automatically when contract is deployed.
         roles[owner] = "Owner"; // Add the owner of the token
     }
 
+    /**
+     * @notice  Prints the address of the token's owner.
+     * @return  address  Of token's owner.
+     */
     function printOwner() public view returns (address) {
-        // Prints the address of the token's owner.
         return token.getTokenOwner();
     }
 
+    /**
+     * @notice  Gets a role from the roles mapping.
+     * @dev     Used for outer functions that cannot access the mapping.
+     * @param   _userAddress  Address of user requested to get role of.
+     * @return  string  If exists, role of the user requested.
+     */
     function getRole(
         address _userAddress
     ) external view returns (string memory) {
-        // Get the role of a specific user using his address.
         return roles[_userAddress];
     }
 
-    struct Requester {
+    /**
+     * @notice Struct of a roler, where his ID, name, addres, and requested roles are saved.
+     * @dev As long as status is false, the role of the user hasn't been verified by an owner/municipality.
+     */
+    struct Roler {
         uint64 ID; // Starts at 1; 64 bits to save on gas.
         string name;
         address rqAddress;
@@ -53,12 +68,20 @@ contract management {
         bool status; // Approve / denied.
     }
 
-    // Array of all requests based on the Requester struct.
-    Requester[] public requests;
+    // Array of all requests based on the Roler struct; represent only requested roles, not approved ones.
+    Roler[] public requests;
 
-    // mapping of requesters' addresses and their request in string; i.e. (0X1234..., "verifier").
+    // mapping of Rolers' addresses and their request in string; i.e. (0X1234..., "verifier").
     mapping(address => string) requestedRoles;
 
+    /**
+     * @notice  Method that lets users request a role for them.
+     * @dev     .
+     * @param   _role  Role requested.
+     * @param   _name  Name of the requester (used for identification in approval).
+     * @return  address  Address of the requester.
+     * @return  string  Role requested by the requester.
+     */
     function requestRole(
         string memory _role,
         string memory _name
@@ -66,15 +89,23 @@ contract management {
         // Add a check/modification so string will be lowercase.
         address _reqAddress = msg.sender;
         uint64 _reqApprID = uint64(requests.length + 1);
-        requests.push(Requester(_reqApprID, _name, _reqAddress, _role, false));
+        requests.push(Roler(_reqApprID, _name, _reqAddress, _role, false));
 
         requestedRoles[_reqAddress] = _role;
         return (_reqAddress, _role);
     }
 
-    function _getIndexByID(uint searchID) private view returns (uint256) {
+    /**
+     * @notice  Finds an array's index by its ID.
+     * @dev     Two things aren't working: 1. Function should be internal, but then it wouldn't be avaiable to other contracts without fully inheriting this contract.
+     *                                     2. Array is fixed, not a var; I haven't figured how to set the array searched as a var;
+     *                                         this function is multiplied in every contract, according to its corresponding array.
+     * @param   searchID  Object's ID to query in the array.
+     * @return  uint64  Index of queried array's object.
+     */
+    function _getIndexByID(uint searchID) private view returns (uint64) {
         // Finds an array's index by its ID; should be internal, doesn't work for some reason (maybe because I'm inherting this contract as instance and not with "is").
-        for (uint i = 0; i < requests.length; i++) {
+        for (uint64 i = 0; i < requests.length; i++) {
             if (requests[i].ID == searchID) {
                 return i;
             }
@@ -82,6 +113,14 @@ contract management {
         revert("ID not found");
     }
 
+    /**
+     * @notice  Approve a role requested by a user, only an owner (for now, might change to municipality) can approve a role.
+     * @dev     .
+     * @param   _reqApprId  .
+     * @param   _decision  .
+     * @return  bool  .
+     * @return  string  .
+     */
     function _approveRole(
         uint _reqApprId,
         bool _decision
@@ -91,7 +130,7 @@ contract management {
             "Only the owner of the coin can set roles! \n owner's address is "
         );
         // Click on 'requests' array button to see the request number, and approve by it.
-        uint _reqIndex = _getIndexByID(_reqApprId); // Get the index of the array using its ID.
+        uint64 _reqIndex = uint64(_getIndexByID(_reqApprId)); // Get the index of the array using its ID.
         address _reqApprAddress = requests[_reqIndex].rqAddress;
         if (_decision == true) {
             requests[_reqIndex].status = true;
@@ -112,7 +151,7 @@ contract management {
             "Only the owner of the coin can set roles! /n owner's address is "
         );
         // Click on 'requests' array button to see the request number, and approve by it.
-        uint _reqRmvIndex = _getIndexByID(_reqRmvId); // Get the index of the array using its ID.
+        uint64 _reqRmvIndex = uint64(_getIndexByID(_reqRmvId)); // Get the index of the array using its ID.
         address _reqRmvAdress = requests[_reqRmvIndex].rqAddress;
         if (_decision == false) {
             requests[_reqRmvIndex].status = false;
