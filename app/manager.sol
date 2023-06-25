@@ -14,8 +14,8 @@ contract Management {
 
     // Later declare events here for listening.
 
-    // Used to deploy roles of users and machines
-    mapping(address => string) roles;
+    // Used to deploy roles of users and machines; only approved roles are here.
+    mapping(address user => string Role) roles;
 
     address owner = token.getTokenOwner();
 
@@ -72,7 +72,7 @@ contract Management {
     Roler[] public requests;
 
     // mapping of Rolers' addresses and their request in string; i.e. (0X1234..., "verifier").
-    mapping(address => string) requestedRoles;
+    mapping(address user => string roleRequested) requestedRoles;
 
     /**
      * @notice  Method that lets users request a role for them.

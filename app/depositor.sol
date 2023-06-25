@@ -21,8 +21,8 @@ contract Depositor {
     }
 
     Recylcer[] public greeners;
-    mapping(address => uint64) public recyclerBottles; // Mapping of addresses and their deposited bottles; added only when their bottles are confirmed.
-    mapping(address => uint64) public recyclerToID; // Mapping of addresses and their ID's.
+    mapping(address recycler => uint64 bottlesAmt) public recyclerBottles; // Mapping of addresses and their deposited bottles; added only when their bottles are confirmed.
+    mapping(address recycler => uint64 recyID) public recyclerToID; // Mapping of addresses and their ID's.
 
     function registerRecycler(string memory _name) public {
         address _recyAddr = msg.sender;

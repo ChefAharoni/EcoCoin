@@ -14,10 +14,10 @@ contract Registration {
     // TODO - Later declare events here for listening.
 
     // Address and name of shop; only approved shops
-    mapping(address => string) shopAddrToName;
+    mapping(address shop => string shopName) shopAddrToName;
 
     // Address and ID of shop; only approved shops
-    mapping(address => uint64) shopAddrToID;
+    mapping(address shop => uint64 shopID) shopAddrToID;
 
     struct Shop {
         uint64 shopID; // Starts from 1.
