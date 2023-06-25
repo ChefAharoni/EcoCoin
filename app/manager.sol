@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
-import {EcoCoin} from  "./EcoToken.sol";
+import {EcoCoin} from "./EcoToken.sol";
 
 contract Management {
     constructor() {
-        // When contract called, set the owner role in the roles mapping.
+        // When contract called, set the i_owner role in the roles mapping.
         _addOwnerRole();
     }
 
@@ -17,23 +17,23 @@ contract Management {
     // Used to deploy roles of users and machines; only approved roles are here.
     mapping(address user => string Role) roles;
 
-    address owner = token.getTokenOwner();
+    address immutable i_owner = token.getTokenOwner();
 
     // Implement this in the future - a smart way to add the address of the contract from the outside.
     // function setTokenContractAddress (address _address) external {
-    // Add here onlyOwner later instead of require
+    // Add here only i_Owner later instead of require
 
-    // Function enables to set the contracts' address from outside, so it can be constantly updated; rectricted to owners only.
-    //     require(msg.sender == owner, "Only the owner can set the contracts' address!");
+    // Function enables to set the contracts' address from outside, so it can be constantly updated; rectricted to i_owners only.
+    //     require(msg.sender == i_owner, "Only the i_owner can set the contracts' address!");
     //     token = EcoCoin(_address);
     // }
 
     /**
-     * @notice  Aadds the role of the owner.
+     * @notice  Adds the role of the owner.
      * @dev Called automatically when contract is called.
      */
     function _addOwnerRole() private {
-        roles[owner] = "Owner"; // Add the owner of the token
+        roles[i_owner] = "i_Owner"; // Add the owner of the token
     }
 
     /**
@@ -64,7 +64,7 @@ contract Management {
         uint64 ID; // Starts at 1; 64 bits to save on gas.
         string name;
         address rqAddress;
-        string role; // Verifier / Owner / Redeemer
+        string role; //  Owner / Redeemer
         bool status; // Approve / denied.
     }
 
@@ -126,8 +126,8 @@ contract Management {
         bool _decision
     ) public returns (bool, string memory) {
         require(
-            msg.sender == owner,
-            "Only the owner of the coin can set roles! \n owner's address is "
+            msg.sender == i_owner,
+            "Only the owner of the coin can set roles! \n owner's address is " /* This error message doesn't work, should return the owner's address. */
         );
         // Click on 'requests' array button to see the request number, and approve by it.
         uint64 _reqIndex = uint64(_getIndexByID(_reqApprId)); // Get the index of the array using its ID.
@@ -147,7 +147,7 @@ contract Management {
         bool _decision
     ) public returns (bool, string memory) {
         require(
-            msg.sender == owner,
+            msg.sender == i_owner,
             "Only the owner of the coin can set roles! /n owner's address is "
         );
         // Click on 'requests' array button to see the request number, and approve by it.

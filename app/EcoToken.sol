@@ -14,40 +14,40 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  */
 
 contract EcoCoin is ERC20 {
-    // To set the tokenOwner of the token; used for managing roles.
-    address tokenOwner = msg.sender;
+    // To set the i_tokenOwner of the token; used for managing roles.
+    address immutable i_tokenOwner = msg.sender;  // i_ prefix means immutable.
 
     /**
-     * @notice  Function to get the tokenOwner of the token.
+     * @notice  Function to get the i_tokenOwner of the token.
      * @dev     .
-     * @return  address  of the tokenOwner.
+     * @return  address  of the i_tokenOwner.
      */
     function getTokenOwner() public view returns (address) {
-        // Returns the address of the tokenOwner.
-        return tokenOwner;
+        // Returns the address of the i_tokenOwner.
+        return i_tokenOwner;
     }
 
     /**
-     * @notice  Addition to function so only the tokenOwner can perform actions.
+     * @notice  Addition to function so only the i_tokenOwner can perform actions.
      * @dev     Not sure this method works with functions that are called from other contracts.
      */
     modifier ownerOnly() {
-        // Addition to function so only the tokenOwner can perform actions.
+        // Addition to function so only the i_tokenOwner can perform actions.
         require(
-            msg.sender == tokenOwner,
+            msg.sender == i_tokenOwner,
             "Only the owner of the token can perform this action!"
         );
         _;
     }
 
     /**
-     * @notice  Function that mints tokens to the tokenOwner.
+     * @notice  Function that mints tokens to the i_tokenOwner.
      * @param   n  Amount of tokens to mint.
      */
     function mintTokens(uint256 n) public {
         // ERC20 tokens by default have 18 decimals
         // number of tokens minted = n * 10^18
-        _mint(tokenOwner, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places
+        _mint(i_tokenOwner, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places
     }
 
     constructor() ERC20("EcoCoin", "ECC") {
