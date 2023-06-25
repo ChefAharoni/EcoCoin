@@ -3,6 +3,10 @@ pragma solidity ^0.8;
 import {Management} from "./manager.sol";
 import {EcoCoin} from "./EcoToken.sol";
 
+error NotRegistered(string message); // Error to throw when the caller is not registered.
+
+// TODO - add more error and revert messages instead of require, to save gas.
+
 contract Depositor {
     EcoCoin token =
         EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
@@ -50,10 +54,13 @@ contract Depositor {
                 break;
             }
         }
-        require(
-            isRegistered,
-            "You must be registered in order to perform actions!"
-        );
+        // require(
+        //     isRegistered,
+        //     "You must be registered in order to perform actions!"
+        // );
+        if (!isRegistered) {
+            revert NotRegistered("You must be registered in order to perform actions!");
+        }
         _;
     }
 

@@ -5,6 +5,9 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 // import "./openzeppelin-contracts/contracts/access/Ownable.sol"; // Doesn't work for some reason, implement in the future.
 
+error NotOwner(); // Error to throw when the caller is not the i_tokenOwner.
+
+// TODO - add more error and revert messages instead of require, to save gas.
 // "EcoCoin", "ECC"
 /**
  * @author  ChefAharoni
@@ -33,10 +36,11 @@ contract EcoCoin is ERC20 {
      */
     modifier ownerOnly() {
         // Addition to function so only the i_tokenOwner can perform actions.
-        require(
-            msg.sender == i_tokenOwner,
-            "Only the owner of the token can perform this action!"
-        );
+        // require(
+        //     msg.sender == i_tokenOwner,
+        //     "Only the owner of the token can perform this action!"
+        // );
+        if (msg.sender != i_tokenOwner) { revert NotOwner(); } // If the caller is not the i_tokenOwner, revert; more gas efficient than require, since it doesn't store the eror message.
         _;
     }
 
