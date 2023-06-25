@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
-import "./EcoToken.sol";
+import {EcoCoin} from  "./EcoToken.sol";
 
-contract management {
+contract Management {
     constructor() {
         // When contract called, set the owner role in the roles mapping.
         _addOwnerRole();

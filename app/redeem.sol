@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
-import "./EcoToken.sol";
-import "./manager.sol";
-import "./depositor.sol";
-import "./registration.sol";
+import {EcoCoin} from "./EcoToken.sol";
+import {Management} from "./manager.sol";
+import {Depositor} from "./depositor.sol";
+import {Registration} from "./registration.sol";
 
 contract Redeemer {
     EcoCoin token =
         EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
-    management manage =
-        management(address(0xf8e81D47203A594245E36C48e151709F0C19fBe8)); // Don't forget to update me!
+    Management manage =
+        Management(address(0xf8e81D47203A594245E36C48e151709F0C19fBe8)); // Don't forget to update me!
     Depositor deposition =
         Depositor(address(0xD7ACd2a9FD159E69Bb102A1ca21C9a3e3A5F771B)); // Don't forget to update me!
     Registration shopReg =

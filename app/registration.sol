@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
-import "./manager.sol";
-import "./EcoToken.sol";
+import {Management} from "./manager.sol";
+import {EcoCoin} from "./EcoToken.sol";
 
 contract Registration {
     EcoCoin token =
         EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
-    management manage =
-        management(address(0xf8e81D47203A594245E36C48e151709F0C19fBe8)); // Don't forget to update me!
+    Management manage =
+        Management(address(0xf8e81D47203A594245E36C48e151709F0C19fBe8)); // Don't forget to update me!
 
     address owner = token.getTokenOwner();
 
-    // Later declare events here for listening.
+    // TODO - Later declare events here for listening.
 
     // Address and name of shop; only approved shops
     mapping(address => string) shopAddrToName;

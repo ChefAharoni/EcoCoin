@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
-import "./EcoToken.sol";
-import "./depositor.sol";
-import "./registration.sol";
+import {EcoCoin} from "./EcoToken.sol";
+import {Depositor} from "./depositor.sol";
+import {Registration} from "./registration.sol";
 
 contract Spender {
     // When a recycler wishes to spend his tokens in a local shop: Cafe, Restaurant, Clothes store, etc...
