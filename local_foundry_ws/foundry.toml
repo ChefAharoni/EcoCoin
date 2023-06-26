@@ -14,7 +14,8 @@ libs = ["lib"]
 
 # ]
 
-remappings = ["@openzeppelin/=lib/openzeppelin/contracts/"]
+remappings = ["@openzeppelin/=lib/openzeppelin-contracts/"]
+# local_foundry_ws/lib/openzeppelin-contracts
 
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
