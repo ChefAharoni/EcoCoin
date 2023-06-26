@@ -1,4 +1,3 @@
-
 [submodule "local_foundry_ws/lib/forge-std"]
 	path = local_foundry_ws/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
