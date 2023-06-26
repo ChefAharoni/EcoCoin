@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8;
 
-import {Test} from "lib/forge-std/src/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 contract TestWorkflow is Test {
     function testWorkflow() public {}
