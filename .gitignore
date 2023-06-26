@@ -52,5 +52,5 @@ Thumbs.db
 .env
 
 # Studying directories
-01_Studying_Ethereum/
-02_foundry_course_2023/
+/01_Studying_Ethereum/
+/02_foundry_course_2023/
