@@ -2,9 +2,12 @@
 pragma solidity ^0.8;
 
 // import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+// import "foundry_ws/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+
 // import "./openzeppelin-contracts/contracts/access/Ownable.sol"; // Doesn't work for some reason, implement in the future.
-// import {ERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 // foundry_ws/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol
 
 error NotOwner(); // Error to throw when the caller is not the i_tokenOwner.
