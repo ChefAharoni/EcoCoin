@@ -18,7 +18,7 @@ error NotOwner(); // Error to throw when the caller is not the i_tokenOwner.
 
 contract EcoCoin is ERC20 {
     // To set the i_tokenOwner of the token; used for managing roles.
-    address immutable i_tokenOwner = msg.sender;  // i_ prefix means immutable.
+    address immutable i_tokenOwner = msg.sender; // i_ prefix means immutable.
 
     /**
      * @notice  Function to get the i_tokenOwner of the token.
@@ -40,7 +40,9 @@ contract EcoCoin is ERC20 {
         //     msg.sender == i_tokenOwner,
         //     "Only the owner of the token can perform this action!"
         // );
-        if (msg.sender != i_tokenOwner) { revert NotOwner(); } // If the caller is not the i_tokenOwner, revert; more gas efficient than require, since it doesn't store the eror message.
+        if (msg.sender != i_tokenOwner) {
+            revert NotOwner();
+        } // If the caller is not the i_tokenOwner, revert; more gas efficient than require, since it doesn't store the eror message.
         _;
     }
 
