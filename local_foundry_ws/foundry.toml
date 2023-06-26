@@ -3,19 +3,6 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-# remappings = [
-#   "@openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
-#   "@openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/",
-#   "@openzeppelin/=lib/openzeppelin/contracts/",
-# ]
-
-# remappings = [
-#   "@openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/", "@openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/",
-
-# ]
-
-remappings = ["@openzeppelin/=lib/openzeppelin-contracts/"]
-# local_foundry_ws/lib/openzeppelin-contracts
-
+remappings = ["@openzeppelin/=lib/openzeppelin-contracts/contracts"]
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
