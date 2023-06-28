@@ -19,6 +19,7 @@ contract Management {
 
     address immutable i_owner = token.getTokenOwner();
 
+    //? Can address of contract be determined by the HelperConfig.s.sol script?
     // Implement this in the future - a smart way to add the address of the contract from the outside.
     // function setTokenContractAddress (address _address) external {
     // Add here only i_Owner later instead of require
@@ -142,6 +143,14 @@ contract Management {
         }
     }
 
+    /**
+     * @notice  Remove a role requested by a user, only an owner (for now, might change to municipality) can remove a role.
+     * @dev     .
+     * @param   _reqRmvId  ID of the user's request to remove.
+     * @param   _decision  Decision of the owner to remove the role or not; false == remove.
+     * @return  bool  False if role was removed.
+     * @return  string  Indication message for the result of the function.
+     */
     function _removeRole(
         uint _reqRmvId,
         bool _decision
@@ -162,6 +171,7 @@ contract Management {
         }
     }
 
+    // ? Is there a smart way to do this function?
     function printRole() public view returns (string memory) {
         return roles[msg.sender];
     }

@@ -5,6 +5,15 @@ import {Management} from "./manager.sol";
 import {Depositor} from "./depositor.sol";
 import {Registration} from "./registration.sol";
 
+// TODO - Redemption mechanism should be automated by the depositor machine.
+
+/**
+ * @author  ChefAharoni
+ * @title   Token redemption
+ * @dev     .
+ * @notice  Contract that handles the redemption of tokens owned by shops.
+ */
+
 contract Redeemer {
     EcoCoin token =
         EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
@@ -15,25 +24,40 @@ contract Redeemer {
     Registration shopReg =
         Registration(address(0x9D7f74d0C41E726EC95884E0e97Fa6129e3b5E99)); // Don't forget to update me!
 
-    function _isRegisteredShop(
-        address _shopAddress
-    ) private view returns (bool) {
+    //? Should this change to a modifier?
+    // function _isRegisteredShop(
+    //     address _shopAddress
+    // ) private view returns (bool) {
+    //     string memory _shopName = shopReg._getShopName(_shopAddress);
+    //     if (
+    //         keccak256(abi.encodePacked(_shopName)) ==
+    //         keccak256(abi.encodePacked(""))
+    //     ) {
+    //         return false; // If the name of the shop equals nothing == no shop registered.
+    //     } else {
+    //         return true; // Otherwise - it is a shop.
+    //     }
+    // }
+
+    modifier isRegisteredShop(address _shopAddress) {
         string memory _shopName = shopReg._getShopName(_shopAddress);
         if (
             keccak256(abi.encodePacked(_shopName)) ==
             keccak256(abi.encodePacked(""))
         ) {
-            return false; // If the name of the shop equals nothing == no shop registered.
+            revert("Only a registered shop can redeem tokens!"); // If the name of the shop equals nothing == no shop registered at this address.
         } else {
-            return true; // Otherwise - it is a shop.
+            _;
         }
     }
 
-    function requestRedeem(uint64 _tokensAmount) public returns (bool) {
-        require(
-            _isRegisteredShop(msg.sender),
-            "Only a registered shop can redeem tokens!"
-        ); // Check if the function called is a registered shop.
+    function requestRedeem(
+        uint64 _tokensAmount
+    ) public isRegisteredShop(msg.sender) returns (bool) {
+        // require(
+        //     _isRegisteredShop(msg.sender),
+        //     "Only a registered shop can redeem tokens!"
+        // ); // Check if the function called is a registered shop.
         require(
             token.balanceOf(msg.sender) >= _tokensAmount,
             "Insufficient tokens to redeem!"

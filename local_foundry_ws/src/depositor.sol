@@ -7,6 +7,13 @@ error NotRegistered(string message); // Error to throw when the caller is not re
 
 // TODO - add more error and revert messages instead of require, to save gas.
 
+/**
+ * @author  ChefAharoni
+ * @title   Contract of the deposition of bottles.
+ * @dev     Development is not complete, should change the whole method of this contract.
+ * @notice  Manages the deposition of bottles.
+ */
+
 contract Depositor {
     EcoCoin token =
         EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
@@ -28,6 +35,11 @@ contract Depositor {
     mapping(address recycler => uint64 bottlesAmt) public recyclerBottles; // Mapping of addresses and their deposited bottles; added only when their bottles are confirmed.
     mapping(address recycler => uint64 recyID) public recyclerToID; // Mapping of addresses and their ID's.
 
+    /**
+     * @notice  Registers the recycler to the system.
+     * @dev     .
+     * @param   _name  Name of the recycler.
+     */
     function registerRecycler(string memory _name) public {
         address _recyAddr = msg.sender;
         uint64 _recyID = uint64(greeners.length + 1); // uint64 must be declared at the end because it is by default uint256.
@@ -45,8 +57,11 @@ contract Depositor {
         );
     }
 
+    /**
+     * @notice  Checks if user has registered to the system; otherwise he won't be able to perform certain actions, such as request deposition of bottles.
+     * @dev     .
+     */
     modifier registered() {
-        // Check if user has registered to the system; otherwise he won't be able to perform certain actions, such as request deposition of bottles.
         bool isRegistered = false;
         for (uint256 i = 0; i < greeners.length; i++) {
             if (greeners[i].recyAddr == msg.sender) {
@@ -54,16 +69,22 @@ contract Depositor {
                 break;
             }
         }
-        // require(
-        //     isRegistered,
-        //     "You must be registered in order to perform actions!"
-        // );
         if (!isRegistered) {
-            revert NotRegistered("You must be registered in order to perform actions!");
+            // Gaswise Chepear than require. //
+            revert NotRegistered(
+                "You must be registered in order to perform actions!"
+            );
         }
         _;
     }
 
+    /**
+     * @notice  Lets the recycler request to deposit bottles.
+     * @dev     User must be registered in order to perform this action.
+     * @param   _bottles  amount of bottles requested for deposition.
+     * @return  address  Address of the recycler.
+     * @return  uint64  Number of bottles requested for deposition.
+     */
     function requestDeposition(
         uint64 _bottles
     ) public registered returns (address, uint64) {
@@ -78,6 +99,7 @@ contract Depositor {
         return (_recyAddr, _bottles);
     }
 
+    // TODO - Deprecate this function; the request should be approved by the recycle machine, not by a verifier.
     function approveDeposition(
         uint64 _reqApprId,
         bool _decision
@@ -111,11 +133,17 @@ contract Depositor {
         }
     }
 
+    /**
+     * @notice  Deposits tokens into the recycler's account, according to the amount of bottles deposited.
+     * @dev     This operation should be modified to be performed by the recycle machine, not by a verifier.
+     * @param   _recyAddr  Address of the recycler.
+     * @param   _amtBottles  Amount of bottles to deposit.
+     * @return  bool  True if the operation was successful.
+     */
     function _depositTokens(
         address _recyAddr,
         uint _amtBottles
     ) private returns (bool) {
-        // Deposit the tokens according to the bottles deposited
         uint _bottlesToTokens = _amtBottles * 2; // Each bottle is 2 coins.
 
         token.transferFunds(owner, _recyAddr, _bottlesToTokens);
@@ -124,10 +152,21 @@ contract Depositor {
         return true;
     }
 
+    /**
+     * @notice  Prints the role of the function caller.
+     * @dev     .
+     * @return  string  Role of the function caller.
+     */
     function _printRole() public view returns (string memory) {
         return manage.getRole(msg.sender);
     }
 
+    /**
+     * @notice  Gets the index of the array by its ID.
+     * @dev     .
+     * @param   searchID  ID of the array to search for.
+     * @return  uint64  Index of the array in the greeners array.
+     */
     function _getGreenerIndexByID(
         uint64 searchID
     ) public view returns (uint64) {
@@ -142,23 +181,39 @@ contract Depositor {
         revert("ID not found");
     }
 
+    //? Not sure this function is needed; I should learn how to reach the balanceOf function better without redundant functions.
     function getBalance() public view returns (uint256) {
         // Allows to get the token balance held by the smart contract.
         return token.balanceOf(address(msg.sender));
     }
 
+    /**
+     * @notice  Gets the recycler's ID by his address.
+     * @dev     Used for external contracts.
+     * @param   _recyAddr  Address of the recycler.
+     * @return  uint64  ID of the recycler.
+     */
     function getIdByAddress(address _recyAddr) external view returns (uint64) {
         // For external contracts, extract the recycler's ID from his address.
         return recyclerToID[_recyAddr];
     }
 
+    /**
+     * @notice  Gets the array of the greeners to interact with.
+     * @dev     Used for external contracts.
+     * @return  Recylcer[]  Array of the greeners.
+     */
     function getGreeners() external view returns (Recylcer[] memory) {
-        // View the `greeners` array from contracts outside of this contract.
         return greeners;
     }
 
+    /**
+     * @notice  Update the balance of the recycler in the greeners array.
+     * @dev     .
+     * @param   _recyID  ID of the recycler.
+     * @return  bool  True if the operation was successful.
+     */
     function updateRecyBalance(uint64 _recyID) public returns (bool) {
-        // Update the recycler's balance in the array.
         uint64 _recyIndex = uint64(_getGreenerIndexByID(_recyID));
         greeners[_recyIndex].recyBalance = token.balanceOf(
             greeners[_recyIndex].recyAddr

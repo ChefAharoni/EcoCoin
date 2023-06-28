@@ -5,9 +5,15 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 // import "./openzeppelin-contracts/contracts/access/Ownable.sol"; // Doesn't work for some reason, implement in the future.
 
-error NotOwner(); // Error to throw when the caller is not the i_tokenOwner.
+error EcoCoin__NotOwner(string errorMsg); // Error to throw when the caller is not the i_tokenOwner.
 
 // TODO - add more error and revert messages instead of require, to save gas.
+// TODO - add s_ prefix to variables saved in storage.
+// TODO - optimize for loops that read from storage every time to read from storage only once.
+// TODO - add i_ prefix to immutable variables.
+// TODO - Ensure ordering of contracts is correct; order is located in general.txt.
+// TODO - Declare events in all contracts.
+// TODO - Gas optimization - change state variables to private if possible.
 // "EcoCoin", "ECC"
 /**
  * @author  ChefAharoni
@@ -19,6 +25,28 @@ error NotOwner(); // Error to throw when the caller is not the i_tokenOwner.
 contract EcoCoin is ERC20 {
     // To set the i_tokenOwner of the token; used for managing roles.
     address immutable i_tokenOwner = msg.sender; // i_ prefix means immutable.
+    string private constant NOT_OWNER_MSG = "Only the token owner can perform this action!"; // Error message to throw when the caller is not the i_tokenOwner.
+
+    constructor() ERC20("EcoCoin", "ECC") {
+        // These actions are executed immediately when the contract is deployed.
+        // ERC20 tokens by default have 18 decimals
+        // number of tokens minted = n * 10^18
+        // Update - do not mint any tokens at start.
+        // uint256 n = 1000; // Number of tokens to create to the contract deployer.
+        // _mint(msg.sender, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places; here I changed it to 0 so there won't be any decimals. //! mint opeation was cancelled - will mint only when bottles are deposited.
+    }
+
+    /**
+     * @notice  Addition to function so only the i_tokenOwner can perform actions.
+     * @dev     Not sure this method works with functions that are called from other contracts.
+     */
+    modifier ownerOnly() {
+        // Addition to function so only the i_tokenOwner can perform actions.
+        if (msg.sender != i_tokenOwner) {
+            revert EcoCoin__NotOwner(NOT_OWNER_MSG);
+        } // If the caller is not the i_tokenOwner, revert; more gas efficient than require, since it doesn't store the eror message.
+        _;
+    }
 
     /**
      * @notice  Function to get the i_tokenOwner of the token.
@@ -31,22 +59,6 @@ contract EcoCoin is ERC20 {
     }
 
     /**
-     * @notice  Addition to function so only the i_tokenOwner can perform actions.
-     * @dev     Not sure this method works with functions that are called from other contracts.
-     */
-    modifier ownerOnly() {
-        // Addition to function so only the i_tokenOwner can perform actions.
-        // require(
-        //     msg.sender == i_tokenOwner,
-        //     "Only the owner of the token can perform this action!"
-        // );
-        if (msg.sender != i_tokenOwner) {
-            revert NotOwner();
-        } // If the caller is not the i_tokenOwner, revert; more gas efficient than require, since it doesn't store the eror message.
-        _;
-    }
-
-    /**
      * @notice  Function that mints tokens to the i_tokenOwner.
      * @param   n  Amount of tokens to mint.
      */
@@ -54,15 +66,6 @@ contract EcoCoin is ERC20 {
         // ERC20 tokens by default have 18 decimals
         // number of tokens minted = n * 10^18
         _mint(i_tokenOwner, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places
-    }
-
-    constructor() ERC20("EcoCoin", "ECC") {
-        // These actions are executed immediately when the contract is deployed.
-        // ERC20 tokens by default have 18 decimals
-        // number of tokens minted = n * 10^18
-        // Update - do not mint any tokens at start.
-        // uint256 n = 1000; // Number of tokens to create to the contract deployer.
-        // _mint(msg.sender, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places; here I changed it to 0 so there won't be any decimals.
     }
 
     /**
