@@ -1,3 +1,25 @@
+// Layout of Contract:
+// version
+// imports
+// errors
+// interfaces, libraries, contracts
+// Type declarations
+// State variables
+// Events
+// Modifiers
+// Functions
+
+// Layout of Functions:
+// constructor
+// receive function (if exists)
+// fallback function (if exists)
+// external
+// public
+// internal
+// private
+// internal & private view & pure functions
+// external & public view & pure functions
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
 
@@ -25,15 +47,29 @@ error EcoCoin__NotOwner(string errorMsg); // Error to throw when the caller is n
 contract EcoCoin is ERC20 {
     // To set the i_tokenOwner of the token; used for managing roles.
     address immutable i_tokenOwner = msg.sender; // i_ prefix means immutable.
-    string private constant NOT_OWNER_MSG = "Only the token owner can perform this action!"; // Error message to throw when the caller is not the i_tokenOwner.
+    Municipality genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
+    string private constant NOT_OWNER_MSG =
+        "Only the token owner can perform this action!"; // Error message to throw when the caller is not the i_tokenOwner. // Seems it's not common to use strings in custom errors - I'll keep it here for now.
 
-    constructor() ERC20("EcoCoin", "ECC") {
+    struct Municipality {
+        address muniAddr; // Address of the Municipality
+        string s_muniZipCode; // Zip code location of the genesis municipality; string so it can handle long zip codes and non-us zipcodes as well.
+    }
+
+    constructor(
+        address _genMunicipalityAddr,
+        string memory _genMunicipalityLocation
+    ) ERC20("EcoCoin", "ECC") {
         // These actions are executed immediately when the contract is deployed.
         // ERC20 tokens by default have 18 decimals
         // number of tokens minted = n * 10^18
         // Update - do not mint any tokens at start.
         // uint256 n = 1000; // Number of tokens to create to the contract deployer.
         // _mint(msg.sender, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places; here I changed it to 0 so there won't be any decimals. //! mint opeation was cancelled - will mint only when bottles are deposited.
+        genMunicipality = Municipality(
+            _genMunicipalityAddr,
+            _genMunicipalityLocation
+        );
     }
 
     /**
@@ -58,15 +94,15 @@ contract EcoCoin is ERC20 {
         return i_tokenOwner;
     }
 
-    /**
-     * @notice  Function that mints tokens to the i_tokenOwner.
-     * @param   n  Amount of tokens to mint.
-     */
-    function mintTokens(uint256 n) public {
-        // ERC20 tokens by default have 18 decimals
-        // number of tokens minted = n * 10^18
-        _mint(i_tokenOwner, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places
-    }
+    // /**
+    //  * @notice  Function that mints tokens to the i_tokenOwner.
+    //  * @param   n  Amount of tokens to mint.
+    //  */
+    // function mintTokens(uint256 n) public {
+    //     // ERC20 tokens by default have 18 decimals
+    //     // number of tokens minted = n * 10^18
+    //     _mint(i_tokenOwner, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places
+    // }
 
     /**
      * @notice  Function to transfer tokens from one address to another.
@@ -77,6 +113,7 @@ contract EcoCoin is ERC20 {
      * @return  bool  True if the transfer was successful.
      */
     function transferFunds(
+        // Double check if I need this function, I may be able to inherit it from this contract.
         address sender,
         address recipient,
         uint amount
@@ -85,22 +122,22 @@ contract EcoCoin is ERC20 {
         return true;
     }
 
-    /**
-     * @notice  Function to burn tokens.
-     * @dev     Uses the _burn function from the ERC20 contract, because it's internal.
-     * @param   account  Account to burn tokens from.
-     * @param   amount  Amount of tokens to burn.
-     * @return  bool  True if the burn was successful.
-     */
-    function _burnTokens(
-        address account,
-        uint256 amount
-    ) public ownerOnly returns (bool) {
-        //---!!!--- I think the ownerOnly gives problems when this function is called from outside - it throws an error even though the caller is the owner. ---!!!---
+    // /**
+    //  * @notice  Function to burn tokens.
+    //  * @dev     Uses the _burn function from the ERC20 contract, because it's internal.
+    //  * @param   account  Account to burn tokens from.
+    //  * @param   amount  Amount of tokens to burn.
+    //  * @return  bool  True if the burn was successful.
+    //  */
+    // function _burnTokens(
+    //     address account,
+    //     uint256 amount
+    // ) public ownerOnly returns (bool) {
+    //     //---!!!--- I think the ownerOnly gives problems when this function is called from outside - it throws an error even though the caller is the owner. ---!!!---
 
-        _burn(account, amount); // Burn tokens
-        return true;
-    }
+    //     _burn(account, amount); // Burn tokens
+    //     return true;
+    // }
 
     /**
      * @notice  Overriding the decimals function from the ERC20 contract, setting the decimals of the token to zero (0).

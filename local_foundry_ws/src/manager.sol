@@ -2,6 +2,9 @@
 pragma solidity ^0.8;
 import {EcoCoin} from "./EcoToken.sol";
 
+
+// When the token is called, in the constructor, an address for a municipality will be determined.
+// Only municipalities can assign other roles; contract deployer has no special roles.
 contract Management {
     constructor() {
         // When contract called, set the i_owner role in the roles mapping.

@@ -7,20 +7,47 @@ contract HelperConfig is Script {
     NetworkConfig public activeNetworkConfig;
 
     uint32 constant SEPOLIA_CHAIN_ID = 11155111;
+    uint32 constant GANACHE_CHAIN_ID = 5777;
+    string constant EUNICE_ZIP_CODE = "70535";
 
     struct NetworkConfig {
-        address relevantAddress; // Maybe change this variable name.
+        address GenesisMunicipalityAddress; // Address of the municipality.
+        string GenesisMunicipalityZipCode; // Zip code location of the genesis municipality; string so it can handle long zip codes and non-us zipcodes as well.
+        address RecyclerAddress; // Address of the recycler.
+        address ShopAddress; // Address of the shops.
+        address MachineAddress; // Address of the machine.
     }
 
     constructor() {
         if (block.chainid == SEPOLIA_CHAIN_ID) {
             activeNetworkConfig = getSepoliaNetConfig();
+        } else if (block.chainid == GANACHE_CHAIN_ID) {
+            activeNetworkConfig = getGanacheNetConfig();
         } else {
             activeNetworkConfig = getOrCreateAnvilEthConfig();
         }
     }
 
-    function getSepoliaNetConfig() public pure returns (NetworkConfig memory) {}
+    /**
+     * @notice  Gets the relevant data from if deployed on the Sepolia testnet.
+     * @dev     Uses forge's cheats to make a labeled address for each user.
+     * @return  NetworkConfig  .
+     */
+    function getSepoliaNetConfig() public returns (NetworkConfig memory) {
+        address genesisMunicipality = makeAddr("genMunicipality");
+        address recycler = makeAddr("recycler");
+        address shop = makeAddr("shop");
+        address machine = makeAddr("machine");
+
+        return
+            NetworkConfig({
+                GenesisMunicipalityAddress: address(genesisMunicipality),
+                GenesisMunicipalityZipCode: EUNICE_ZIP_CODE,
+                RecyclerAddress: address(recycler),
+                ShopAddress: address(shop),
+                MachineAddress: address(machine)
+            });
+    }
 
     function getOrCreateAnvilEthConfig()
         public
@@ -28,10 +55,44 @@ contract HelperConfig is Script {
         returns (NetworkConfig memory)
     {
         // Line blelow checks if the contract has already been deployed. If it has, the address would be different from 0.
-        if (activeNetworkConfig.relevantAddress != address(0)) {
+        if (activeNetworkConfig.GenesisMunicipalityAddress != address(0)) {
             return activeNetworkConfig;
         }
 
-        // Function is not complete, complete when details to test are more clear.
+        return
+            NetworkConfig({
+                GenesisMunicipalityAddress: address(
+                    0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+                ),
+                GenesisMunicipalityZipCode: EUNICE_ZIP_CODE,
+                RecyclerAddress: address(
+                    0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+                ),
+                ShopAddress: address(
+                    0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC
+                ),
+                MachineAddress: address(
+                    0x90F79bf6EB2c4f870365E785982E1f101E93b906
+                )
+            });
+    }
+
+    function getGanacheNetConfig() public pure returns (NetworkConfig memory) {
+        return
+            NetworkConfig({
+                GenesisMunicipalityAddress: address(
+                    0xc3b0360670CE81F91cE4529C22b9a0e97D96D171
+                ),
+                GenesisMunicipalityZipCode: EUNICE_ZIP_CODE,
+                RecyclerAddress: address(
+                    0xDf6B8E2Fc696A0A262D51E165b23d2f6F29AbEBD
+                ),
+                ShopAddress: address(
+                    0x3F9210997349BdeC67e02837b9f6Bc7b2F4BFB97
+                ),
+                MachineAddress: address(
+                    0x7f86b03950d1858FB80b5769B862d8fc9b031883
+                )
+            });
     }
 }
