@@ -20,7 +20,7 @@ contract Depositor {
     Management manage =
         Management(address(0xf8e81D47203A594245E36C48e151709F0C19fBe8)); // Don't forget to update me!
 
-    address owner = token.getTokenOwner();
+    // address owner = token.getTokenOwner();
 
     struct Recylcer {
         uint64 ID; // Starts at 1; 64 bits to save on gas; perhaps in the future think of a better way to generate an ID.

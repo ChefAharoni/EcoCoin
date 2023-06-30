@@ -2,25 +2,26 @@
 pragma solidity ^0.8;
 import {EcoCoin} from "./EcoToken.sol";
 
-
 // When the token is called, in the constructor, an address for a municipality will be determined.
 // Only municipalities can assign other roles; contract deployer has no special roles.
 contract Management {
     constructor() {
         // When contract called, set the i_owner role in the roles mapping.
-        _addOwnerRole();
+        // _addOwnerRole();
     }
 
     // EcoCoin token
     EcoCoin token =
         EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
+    
+    // EcoCoin ecoCoin = new EcoCoin()
 
     // Later declare events here for listening.
 
     // Used to deploy roles of users and machines; only approved roles are here.
     mapping(address user => string Role) roles;
 
-    address immutable i_owner = token.getTokenOwner();
+    // address immutable i_owner = token.getTokenOwner();
 
     //? Can address of contract be determined by the HelperConfig.s.sol script?
     // Implement this in the future - a smart way to add the address of the contract from the outside.
@@ -36,17 +37,17 @@ contract Management {
      * @notice  Adds the role of the owner.
      * @dev Called automatically when contract is called.
      */
-    function _addOwnerRole() private {
-        roles[i_owner] = "i_Owner"; // Add the owner of the token
-    }
+    // function _addOwnerRole() private {
+    //     roles[i_owner] = "i_Owner"; // Add the owner of the token
+    // }
 
     /**
      * @notice  Prints the address of the token's owner.
      * @return  address  Of token's owner.
      */
-    function printOwner() public view returns (address) {
-        return token.getTokenOwner();
-    }
+    // function printOwner() public view returns (address) {
+    //     return token.getTokenOwner();
+    // }
 
     /**
      * @notice  Gets a role from the roles mapping.
@@ -129,10 +130,10 @@ contract Management {
         uint _reqApprId,
         bool _decision
     ) public returns (bool, string memory) {
-        require(
-            msg.sender == i_owner,
-            "Only the owner of the coin can set roles! \n owner's address is " /* This error message doesn't work, should return the owner's address. */
-        );
+        // require(
+        //     msg.sender == i_owner,
+        //     "Only the owner of the coin can set roles! \n owner's address is " /* This error message doesn't work, should return the owner's address. */
+        // );
         // Click on 'requests' array button to see the request number, and approve by it.
         uint64 _reqIndex = uint64(_getIndexByID(_reqApprId)); // Get the index of the array using its ID.
         address _reqApprAddress = requests[_reqIndex].rqAddress;
@@ -158,10 +159,10 @@ contract Management {
         uint _reqRmvId,
         bool _decision
     ) public returns (bool, string memory) {
-        require(
-            msg.sender == i_owner,
-            "Only the owner of the coin can set roles! /n owner's address is "
-        );
+        // require(
+        //     msg.sender == i_owner,
+        //     "Only the owner of the coin can set roles! /n owner's address is "
+        // );
         // Click on 'requests' array button to see the request number, and approve by it.
         uint64 _reqRmvIndex = uint64(_getIndexByID(_reqRmvId)); // Get the index of the array using its ID.
         address _reqRmvAdress = requests[_reqRmvIndex].rqAddress;

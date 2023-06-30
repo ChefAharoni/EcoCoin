@@ -9,6 +9,7 @@ contract HelperConfig is Script {
     uint32 constant SEPOLIA_CHAIN_ID = 11155111;
     uint32 constant GANACHE_CHAIN_ID = 5777;
     string constant EUNICE_ZIP_CODE = "70535";
+    string constant LAFAYETTE_ZIP_CODE = "70501";
 
     struct NetworkConfig {
         address GenesisMunicipalityAddress; // Address of the municipality.
@@ -16,6 +17,8 @@ contract HelperConfig is Script {
         address RecyclerAddress; // Address of the recycler.
         address ShopAddress; // Address of the shops.
         address MachineAddress; // Address of the machine.
+        address seondMunicipalityAddress; // Address of the second municipality.
+        string secondMunicipalityZipCode; // Zip code location of the second municipality, used to test if the genesis municipality can add a new municipality.
     }
 
     constructor() {
@@ -38,6 +41,7 @@ contract HelperConfig is Script {
         address recycler = makeAddr("recycler");
         address shop = makeAddr("shop");
         address machine = makeAddr("machine");
+        address secondMunicipality = makeAddr("secondMunicipality");
 
         return
             NetworkConfig({
@@ -45,7 +49,9 @@ contract HelperConfig is Script {
                 GenesisMunicipalityZipCode: EUNICE_ZIP_CODE,
                 RecyclerAddress: address(recycler),
                 ShopAddress: address(shop),
-                MachineAddress: address(machine)
+                MachineAddress: address(machine),
+                seondMunicipalityAddress: address(secondMunicipality),
+                secondMunicipalityZipCode: LAFAYETTE_ZIP_CODE
             });
     }
 
@@ -73,7 +79,11 @@ contract HelperConfig is Script {
                 ),
                 MachineAddress: address(
                     0x90F79bf6EB2c4f870365E785982E1f101E93b906
-                )
+                ),
+                seondMunicipalityAddress: address(
+                    0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65
+                ),
+                secondMunicipalityZipCode: LAFAYETTE_ZIP_CODE
             });
     }
 
@@ -92,7 +102,11 @@ contract HelperConfig is Script {
                 ),
                 MachineAddress: address(
                     0x7f86b03950d1858FB80b5769B862d8fc9b031883
-                )
+                ),
+                seondMunicipalityAddress: address(
+                    0xd984ba179fb11A8c3aa22552018a4086101cFE1D
+                ),
+                secondMunicipalityZipCode: LAFAYETTE_ZIP_CODE
             });
     }
 }

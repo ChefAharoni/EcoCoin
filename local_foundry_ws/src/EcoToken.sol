@@ -27,7 +27,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 // import "./openzeppelin-contracts/contracts/access/Ownable.sol"; // Doesn't work for some reason, implement in the future.
 
-error EcoCoin__NotOwner(string errorMsg); // Error to throw when the caller is not the i_tokenOwner.
+error EcoCoin__NotMunicipality(string errorMsg); // Error to throw when the caller is not the i_tokenOwner.
 
 // TODO - add more error and revert messages instead of require, to save gas.
 // TODO - add s_ prefix to variables saved in storage.
@@ -46,11 +46,13 @@ error EcoCoin__NotOwner(string errorMsg); // Error to throw when the caller is n
 
 contract EcoCoin is ERC20 {
     // To set the i_tokenOwner of the token; used for managing roles.
-    address immutable i_tokenOwner = msg.sender; // i_ prefix means immutable.
-    Municipality genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
-    string private constant NOT_OWNER_MSG =
-        "Only the token owner can perform this action!"; // Error message to throw when the caller is not the i_tokenOwner. // Seems it's not common to use strings in custom errors - I'll keep it here for now.
+    // address immutable i_tokenOwner = msg.sender; // i_ prefix means immutable.
+    Municipality private i_genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
+    string private constant NOT_MUNICIPALITY_MSG =
+        "Only a municipality can perform this action!"; // Error message to throw when the caller is not the i_tokenOwner. // Seems it's not common to use strings in custom errors - I'll keep it here for now.
 
+    mapping(address => string) public MuniAddrToZipCode; // Mapping of address to a municipality zip code.
+    mapping(address => Municipality) public municipalities; // Mapping of all municipalites of type Municipality; used to check if a msg.sender is of type Municipality.
     struct Municipality {
         address muniAddr; // Address of the Municipality
         string s_muniZipCode; // Zip code location of the genesis municipality; string so it can handle long zip codes and non-us zipcodes as well.
@@ -58,7 +60,7 @@ contract EcoCoin is ERC20 {
 
     constructor(
         address _genMunicipalityAddr,
-        string memory _genMunicipalityLocation
+        string memory _genMunicipalityZipCode
     ) ERC20("EcoCoin", "ECC") {
         // These actions are executed immediately when the contract is deployed.
         // ERC20 tokens by default have 18 decimals
@@ -66,22 +68,39 @@ contract EcoCoin is ERC20 {
         // Update - do not mint any tokens at start.
         // uint256 n = 1000; // Number of tokens to create to the contract deployer.
         // _mint(msg.sender, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places; here I changed it to 0 so there won't be any decimals. //! mint opeation was cancelled - will mint only when bottles are deposited.
-        genMunicipality = Municipality(
+        i_genMunicipality = Municipality(
             _genMunicipalityAddr,
-            _genMunicipalityLocation
+            _genMunicipalityZipCode
         );
+        addMuni({
+            _municipalityAddr: _genMunicipalityAddr,
+            _municipalityZipCode: _genMunicipalityZipCode
+        });
     }
 
     /**
      * @notice  Addition to function so only the i_tokenOwner can perform actions.
      * @dev     Not sure this method works with functions that are called from other contracts.
      */
-    modifier ownerOnly() {
-        // Addition to function so only the i_tokenOwner can perform actions.
-        if (msg.sender != i_tokenOwner) {
-            revert EcoCoin__NotOwner(NOT_OWNER_MSG);
-        } // If the caller is not the i_tokenOwner, revert; more gas efficient than require, since it doesn't store the eror message.
+    modifier muniOnly() {
+        if (municipalities[msg.sender].muniAddr != msg.sender) {
+            /* Since all keys in mapping are set to address(0) by default, checks if the address exists in the mapping. */
+            revert EcoCoin__NotMunicipality(NOT_MUNICIPALITY_MSG);
+        }
         _;
+    }
+
+    function addMuni(
+        address _municipalityAddr,
+        string memory _municipalityZipCode
+    ) public returns (Municipality memory) {
+        // Function to add a municipality to the mapping.
+        MuniAddrToZipCode[_municipalityAddr] = _municipalityZipCode;
+        municipalities[_municipalityAddr] = Municipality({
+            muniAddr: _municipalityAddr,
+            s_muniZipCode: _municipalityZipCode
+        });
+        return municipalities[_municipalityAddr];
     }
 
     /**
@@ -89,10 +108,10 @@ contract EcoCoin is ERC20 {
      * @dev     .
      * @return  address  of the i_tokenOwner.
      */
-    function getTokenOwner() public view returns (address) {
-        // Returns the address of the i_tokenOwner.
-        return i_tokenOwner;
-    }
+    // function getTokenOwner() public view returns (address) {
+    //     // Returns the address of the i_tokenOwner.
+    //     return i_tokenOwner;
+    // }
 
     // /**
     //  * @notice  Function that mints tokens to the i_tokenOwner.
@@ -112,15 +131,16 @@ contract EcoCoin is ERC20 {
      * @param   amount  Amount of tokens to transfer.
      * @return  bool  True if the transfer was successful.
      */
-    function transferFunds(
-        // Double check if I need this function, I may be able to inherit it from this contract.
-        address sender,
-        address recipient,
-        uint amount
-    ) public returns (bool) {
-        _transfer(sender, payable(recipient), amount); // payable keyword means that the receipent can accept eth (or tokens).
-        return true;
-    }
+    //! the _transfer function can be inherited from ERC20, and the sender would be the machine, who would also be the tokens minter.
+    // function transferFunds(
+    //     // Double check if I need this function, I may be able to inherit it from this contract.
+    //     address sender,
+    //     address recipient,
+    //     uint amount
+    // ) public returns (bool) {
+    //     _transfer(sender, payable(recipient), amount); // payable keyword means that the receipent can accept eth (or tokens).
+    //     return true;
+    // }
 
     // /**
     //  * @notice  Function to burn tokens.
@@ -132,8 +152,8 @@ contract EcoCoin is ERC20 {
     // function _burnTokens(
     //     address account,
     //     uint256 amount
-    // ) public ownerOnly returns (bool) {
-    //     //---!!!--- I think the ownerOnly gives problems when this function is called from outside - it throws an error even though the caller is the owner. ---!!!---
+    // ) public muniOnly returns (bool) {
+    //     //---!!!--- I think the muniOnly gives problems when this function is called from outside - it throws an error even though the caller is the owner. ---!!!---
 
     //     _burn(account, amount); // Burn tokens
     //     return true;
