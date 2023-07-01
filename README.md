@@ -26,7 +26,10 @@ The token will be deployed on the Ethereum blockchain, most probably on a testne
 
 <br><br>
 
+# Acknowledgments #
 
+- Special thanks to @PatrickAlphaC for his amazing tutorials on smart contracts developments. <br>
+- Thanks to [Cryptozombies](https://cryptozombies.io/) for their great lessons about Solidity language. <br>
 # Creator #
 
 @ChefAharoni
