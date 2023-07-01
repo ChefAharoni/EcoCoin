@@ -12,21 +12,21 @@ contract DeployEcoToken is Script {
         HelperConfig helperConfig = new HelperConfig();
         (
             address GenesisMunicipalityAddress, // Address of the municipality.
-            string memory s_GenesisMunicipalityZipCode, // ZipCode of Municipality; should it be a `storage`? throws a converting error.
+            string memory s_GenesisMunicipalityZipCode, // ZipCode of Municipality; should it be a `storage`? throws a converting error. // address RecyclerAddress, // Address of the recycler. - use later // address ShopAddress, // Address of the shops. - use later
+            ,
+            ,
             ,
             ,
 
-        ) = // address RecyclerAddress, // Address of the recycler. - use later
-            // address ShopAddress, // Address of the shops. - use later
-            // address MachineAddress // Address of the machine. - use later
+        ) = // address MachineAddress // Address of the machine. - use later
             helperConfig.activeNetworkConfig();
 
         vm.startBroadcast();
-        EcoCoin ecoCoin = new EcoCoin(
+        EcoCoin ecoCoin = new EcoCoin();
+        ecoCoin.addGenMuni(
             GenesisMunicipalityAddress,
             s_GenesisMunicipalityZipCode
         );
-
         vm.stopBroadcast();
 
         return ecoCoin;

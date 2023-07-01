@@ -13,10 +13,10 @@ contract Management {
     // EcoCoin token
     EcoCoin token =
         EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
-    
+
     // EcoCoin ecoCoin = new EcoCoin()
 
-    // Later declare events here for listening.
+    // TODO - declare events here.
 
     // Used to deploy roles of users and machines; only approved roles are here.
     mapping(address user => string Role) roles;
@@ -34,22 +34,6 @@ contract Management {
     // }
 
     /**
-     * @notice  Adds the role of the owner.
-     * @dev Called automatically when contract is called.
-     */
-    // function _addOwnerRole() private {
-    //     roles[i_owner] = "i_Owner"; // Add the owner of the token
-    // }
-
-    /**
-     * @notice  Prints the address of the token's owner.
-     * @return  address  Of token's owner.
-     */
-    // function printOwner() public view returns (address) {
-    //     return token.getTokenOwner();
-    // }
-
-    /**
      * @notice  Gets a role from the roles mapping.
      * @dev     Used for outer functions that cannot access the mapping.
      * @param   _userAddress  Address of user requested to get role of.
@@ -63,13 +47,16 @@ contract Management {
 
     /**
      * @notice Struct of a roler, where his ID, name, addres, and requested roles are saved.
-     * @dev As long as status is false, the role of the user hasn't been verified by an owner/municipality.
+     * @dev As long as status is false, the role of the user hasn't been verified by an municipality.
      */
+    //? Not sure this struct is needed once there's a struct for shops and municipalites for each one.
+    // This function was relevant when a redeemer had a role - but was replaced by the machine.
+    // Should the machine have its own struct and contract?
     struct Roler {
         uint64 ID; // Starts at 1; 64 bits to save on gas.
         string name;
         address rqAddress;
-        string role; //  Owner / Redeemer
+        string role; //  Municipality / machine (?)
         bool status; // Approve / denied.
     }
 
@@ -119,13 +106,14 @@ contract Management {
     }
 
     /**
-     * @notice  Approve a role requested by a user, only an owner (for now, might change to municipality) can approve a role.
+     * @notice  Approve a role requested by a user, only a municipality can approve a role.
      * @dev     .
-     * @param   _reqApprId  .
-     * @param   _decision  .
-     * @return  bool  .
-     * @return  string  .
+     * @param   _reqApprId  ID of the user's request in the greeners array.
+     * @param   _decision  Decision of the municipality to approve or deny the request.
+     * @return  bool  True if approved, false if denied.
+     * @return  string  Message of approval/denial.
      */
+    // TODO - Add the muniOnly modifier once function is implemented.
     function _approveRole(
         uint _reqApprId,
         bool _decision
@@ -148,13 +136,14 @@ contract Management {
     }
 
     /**
-     * @notice  Remove a role requested by a user, only an owner (for now, might change to municipality) can remove a role.
+     * @notice  Remove a role requested by a user, only a municipality can remove a role.
      * @dev     .
      * @param   _reqRmvId  ID of the user's request to remove.
-     * @param   _decision  Decision of the owner to remove the role or not; false == remove.
+     * @param   _decision  Decision of the municipality to remove the role or not; false == remove.
      * @return  bool  False if role was removed.
      * @return  string  Indication message for the result of the function.
      */
+    // TODO - Add the muniOnly modifier once function is implemented.
     function _removeRole(
         uint _reqRmvId,
         bool _decision

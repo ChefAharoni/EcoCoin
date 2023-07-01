@@ -3,15 +3,22 @@ pragma solidity ^0.8;
 import {Management} from "./manager.sol";
 import {EcoCoin} from "./EcoToken.sol";
 
+/**
+ * @author  ChefAharoni
+ * @title   Registration for shops
+ * @dev     .
+ * @notice  Allows shops to register themselves. Used to prevent fraud by random users pretend to be shops and fool users into sending them tokens.
+ */
+
 contract Registration {
     EcoCoin token =
         EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
     Management manage =
         Management(address(0xf8e81D47203A594245E36C48e151709F0C19fBe8)); // Don't forget to update me!
 
-    address owner = token.getTokenOwner();
+    // address owner = token.getTokenOwner(); // Owner is not longer relevant.
 
-    // TODO - Later declare events here for listening.
+    // TODO - Declare events here for listening.
 
     // Address and name of shop; only approved shops
     mapping(address shop => string shopName) shopAddrToName;
@@ -34,8 +41,19 @@ contract Registration {
     Shop[] public shops;
 
     // mapping of Rolers' addresses and their request in string; i.e. (0X1234..., "verifier").
+    //? Can I delete this?
     // mapping (address => string) requestedRoles;
 
+    /**
+     * @notice  Main function for shops to register themselves.
+     * @dev     Adds a shop to the array of shops, using the Shop struct.
+     * @dev     The shop's address is the sender's address.
+     * @param   _name  Name of the shop.
+     * @param   _type  Type of the shop: Coffeehouse / Clothes / Restaurant / etc...
+     * @return  address  Address of the shop.
+     * @return  string  Name of the shop.
+     * @return  string  Type of the shop.
+     */
     function registerShop(
         string memory _name,
         string memory _type
@@ -60,8 +78,13 @@ contract Registration {
         return (_shopAddress, _name, _type);
     }
 
+    /**
+     * @notice  Finds an array's index by its ID; should be internal, doesn't work for some reason (maybe because I'm inheriting this contract as instance and not with "is").
+     * @dev     .
+     * @param   searchID  ID of the shop to search.
+     * @return  uint64  Index of the shop in the array.
+     */
     function _getIndexByID(uint64 searchID) public view returns (uint64) {
-        // Finds an array's index by its ID; should be internal, doesn't work for some reason (maybe because I'm inheriting this contract as instance and not with "is").
         // Setting it public so it can be used in spender contract as well. (maybe not?)
         for (uint64 i = 0; i < shops.length; i++) {
             if (shops[i].shopID == searchID) {

@@ -140,6 +140,7 @@ contract Depositor {
      * @param   _amtBottles  Amount of bottles to deposit.
      * @return  bool  True if the operation was successful.
      */
+    // TODO - change from owner to machine's address.
     function _depositTokens(
         address _recyAddr,
         uint _amtBottles

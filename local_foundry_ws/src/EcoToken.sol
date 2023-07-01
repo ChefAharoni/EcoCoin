@@ -25,10 +25,12 @@ pragma solidity ^0.8;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Muni, MuniData} from "./Municipality.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 // import "./openzeppelin-contracts/contracts/access/Ownable.sol"; // Doesn't work for some reason, implement in the future.
 
 // error EcoCoin__NotMunicipality(string errorMsg); // Error to throw when the caller is not the i_tokenOwner.
+error EcoCoin__genMunicipalityIsSet(); // Error to throw when Genesis municipality is already set.
 
 // TODO - add more error and revert messages instead of require, to save gas.
 // TODO - add s_ prefix to variables saved in storage.
@@ -45,7 +47,7 @@ import {Muni, MuniData} from "./Municipality.sol";
  * @notice  .
  */
 
-contract EcoCoin is ERC20, MuniData {
+contract EcoCoin is ERC20, MuniData, Ownable {
     using Muni for *;
 
     // To set the i_tokenOwner of the token; used for managing roles.
@@ -60,16 +62,35 @@ contract EcoCoin is ERC20, MuniData {
     //     string s_muniZipCode; // Zip code location of the genesis municipality; string so it can handle long zip codes and non-us zipcodes as well.
     // }
 
-    constructor(
-        address _genMunicipalityAddr,
-        string memory _genMunicipalityZipCode
-    ) ERC20("EcoCoin", "ECC") {
+    // These next two lines were the parameters in the constructor.
+    // address _genMunicipalityAddr,
+    // string memory _genMunicipalityZipCode
+    constructor() ERC20("EcoCoin", "ECC") {
         // These actions are executed immediately when the contract is deployed.
         // ERC20 tokens by default have 18 decimals
         // number of tokens minted = n * 10^18
         // Update - do not mint any tokens at start.
         // uint256 n = 1000; // Number of tokens to create to the contract deployer.
         // _mint(msg.sender, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places; here I changed it to 0 so there won't be any decimals. //! mint opeation was cancelled - will mint only when bottles are deposited.
+        // i_genMunicipality = Muni.Municipality(
+        //     _genMunicipalityAddr,
+        //     _genMunicipalityZipCode
+        // );
+        // Because the function addMuni requires msg.sender to be a municipality, implementing the function here so it could be called once automatically without restrictions.
+        // municipalities[_genMunicipalityAddr] = Muni.Municipality({
+        //     muniAddr: _genMunicipalityAddr,
+        //     s_muniZipCode: _genMunicipalityZipCode
+        // });
+    }
+
+    function addGenMuni(
+        address _genMunicipalityAddr,
+        string memory _genMunicipalityZipCode
+    ) public onlyOwner {
+        // Error if the genesis municipality is already set; should only be set once.
+        if (i_genMunicipality.muniAddr != address(0)) {
+            revert EcoCoin__genMunicipalityIsSet();
+        }
         i_genMunicipality = Muni.Municipality(
             _genMunicipalityAddr,
             _genMunicipalityZipCode
@@ -82,20 +103,10 @@ contract EcoCoin is ERC20, MuniData {
     }
 
     /**
-     * @notice  Function to get the i_tokenOwner of the token.
-     * @dev     .
-     * @return  address  of the i_tokenOwner.
-     */
-    // function getTokenOwner() public view returns (address) {
-    //     // Returns the address of the i_tokenOwner.
-    //     return i_tokenOwner;
-    // }
-
-    /**
      * @notice  Function that mints tokens to the machine.
      * @param   n  Amount of tokens to mint.
      */
-    function mintTokens(address machineAdr,uint256 n) public muniOnly {
+    function mintTokens(address machineAdr, uint256 n) public muniOnly {
         // ERC20 tokens by default have 18 decimals
         // number of tokens minted = n * 10^18
         _mint(machineAdr, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places

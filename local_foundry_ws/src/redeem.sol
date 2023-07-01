@@ -39,6 +39,11 @@ contract Redeemer {
     //     }
     // }
 
+    /**
+     * @notice  Checks if an address is a registered shop. Used to prevent random users to pretend to be a shop and fool recyclers from depositing tokens to them.
+     * @dev     .
+     * @param   _shopAddress  .
+     */
     modifier isRegisteredShop(address _shopAddress) {
         string memory _shopName = shopReg._getShopName(_shopAddress);
         if (
@@ -51,6 +56,15 @@ contract Redeemer {
         }
     }
 
+    /**
+     * @notice  Allows a shop to request to redeem tokens received by recyclers.
+     * @dev     .
+     * @param   _tokensAmount  .
+     * @return  bool  .
+     */
+    // TODO - Add a modifier to check if the function caller is a registered shop.
+    // TODO - Change the require to if and create a custom error.
+    // TODO - Test if this workflow works with a machine instead of a human.
     function requestRedeem(
         uint64 _tokensAmount
     ) public isRegisteredShop(msg.sender) returns (bool) {
@@ -68,10 +82,16 @@ contract Redeemer {
         return true;
     }
 
+    /**
+     * @notice  Getter function for an caller's address' role.
+     * @dev     .
+     * @return  string  Role of the function caller.
+     */
     function _getRole() public view returns (string memory) {
         return manage.getRole(msg.sender);
     }
 
+    // TODO - This approval of the tokens should be by the machine, not by a human.
     function approveRedeem(
         uint64 _shopID,
         bool _decision
@@ -101,13 +121,14 @@ contract Redeemer {
         }
     }
 
+    // TODO - Move this function to the machine's contract - only the machine should be able to burn tokens.
     function BurnRedeemedTokens() public returns (bool, uint256) {
-        // Because we want to keep the _burnTokens function available to the owner only, the burn of tokens must occur manually by the owner.
-        address tokenOwner = token.getTokenOwner(); // Get the address of the token's owner.
-        require(
-            msg.sender == tokenOwner,
-            "Only the owner of the token can burn tokens!"
-        ); // Allow only the token owner to call this function
+        // TODO - change the requirement for this function to a machine, not an owner.
+        // address tokenOwner = token.getTokenOwner(); // Get the address of the token's owner.
+        // require(
+        //     msg.sender == tokenOwner,
+        //     "Only the owner of the token can burn tokens!"
+        // ); // Allow only the token owner to call this function
         uint256 _thisContractBalance = token.balanceOf(address(this)); // Get the amount of tokens this contract owns.
         token._burnTokens(address(this), _thisContractBalance); // Burn (delete) the tokens requested to redeem from the recyclers account.
         return (true, token.balanceOf(address(this))); // Return true if successful && balance of this contract.
