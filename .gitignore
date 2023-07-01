@@ -50,3 +50,6 @@ Thumbs.db
 
 # Dotenv file
 .env
+
+# Diagram SVG
+DiagramIntegration.svg

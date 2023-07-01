@@ -8,12 +8,10 @@ The token will be deployed on the Ethereum blockchain, most probably on a testne
 <br> <br>
 
 # Workflow #
-
-![Application Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/AppDiagram%20V2.drawio)
-
 <p align="center">
-  <img src="https://github.com/ChefAharoni/EcoCoin/blob/master/AppDiagram%20V2.drawio" />
-  </p>
+
+  ![Diagram](DiagramIntegration.svg)
+</p>
 
 # Roles #
 <p align="center">
@@ -28,7 +26,7 @@ The token will be deployed on the Ethereum blockchain, most probably on a testne
 
 # Acknowledgments #
 
-- Special thanks to @PatrickAlphaC for his amazing tutorials on smart contracts developments. <br>
+- Special thanks to [@PatrickAlphaC](https://github.com/PatrickAlphaC/PatrickAlphaC) for his amazing tutorials on smart contracts developments, especially his latest [course using Foundry!](https://github.com/Cyfrin/foundry-full-course-f23) <br>
 - Thanks to [Cryptozombies](https://cryptozombies.io/) for their great lessons about Solidity language. <br>
 # Creator #
 
