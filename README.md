@@ -7,8 +7,16 @@ The concept of the token is based on a decentralized platform that incentivizes 
 The token will be deployed on the Ethereum blockchain, most probably on a testnet to avoid security issues that might end up users losing all their funds.
 <br> <br>
 
+# Workflow #
+
+![Application Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/AppDiagram%20V2.drawio)
+
+<p align="center">
+  <img src="https://github.com/ChefAharoni/EcoCoin/blob/master/AppDiagram%20V2.drawio" />
+  </p>
+
 # Roles #
-<p align="center" >
+<p align="center">
   <img width="805" alt="Roles Description" src="https://github.com/ChefAharoni/EcoCoin/assets/4399057/25d36cf4-18df-4bc6-a71b-fbb86b89ed0b" />
 </p>
 
@@ -17,6 +25,7 @@ The token will be deployed on the Ethereum blockchain, most probably on a testne
   - Each municipality will register machines and shops; recyclers doesn't require approval.
 
 <br><br>
+
 
 # Creator #
 
