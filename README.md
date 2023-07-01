@@ -8,10 +8,8 @@ The token will be deployed on the Ethereum blockchain, most probably on a testne
 <br> <br>
 
 # Workflow #
-<p align="center">
 
-  ![Diagram](DiagramIntegration.svg)
-</p>
+![Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DiagramIntegration.svg)
 
 # Roles #
 <p align="center">
