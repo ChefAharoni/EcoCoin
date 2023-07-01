@@ -1,4 +1,4 @@
-# EcoCoin #
+# EcoCoin # 
 
 A college based, independent research project, that focuses on the development of a green blockchain token. The aim is to create an environmentally friendly digital currency that can be earned by participating in recycling programs.
 
@@ -7,9 +7,28 @@ The concept of the token is based on a decentralized platform that incentivizes 
 The token will be deployed on the Ethereum blockchain, most probably on a testnet to avoid security issues that might end up users losing all their funds.
 <br> <br>
 
+# Roles #
+<p align="center" >
+  <img width="805" alt="Roles Description" src="https://github.com/ChefAharoni/EcoCoin/assets/4399057/25d36cf4-18df-4bc6-a71b-fbb86b89ed0b" />
+</p>
+
+  - Contract is deployed with an address of the first (genesis) municipality.
+  - Gensis municipality assigns other municipalities; every municipality owns the same permissions as the genesis, and can assign other municipalites.
+  - Each municipality will register machines and shops; recyclers doesn't require approval.
+
+<br><br>
+
 # Creator #
 
 @ChefAharoni
+
+<p align="center">
+  <img src="https://github.com/ChefAharoni/EcoCoin/assets/4399057/bccc051d-656d-48a6-91ca-739301ad3f78" />
+</p>
+
+
+
+<!--- ![EcoCoinLogo V2 6](https://github.com/ChefAharoni/EcoCoin/assets/4399057/bccc051d-656d-48a6-91ca-739301ad3f78) --->
 
 
 <!-- ### How do I get set up? ###
