@@ -42,7 +42,7 @@ library Muni {
 contract MuniData {
     // EcoCoin ecoCoin = new EcoCoin;
     using Muni for *;
-    mapping(address => Muni.Municipality) municipalities; // Mapping of all municipalites of type Municipality; used to check if a msg.sender is of type Municipality.
+    // mapping(address => Muni.Municipality) municipalities; // Mapping of all municipalites of type Municipality; used to check if a msg.sender is of type Municipality; might not be needed. 
     mapping(address => string) public MuniAddrToZipCode; // Mapping of address to a municipality zip code.
     string private constant NOT_MUNICIPALITY_MSG =
         "Only a municipality can perform this action!"; // Error message to throw when the caller is not the i_tokenOwner. // Seems it's not common to use strings in custom errors - I'll keep it here for now.
@@ -52,7 +52,7 @@ contract MuniData {
      * @dev   .
      */
     modifier muniOnly() {
-        if (municipalities[msg.sender].muniAddr != msg.sender) {
+        if (MuniAddrToZipCode[msg.sender] == "") {
             /* Since all keys in mapping are set to address(0) by default, checks if the address exists in the mapping. */
             revert MuniData__NotMunicipality(NOT_MUNICIPALITY_MSG);
         }
