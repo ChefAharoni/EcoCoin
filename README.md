@@ -9,7 +9,7 @@ The token will be deployed on the Ethereum blockchain, most probably on a testne
 
 # Workflow #
 
-![Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DiagramIntegration.svg)
+![Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/AppDiagramV2.svg)
 
 <br><br>
 

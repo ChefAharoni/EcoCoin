@@ -17,23 +17,25 @@ library Muni {
      * @dev     Should be called only by another municipality using a modifier muniOnly() from MuniData contract.
      * @dev This function should be called ON the municipalities mapping.
      * @dev i.e. municipalities.addMuni(_municipalityAddr, _municipalityZipCode) muniOnly().
-     * @param  municipalities  Mapping of all municipalites of type Municipality.
      * @param _municipalityAddr  Address of the municipality to add.
      * @param _municipalityZipCode  Zip code of the municipality to add.
      * @return  address   Address of the municipality added.
      */
+    // mapping(address => Municipality) storage municipalities, // Not needed for testing
     function addMuni(
-        mapping(address => Municipality) storage municipalities,
+        mapping(address => string) storage MuniAddrToZipCode,
         address _municipalityAddr,
         string memory _municipalityZipCode
-    ) public returns (Muni.Municipality memory) {
+    ) public returns (address) {
         // Function to add a municipality to the mapping.
         // MuniAddrToZipCode[_municipalityAddr] = _municipalityZipCode;
-        municipalities[_municipalityAddr] = Muni.Municipality({
-            muniAddr: _municipalityAddr,
-            s_muniZipCode: _municipalityZipCode
-        });
-        return municipalities[_municipalityAddr];
+        // municipalities[_municipalityAddr] = Muni.Municipality({
+        //     muniAddr: _municipalityAddr,
+        //     s_muniZipCode: _municipalityZipCode
+        // });
+        // return municipalities[_municipalityAddr];
+        MuniAddrToZipCode[_municipalityAddr] = _municipalityZipCode;
+        return _municipalityAddr;
     }
 }
 
