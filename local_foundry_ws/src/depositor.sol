@@ -14,6 +14,7 @@ error NotRegistered(string message); // Error to throw when the caller is not re
  * @notice  Manages the deposition of bottles.
  */
 contract Depositor {
+    // TODO - Update these addresses to instances.
     EcoCoin token =
         EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
     Management manage =
