@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8;
+pragma solidity ^0.8.19;
 import {Management} from "./manager.sol";
 import {EcoCoin} from "./EcoToken.sol";
 
@@ -13,7 +13,6 @@ error NotRegistered(string message); // Error to throw when the caller is not re
  * @dev     Development is not complete, should change the whole method of this contract.
  * @notice  Manages the deposition of bottles.
  */
-
 contract Depositor {
     EcoCoin token =
         EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
@@ -44,16 +43,16 @@ contract Depositor {
         address _recyAddr = msg.sender;
         uint64 _recyID = uint64(greeners.length + 1); // uint64 must be declared at the end because it is by default uint256.
         recyclerToID[_recyAddr] = _recyID; // Add the ID of the recycler to associate with his address.
-        //                      ID;    name;  address; bottles;   balance;   requested..Redeem; ;redeemedTokens;  status
+
         greeners.push(
-            Recylcer(
-                _recyID,
-                _name,
-                _recyAddr,
-                0,
-                token.balanceOf(_recyAddr),
-                false
-            )
+            Recylcer({
+                ID: _recyID,
+                recyName: _name,
+                recyAddr: _recyAddr,
+                bottlesDepo: 0,
+                recyBalance: token.balanceOf(_recyAddr),
+                status: false
+            })
         );
     }
 

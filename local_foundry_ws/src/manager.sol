@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8;
+pragma solidity ^0.8.19;
 import {EcoCoin} from "./EcoToken.sol";
 
 // When the token is called, in the constructor, an address for a municipality will be determined.

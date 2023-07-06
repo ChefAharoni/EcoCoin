@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8;
+pragma solidity ^0.8.19;
 import {Management} from "./manager.sol";
 import {EcoCoin} from "./EcoToken.sol";
 
@@ -94,14 +94,23 @@ contract Registration {
         revert("ID not found");
     }
 
+    /**
+     * @notice  Approved a request of a shop to register; only municipality can approve.
+     * @dev     .
+     * @param   _shopRegisterID  ID of the shop that requested to register.
+     * @param   _decision  Decision of the municipality to approve or deny the request.
+     * @return  bool  True if approved, false if denied.
+     * @return  string  Message of approval/denial.
+     */
     function _approveShop(
         uint64 _shopRegisterID,
         bool _decision
     ) public returns (bool, string memory) {
-        require(
-            msg.sender == owner,
-            "Only the owner of the coin can set roles! \n owner's address is "
-        );
+        // TODO - Change check here to Municipality, not owner.
+        // require(
+        //     msg.sender == owner,
+        //     "Only the owner of the coin can set roles! \n owner's address is "
+        // );
         // Click on 'shops' array button to see the request number, and approve by it.
         uint64 _shopIndex = _getIndexByID(_shopRegisterID); // Get the index of the array using its ID.
         address _shopAddress = shops[_shopIndex].shopAddress;
@@ -116,14 +125,23 @@ contract Registration {
         }
     }
 
+    /**
+     * @notice   Remove a role requested by a shop; only municipality can remove a role.
+     * @dev     .
+     * @param   _shopRmvID   ID of the shop that requested to be removed.
+     * @param   _decision   Decision of the municipality to approve or deny the request.
+     * @return  bool  True if approved, false if denied.
+     * @return  string Message of approval/denial.
+     */
     function _removeShop(
         uint64 _shopRmvID,
         bool _decision
     ) public returns (bool, string memory) {
-        require(
-            msg.sender == owner,
-            "Only the owner of the coin can set roles! /n owner's address is "
-        );
+        // TODO - Change check here to Municipality, not owner.
+        // require(
+        //     msg.sender == owner,
+        //     "Only the owner of the coin can set roles! /n owner's address is "
+        // );
         // Click on 'shops' array button to see the request number, and approve by it.
         uint64 _shopRmvIndex = _getIndexByID(_shopRmvID); // Get the index of the array using its ID.
         address _reqRmvAddress = shops[_shopRmvIndex].shopAddress;

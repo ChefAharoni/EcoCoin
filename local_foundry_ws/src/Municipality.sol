@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8;
+pragma solidity ^0.8.19;
 
 import {EcoCoin} from "./EcoToken.sol";
 
-error MuniData__NotMunicipality(string errorMsg); // Error to throw when the caller is not the i_tokenOwner.
+error MuniData__NotMunicipality(string errorMsg); // Error to throw when the caller is not a municipality.
 
 library Muni {
     struct Municipality {
@@ -27,13 +27,6 @@ library Muni {
         address _municipalityAddr,
         string memory _municipalityZipCode
     ) public returns (address) {
-        // Function to add a municipality to the mapping.
-        // MuniAddrToZipCode[_municipalityAddr] = _municipalityZipCode;
-        // municipalities[_municipalityAddr] = Muni.Municipality({
-        //     muniAddr: _municipalityAddr,
-        //     s_muniZipCode: _municipalityZipCode
-        // });
-        // return municipalities[_municipalityAddr];
         MuniAddrToZipCode[_municipalityAddr] = _municipalityZipCode;
         return _municipalityAddr;
     }
@@ -41,8 +34,7 @@ library Muni {
 
 contract MuniData {
     // EcoCoin ecoCoin = new EcoCoin;
-    using Muni for *;
-    // mapping(address => Muni.Municipality) municipalities; // Mapping of all municipalites of type Municipality; used to check if a msg.sender is of type Municipality; might not be needed. 
+    using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
     mapping(address => string) public MuniAddrToZipCode; // Mapping of address to a municipality zip code.
     string private constant NOT_MUNICIPALITY_MSG =
         "Only a municipality can perform this action!"; // Error message to throw when the caller is not the i_tokenOwner. // Seems it's not common to use strings in custom errors - I'll keep it here for now.
@@ -52,10 +44,10 @@ contract MuniData {
      * @dev   .
      */
     modifier muniOnly() {
-        if (MuniAddrToZipCode[msg.sender] == "") {
-            /* Since all keys in mapping are set to address(0) by default, checks if the address exists in the mapping. */
-            revert MuniData__NotMunicipality(NOT_MUNICIPALITY_MSG);
-        }
+        if (
+            keccak256(abi.encodePacked(MuniAddrToZipCode[msg.sender])) ==
+            keccak256(abi.encodePacked(""))
+        ) revert MuniData__NotMunicipality(NOT_MUNICIPALITY_MSG);
         _;
     }
 }

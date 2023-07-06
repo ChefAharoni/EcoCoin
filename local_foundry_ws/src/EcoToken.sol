@@ -21,7 +21,7 @@
 // external & public view & pure functions
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8;
+pragma solidity ^0.8.19;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Muni, MuniData} from "./Municipality.sol";
@@ -48,41 +48,20 @@ error EcoCoin__genMunicipalityIsSet(); // Error to throw when Genesis municipali
  */
 
 contract EcoCoin is ERC20, MuniData, Ownable {
-    using Muni for *;
+    using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
 
-    // To set the i_tokenOwner of the token; used for managing roles.
-    // address immutable i_tokenOwner = msg.sender; // i_ prefix means immutable.
     Muni.Municipality private i_genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
 
-    // string private constant NOT_MUNICIPALITY_MSG =
-    //     "Only a municipality can perform this action!"; // Error message to throw when the caller is not the i_tokenOwner. // Seems it's not common to use strings in custom errors - I'll keep it here for now.
+    constructor() ERC20("EcoCoin", "ECC") {}
 
-    // struct Municipality {
-    //     address muniAddr; // Address of the Municipality
-    //     string s_muniZipCode; // Zip code location of the genesis municipality; string so it can handle long zip codes and non-us zipcodes as well.
-    // }
-
-    // These next two lines were the parameters in the constructor.
-    // address _genMunicipalityAddr,
-    // string memory _genMunicipalityZipCode
-    constructor() ERC20("EcoCoin", "ECC") {
-        // These actions are executed immediately when the contract is deployed.
-        // ERC20 tokens by default have 18 decimals
-        // number of tokens minted = n * 10^18
-        // Update - do not mint any tokens at start.
-        // uint256 n = 1000; // Number of tokens to create to the contract deployer.
-        // _mint(msg.sender, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places; here I changed it to 0 so there won't be any decimals. //! mint opeation was cancelled - will mint only when bottles are deposited.
-        // i_genMunicipality = Muni.Municipality(
-        //     _genMunicipalityAddr,
-        //     _genMunicipalityZipCode
-        // );
-        // Because the function addMuni requires msg.sender to be a municipality, implementing the function here so it could be called once automatically without restrictions.
-        // municipalities[_genMunicipalityAddr] = Muni.Municipality({
-        //     muniAddr: _genMunicipalityAddr,
-        //     s_muniZipCode: _genMunicipalityZipCode
-        // });
-    }
-
+    /**
+     * @notice  Adds the genesis municipality.
+     * @dev     Should be called only once, when the contract is deployed.
+     * @dev     The genesis municipality is the first municipality to be added to the system.
+     * @dev     Only the contract deployer can call this function.
+     * @param   _genMunicipalityAddr  Wallet address of the genesis municipality.
+     * @param   _genMunicipalityZipCode  Zip code of the genesis municipality.
+     */
     function addGenMuni(
         address _genMunicipalityAddr,
         string memory _genMunicipalityZipCode
@@ -95,11 +74,9 @@ contract EcoCoin is ERC20, MuniData, Ownable {
             _genMunicipalityAddr,
             _genMunicipalityZipCode
         );
+
         // Because the function addMuni requires msg.sender to be a municipality, implementing the function here so it could be called once automatically without restrictions.
-        municipalities[_genMunicipalityAddr] = Muni.Municipality({
-            muniAddr: _genMunicipalityAddr,
-            s_muniZipCode: _genMunicipalityZipCode
-        });
+        MuniAddrToZipCode[_genMunicipalityAddr] = _genMunicipalityZipCode;
     }
 
     /**
