@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
-import {Management} from "./manager.sol";
+import {Management} from "./Management.sol";
 import {EcoCoin} from "./EcoToken.sol";
 
 /**
@@ -10,13 +10,9 @@ import {EcoCoin} from "./EcoToken.sol";
  * @notice  Allows shops to register themselves. Used to prevent fraud by random users pretend to be shops and fool users into sending them tokens.
  */
 
-contract Registration {
-    EcoCoin token =
-        EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
-    Management manage =
-        Management(address(0xf8e81D47203A594245E36C48e151709F0C19fBe8)); // Don't forget to update me!
-
-    // address owner = token.getTokenOwner(); // Owner is not longer relevant.
+contract ShopHandler {
+    EcoCoin ecoCoin = new EcoCoin();
+    Management management = new Management();
 
     // TODO - Declare events here for listening.
 
@@ -67,7 +63,7 @@ contract Registration {
                 _shopAddress,
                 _name,
                 _type,
-                token.balanceOf(_shopAddress),
+                ecoCoin.balanceOf(_shopAddress),
                 0,
                 0,
                 false
@@ -169,7 +165,7 @@ contract Registration {
         address _shopAddress
     ) external {
         // Updates the balance of a requested shop according to its balance as written in the blockchain.
-        shops[_shopIndex].shopBalance = token.balanceOf(_shopAddress);
+        shops[_shopIndex].shopBalance = ecoCoin.balanceOf(_shopAddress);
     }
 
     function _getShopName(
@@ -193,7 +189,7 @@ contract Registration {
         uint64 _shopIndex,
         uint256 _redeemedTokens
     ) external returns (bool) {
-        string memory _role = manage.getRole(msg.sender); // Get the role of the msg.sender.
+        string memory _role = management.getRole(msg.sender); // Get the role of the msg.sender.
 
         // Updates the amount of redeemed tokens approved by the redeemer.
         require(

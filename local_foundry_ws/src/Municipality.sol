@@ -36,6 +36,7 @@ contract MuniData {
     // EcoCoin ecoCoin = new EcoCoin;
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
     mapping(address => string) public MuniAddrToZipCode; // Mapping of address to a municipality zip code.
+
     string private constant NOT_MUNICIPALITY_MSG =
         "Only a municipality can perform this action!"; // Error message to throw when the caller is not the i_tokenOwner. // Seems it's not common to use strings in custom errors - I'll keep it here for now.
 

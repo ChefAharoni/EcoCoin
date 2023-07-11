@@ -3,7 +3,7 @@
 // imports
 // errors
 // interfaces, libraries, contracts
-// Type declarations
+// Type declarations: structs, enums
 // State variables
 // Events
 // Modifiers
@@ -25,7 +25,6 @@ pragma solidity ^0.8.19;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {IEcoCoin} from "./IEcoCoin.sol"; // EcoCoin Interface
 import {Muni, MuniData} from "./Municipality.sol";
 
 // import "./openzeppelin-contracts/contracts/access/Ownable.sol"; // Doesn't work for some reason, implement in the future.
@@ -47,7 +46,7 @@ error EcoCoin__genMunicipalityIsSet(); // Error to throw when Genesis municipali
  * @notice  0 Decimals, derives basic structure from OpenZeppelin's ERC20 contract.
  */
 
-contract EcoCoin is ERC20, MuniData, Ownable, IEcoCoin {
+contract EcoCoin is ERC20, MuniData, Ownable {
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
 
     Muni.Municipality private i_genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable

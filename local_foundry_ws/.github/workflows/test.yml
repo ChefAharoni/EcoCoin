@@ -1,5 +1,7 @@
-name: test
+# Docs - https://docs.github.com/en/actions
+name: test # Name of the workflow
 
+# When a certain action is triggered, the workflow will run on the latest commit.
 on: workflow_dispatch
 
 env:

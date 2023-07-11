@@ -1,3 +1,11 @@
+/*
+    Order of testing:
+        1. Unit
+        2. Intergration
+        3. Forked
+        4. Staging <- running tests on a testnet
+*/
+
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.19;
@@ -9,13 +17,12 @@ contract TestWorkflow is Test {
     EcoCoin ecoCoin;
 
     address municiplaity = makeAddr("municiplaity");
+
     function testWorkflow() public {}
 
     function testSomeTest() public {
         // Arrange
-
         // Act
-
         // Assert
     }
 }
