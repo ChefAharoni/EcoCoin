@@ -25,7 +25,7 @@ contract Machine is MuniData {
     */
 
     /* Errors */
-    error Depositor__RecyclerNotRegistered();
+    error Depositor__RecyclerNotRegistered();  // Error to throw when the recycler is not registered.
     error ShopHandler__ShopNotRegisteredOrApproved(); // Error to throw when the caller is not registered.
     error Machine__CallerIsNotMachine();
     error Machine__BottlesNumberToDepositMustBeGreaterThanZero();
@@ -66,7 +66,7 @@ contract Machine is MuniData {
 
     constructor(address _ecoCoinAddr) {
         // Not sure whether it's more gas efficient to deploy the interface or the contract itself; a problem for future fixes.
-        ecoCoin = IEcoCoin(_ecoCoinAddr);
+        ecoCoin = IEcoCoin(_ecoCoinAddr); // Address of the EcoCoin contract.
         i_CoolDownInterval = 3600; // Should be one hour, MAKE SURE LATER
         //! Make sure block.timestanp is in seconds.
     }
@@ -157,7 +157,7 @@ contract Machine is MuniData {
             revert Machine__CoolDownTimerHasntPassed();
         }
 
-        depositor.getGreeners()[_recyIndex].bottlesDepo = _bottles; // Update the number of bottles requested to deposit in the greeners array; (note - this is NOT approved bottles).
+        depositor.getGreeners()[_recyIndex].bottlesDepo = _bottles; // Update the number of bottles requested to deposit in the greeners array.
         // Do some clever checks here to verify the deposition; after verification, set the status of the deposition in greeners to 'true'.
         /*
             Saved space for validating the number of bottles.
@@ -235,7 +235,7 @@ contract Machine is MuniData {
 
         ecoCoin._burn(address(this), _tokensAmt); // Burn the tokens from the machine.
         // The process of transferring the tokens and then burning them might be redundant, but I think this might be more secure.
-        
+
         // Transfer the real money to the shop.
         transferRealMoney({
             _exMachineID: _exMachineID,
