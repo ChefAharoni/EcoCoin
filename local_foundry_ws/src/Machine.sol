@@ -25,7 +25,7 @@ contract Machine is MuniData {
     */
 
     /* Errors */
-    error Depositor__RecyclerNotRegistered();  // Error to throw when the recycler is not registered.
+    error Depositor__RecyclerNotRegistered(); // Error to throw when the recycler is not registered.
     error ShopHandler__ShopNotRegisteredOrApproved(); // Error to throw when the caller is not registered.
     error Machine__CallerIsNotMachine();
     error Machine__BottlesNumberToDepositMustBeGreaterThanZero();
@@ -243,6 +243,8 @@ contract Machine is MuniData {
             _cashAppUsername: _cashAppUsername,
             _tokensAmt: _tokensAmt
         }); // Transfer the real money (RM) to the shop.
+
+        return true;
     }
 
     /**
@@ -259,7 +261,7 @@ contract Machine is MuniData {
         address _shopAddress,
         string memory _cashAppUsername,
         uint64 _tokensAmt
-    ) private returns (string memory) {
+    ) private pure returns (string memory) {
         /*
             For now, this function **imitates** the action of transferring real money from the machine to the shop that redeems tokens.
             
@@ -267,6 +269,19 @@ contract Machine is MuniData {
             
             Enter a calculation for the amount of real money (RM) to transfer to the shop, according to the amount of tokens redeemed.
         */
-        return "Real money transferred to shop!";
+        string memory transferData = string(
+            abi.encodePacked(
+                "Exchange Machine ID: ",
+                string(abi.encodePacked(_exMachineID)),
+                "Transferred real money (RM) to shop with CashApp username: ",
+                _cashAppUsername,
+                "Associated with the address of: ",
+                string(abi.encodePacked(_shopAddress)),
+                " for redeeming ",
+                string(abi.encodePacked(_tokensAmt)),
+                " tokens."
+            )
+        );
+        return transferData;
     }
 }
