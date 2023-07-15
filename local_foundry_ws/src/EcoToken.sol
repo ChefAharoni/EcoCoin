@@ -30,7 +30,6 @@ import {Muni, MuniData} from "./Municipality.sol";
 // import "./openzeppelin-contracts/contracts/access/Ownable.sol"; // Doesn't work for some reason, implement in the future.
 
 // error EcoCoin__NotMunicipality(string errorMsg); // Error to throw when the caller is not the i_tokenOwner.
-error EcoCoin__genMunicipalityIsSet(); // Error to throw when Genesis municipality is already set.
 
 // TODO - add more error and revert messages instead of require, to save gas.
 // TODO - add s_ prefix to variables saved in storage.
@@ -47,6 +46,8 @@ error EcoCoin__genMunicipalityIsSet(); // Error to throw when Genesis municipali
  */
 
 contract EcoCoin is ERC20, MuniData, Ownable {
+    error EcoCoin__genMunicipalityIsSet(); // Error to throw when Genesis municipality is already set.
+
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
 
     Muni.Municipality private i_genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
