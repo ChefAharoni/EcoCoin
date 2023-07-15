@@ -196,6 +196,7 @@ contract Machine is MuniData {
      */
     function redeemTokens(
         uint64 _exMachineID,
+        string memory _cashAppUsername,
         uint64 _tokensAmt
     ) public returns (bool) {
         /* 
@@ -229,17 +230,34 @@ contract Machine is MuniData {
             revert Machine__InsufficientTokensBalanceToRedeem();
         }
 
+        /* Redeem */
         ecoCoin._transfer(msg.sender, address(this), _tokensAmt); // Transfer the tokens from the shop to the machine.
 
         ecoCoin._burn(address(this), _tokensAmt); // Burn the tokens from the machine.
         // The process of transferring the tokens and then burning them might be redundant, but I think this might be more secure.
-
-        transferRealMoney(_exMachineID, _shopAddress, _tokensAmt); // Transfer the real money (RM) to the shop.
+        
+        // Transfer the real money to the shop.
+        transferRealMoney({
+            _exMachineID: _exMachineID,
+            _shopAddress: _shopAddress,
+            _cashAppUsername: _cashAppUsername,
+            _tokensAmt: _tokensAmt
+        }); // Transfer the real money (RM) to the shop.
     }
 
+    /**
+     * @notice  Transfers real money (RM) to the shop; currently a mock function.
+     * @dev     .
+     * @param   _exMachineID   ID of the exchange machine to be used.
+     * @param   _shopAddress  Address of the shop that's associated with the redeemed tokens.
+     * @param   _cashAppUsername CashApp username of the shop, RM will be transferred to this username.
+     * @param   _tokensAmt  Amount of redeemed tokens to be converterd as a transfer of real money (RM).
+     * @return  string  Success message of the transfer.
+     */
     function transferRealMoney(
         uint64 _exMachineID,
         address _shopAddress,
+        string memory _cashAppUsername,
         uint64 _tokensAmt
     ) private returns (string memory) {
         /*
