@@ -138,11 +138,4 @@ contract Depositor {
         return true;
     }
 
-    // Deprecate?
-    // function updateRecyclerBottles(
-    //     address _recyAddr,
-    //     uint64 _bottles
-    // ) external {
-    //     recyclerBottles[_recyAddr] = _bottles;
-    // }
 }
