@@ -79,50 +79,6 @@ contract EcoCoin is ERC20, MuniData, Ownable {
     }
 
     /**
-     * @notice  Function that mints tokens to the machine.
-     * @param   n  Amount of tokens to mint.
-     */
-    // function mintTokens(address machineAdr, uint256 n) public muniOnly {
-    //     // ERC20 tokens by default have 18 decimals
-    //     // number of tokens minted = n * 10^18
-    //     _mint(machineAdr, n * 10 ** uint(decimals())); // Decimals function return 18 == 18 decimal places
-    // }
-
-    /**
-     * @notice  Function to transfer tokens from one address to another.
-     * @dev     Uses the _transfer function from the ERC20 contract, because it's internal.
-     * @param   sender  Sender of the tokens.
-     * @param   recipient  Recipient of the tokens.
-     * @param   amount  Amount of tokens to transfer.
-     * @return  bool  True if the transfer was successful.
-     */
-    //! the _transfer function can be inherited from ERC20, and the sender would be the machine, who would also be the tokens minter.
-    // function transferFunds(
-    //     // Double check if I need this function, I may be able to inherit it from this contract.
-    //     address sender,
-    //     address recipient,
-    //     uint amount
-    // ) public muniOnly returns (bool) {
-    //     _transfer(sender, payable(recipient), amount); // payable keyword means that the receipent can accept eth (or tokens).
-    //     return true;
-    // }
-
-    /**
-     * @notice  Function to burn tokens.
-     * @dev     Uses the _burn function from the ERC20 contract, because it's internal.
-     * @param   account  Account to burn tokens from.
-     * @param   amount  Amount of tokens to burn.
-     * @return  bool  True if the burn was successful.
-     */
-    // function _burnTokens(
-    //     address account,
-    //     uint256 amount
-    // ) public muniOnly returns (bool) {
-    //     _burn(account, amount); // Burn tokens
-    //     return true;
-    // }
-
-    /**
      * @notice  Overriding the decimals function from the ERC20 contract, setting the decimals of the token to zero (0).
      * @return  uint8  Amount of decimals used for the token.
      */
