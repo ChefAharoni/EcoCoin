@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
-import {EcoCoin} from "./EcoToken.sol";
+import {EcoCoin} from "./EcoCoin.sol";
 import {Machine} from "./Machine.sol";
 
 /**

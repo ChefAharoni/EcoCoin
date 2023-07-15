@@ -2,12 +2,12 @@
 
 pragma solidity ^0.8.19;
 
-import {Muni, MuniData} from "./Municipality.sol";
+import {Municipality} from "./Municipality.sol";
 import {IEcoCoin} from "./IEcoCoin.sol"; // EcoCoin Interface
 import {Depositor} from "./Depositor.sol";
 import {ShopHandler} from "./ShopHandler.sol";
 
-contract Machine is MuniData {
+contract Machine is Municipality {
     // What will the machine do?
     /*  1. Exchange bottles for tokens
             a. Receive bottles from recycler

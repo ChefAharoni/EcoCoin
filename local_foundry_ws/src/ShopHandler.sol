@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
-import {EcoCoin} from "./EcoToken.sol";
-import {Muni, MuniData} from "./Municipality.sol";
+import {EcoCoin} from "./EcoCoin.sol";
+import {Municipality} from "./Municipality.sol";
 
 /**
  * @author  ChefAharoni
@@ -9,7 +9,7 @@ import {Muni, MuniData} from "./Municipality.sol";
  * @dev     .
  * @notice  Allows shops to register themselves. Used to prevent fraud by random users pretend to be shops and fool users into sending them tokens.
  */
-contract ShopHandler is MuniData {
+contract ShopHandler is Municipality {
     /* Errors */
 
     EcoCoin ecoCoin = new EcoCoin();

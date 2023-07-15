@@ -25,7 +25,7 @@ pragma solidity ^0.8.19;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {Muni, MuniData} from "./Municipality.sol";
+import {Muni, Municipality} from "./Municipality.sol";
 
 // import "./openzeppelin-contracts/contracts/access/Ownable.sol"; // Doesn't work for some reason, implement in the future.
 
@@ -45,12 +45,12 @@ import {Muni, MuniData} from "./Municipality.sol";
  * @notice  0 Decimals, derives basic structure from OpenZeppelin's ERC20 contract.
  */
 
-contract EcoCoin is ERC20, MuniData, Ownable {
+contract EcoCoin is ERC20, Municipality, Ownable {
     error EcoCoin__genMunicipalityIsSet(); // Error to throw when Genesis municipality is already set.
 
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
 
-    Muni.Municipality private i_genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
+    Muni.MunicipalityBase private i_genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
 
     constructor() ERC20("EcoCoin", "ECC") {}
 
@@ -59,6 +59,7 @@ contract EcoCoin is ERC20, MuniData, Ownable {
      * @dev     Should be called only once, when the contract is deployed.
      * @dev     The genesis municipality is the first municipality to be added to the system.
      * @dev     Only the contract deployer can call this function.
+     * @dev     This function is the onlu function that utilizes the onlyOwner modifier from the Ownable contract; owner has no other special permissions.
      * @param   _genMunicipalityAddr  Wallet address of the genesis municipality.
      * @param   _genMunicipalityZipCode  Zip code of the genesis municipality.
      */
@@ -70,7 +71,7 @@ contract EcoCoin is ERC20, MuniData, Ownable {
         if (i_genMunicipality.muniAddr != address(0)) {
             revert EcoCoin__genMunicipalityIsSet();
         }
-        i_genMunicipality = Muni.Municipality(
+        i_genMunicipality = Muni.MunicipalityBase(
             _genMunicipalityAddr,
             _genMunicipalityZipCode
         );
