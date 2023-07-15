@@ -9,7 +9,6 @@ import {Muni, MuniData} from "./Municipality.sol";
  * @dev     .
  * @notice  Allows shops to register themselves. Used to prevent fraud by random users pretend to be shops and fool users into sending them tokens.
  */
-
 contract ShopHandler is MuniData {
     /* Errors */
 
@@ -63,7 +62,6 @@ contract ShopHandler is MuniData {
             )
         );
 
-        // requestedRoles[_shopAddress] = _role;  // Can I delete this?
         return (_shopAddress, _name, _type);
     }
 
