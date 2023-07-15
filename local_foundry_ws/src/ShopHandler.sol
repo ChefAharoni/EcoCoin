@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 import {EcoCoin} from "./EcoToken.sol";
+import {Muni, MuniData} from "./Municipality.sol";
 
 /**
  * @author  ChefAharoni
@@ -9,7 +10,7 @@ import {EcoCoin} from "./EcoToken.sol";
  * @notice  Allows shops to register themselves. Used to prevent fraud by random users pretend to be shops and fool users into sending them tokens.
  */
 
-contract ShopHandler {
+contract ShopHandler is MuniData {
     /* Errors */
 
     EcoCoin ecoCoin = new EcoCoin();
@@ -93,12 +94,7 @@ contract ShopHandler {
     function _approveShop(
         uint64 _shopRegisterID,
         bool _decision
-    ) public returns (bool, string memory) {
-        // TODO - Change check here to Municipality, not owner.
-        // require(
-        //     msg.sender == owner,
-        //     "Only the owner of the coin can set roles! \n owner's address is "
-        // );
+    ) public muniOnly returns (bool, string memory) {
         // Click on 'shops' array button to see the request number, and approve by it.
         uint64 _shopIndex = _getIndexByID(_shopRegisterID); // Get the index of the array using its ID.
         address _shopAddress = shops[_shopIndex].shopAddress;
@@ -124,12 +120,7 @@ contract ShopHandler {
     function _removeShop(
         uint64 _shopRmvID,
         bool _decision
-    ) public returns (bool, string memory) {
-        // TODO - Change check here to Municipality, not owner.
-        // require(
-        //     msg.sender == owner,
-        //     "Only the owner of the coin can set roles! /n owner's address is "
-        // );
+    ) public muniOnly returns (bool, string memory) {
         // Click on 'shops' array button to see the request number, and approve by it.
         uint64 _shopRmvIndex = _getIndexByID(_shopRmvID); // Get the index of the array using its ID.
         address _reqRmvAddress = shops[_shopRmvIndex].shopAddress;
