@@ -75,62 +75,6 @@ contract Depositor {
         _;
     }
 
-    //! Deprecating this function.
-    /**
-     * @notice  Lets the recycler request to deposit bottles.
-     * @dev     User must be registered in order to perform this action.
-     * @param   _bottles  amount of bottles requested for deposition.
-     * @return  address  Address of the recycler.
-     * @return  uint64  Number of bottles requested for deposition.
-     */
-    // function requestDeposition(
-    //     uint64 _bottles
-    // ) public registered returns (address, uint64) {
-    //     require(
-    //         _bottles > 0,
-    //         "Number of bottles to deposit must be bigger than 0!"
-    //     );
-    //     address _recyAddr = msg.sender;
-    //     uint64 _recyID = recyclerToID[_recyAddr]; // Get the recycler's ID from the corresponding mapping, using his address.
-    //     uint64 _recyIndex = uint64(_getGreenerIndexByID(_recyID));
-    //     greeners[_recyIndex].bottlesDepo = _bottles; // Update the number of bottles requested to deposit in the greeners array; (note - this is NOT approved bottles).
-    //     return (_recyAddr, _bottles);
-    // }
-
-    //! Deprecating this function.
-    // function approveDeposition(
-    //     uint64 _reqApprId,
-    //     bool _decision
-    // ) public returns (bool, string memory) {
-    //     string memory _role = management.getRole(msg.sender); // Gets the role of the function caller.
-    //     require(
-    //         keccak256(abi.encodePacked(_role)) ==
-    //             keccak256(abi.encodePacked("Verifier")),
-    //         "Only verifiers can approve depositions of bottles!"
-    //     );
-    //     // Click on 'greeners' array button to see the request number, and approve by it.
-    //     uint64 _greenerIndex = uint64(_getGreenerIndexByID(_reqApprId)); // Get the index of the array using its ID.
-    //     require(
-    //         greeners[_greenerIndex].status == false,
-    //         "Only unapproved requests can be approved!"
-    //     ); // To prevent approval of the same request twice.
-    //     address _reqDepoAddress = greeners[_greenerIndex].recyAddr; // Get the address of the recycler.
-    //     uint64 _bottlesAmount = greeners[_greenerIndex].bottlesDepo; // Get the amount of bottles requested to deposit.
-    //     if (_decision == true) {
-    //         // If approver has approved the deposit.
-    //         greeners[_greenerIndex].status = true; // Change the status of tthe deposition in the array to true (meaning approved).
-    //         recyclerBottles[_reqDepoAddress] = _bottlesAmount; // Only here the bottles are added to the mapping object.
-    //         _depositTokens(_reqDepoAddress, _bottlesAmount); // Deposit the corresponding tokens to the recycler.
-    //         greeners[_greenerIndex].recyBalance = ecoCoin.balanceOf(
-    //             _reqDepoAddress
-    //         ); // Set the balance in the greeners array to the tokens balance of the account.
-    //         return (true, "Desposited!");
-    //     } else {
-    //         greeners[_greenerIndex].status = false;
-    //         return (false, "Denied ;(");
-    //     }
-    // }
-
     /**
      * @notice  Prints the role of the function caller.
      * @dev     .
