@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 
 import {EcoCoin} from "./EcoToken.sol";
 
-error MuniData__NotMunicipality(string errorMsg); // Error to throw when the caller is not a municipality.
+error MuniData__NotMunicipality(); // Error to throw when the caller is not a municipality.
 
 library Muni {
     struct Municipality {
@@ -37,9 +37,6 @@ contract MuniData {
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
     mapping(address => string) public MuniAddrToZipCode; // Mapping of address to a municipality zip code.
 
-    string private constant NOT_MUNICIPALITY_MSG =
-        "Only a municipality can perform this action!"; // Error message to throw when the caller is not the i_tokenOwner. // Seems it's not common to use strings in custom errors - I'll keep it here for now.
-
     /**
      * @notice  Addition to functions so only municipalities can perform actions.
      * @dev   .
@@ -48,7 +45,7 @@ contract MuniData {
         if (
             keccak256(abi.encodePacked(MuniAddrToZipCode[msg.sender])) ==
             keccak256(abi.encodePacked(""))
-        ) revert MuniData__NotMunicipality(NOT_MUNICIPALITY_MSG);
+        ) revert MuniData__NotMunicipality();
         _;
     }
 }

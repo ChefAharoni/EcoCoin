@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
-import {Management} from "./Management.sol";
 import {EcoCoin} from "./EcoToken.sol";
 import {Machine} from "./Machine.sol";
-
-// TODO - add more error and revert messages instead of require, to save gas.
 
 /**
  * @author  ChefAharoni
@@ -16,7 +13,6 @@ contract Depositor {
     error Depositor__RecyclerNotRegistered(); // Error to throw when the caller is not registered.
 
     EcoCoin ecoCoin = new EcoCoin();
-    Management management = new Management();
 
     struct Recylcer {
         uint64 ID; // Starts at 1; 64 bits to save on gas; perhaps in the future think of a better way to generate an ID.
@@ -76,15 +72,6 @@ contract Depositor {
     }
 
     /**
-     * @notice  Prints the role of the function caller.
-     * @dev     .
-     * @return  string  Role of the function caller.
-     */
-    function _printRole() public view returns (string memory) {
-        return management.getRole(msg.sender);
-    }
-
-    /**
      * @notice  Gets the index of the array by its ID.
      * @dev     .
      * @param   searchID  ID of the array to search for.
@@ -137,5 +124,4 @@ contract Depositor {
         );
         return true;
     }
-
 }

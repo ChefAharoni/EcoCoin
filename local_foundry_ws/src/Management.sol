@@ -5,33 +5,14 @@ import {EcoCoin} from "./EcoToken.sol";
 // When the token is called, in the constructor, an address for a municipality will be determined.
 // Only municipalities can assign other roles; contract deployer has no special roles.
 contract Management {
-    constructor() {
-        // When contract called, set the i_owner role in the roles mapping.
-        // _addOwnerRole();
-    }
+    constructor() {}
 
-    // EcoCoin token
-    EcoCoin token =
-        EcoCoin(address(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8)); // Don't forget to update me!
-
-    // EcoCoin ecoCoin = new EcoCoin()
+    EcoCoin ecoCoin = new EcoCoin();
 
     // TODO - declare events here.
 
     // Used to deploy roles of users and machines; only approved roles are here.
     mapping(address user => string Role) roles;
-
-    // address immutable i_owner = token.getTokenOwner();
-
-    //? Can address of contract be determined by the HelperConfig.s.sol script?
-    // Implement this in the future - a smart way to add the address of the contract from the outside.
-    // function setTokenContractAddress (address _address) external {
-    // Add here only i_Owner later instead of require
-
-    // Function enables to set the contracts' address from outside, so it can be constantly updated; rectricted to i_owners only.
-    //     require(msg.sender == i_owner, "Only the i_owner can set the contracts' address!");
-    //     token = EcoCoin(_address);
-    // }
 
     /**
      * @notice  Gets a role from the roles mapping.
@@ -56,7 +37,7 @@ contract Management {
         uint64 ID; // Starts at 1; 64 bits to save on gas.
         string name;
         address rqAddress;
-        string role; //  Municipality / machine (?)
+        string role; //  Municipality
         bool status; // Approve / denied.
     }
 

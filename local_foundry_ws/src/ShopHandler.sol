@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
-import {Management} from "./Management.sol";
 import {EcoCoin} from "./EcoToken.sol";
 
 /**
@@ -12,12 +11,10 @@ import {EcoCoin} from "./EcoToken.sol";
 
 contract ShopHandler {
     /* Errors */
-    // error ShopHandler__ShopNotRegistered(); // Error to throw when the caller is not registered.
 
     EcoCoin ecoCoin = new EcoCoin();
-    Management management = new Management();
 
-    // TODO - Declare events here for listening.
+    // TODO - Declare events here.
 
     // Address and name of shop; only approved shops
     mapping(address shop => string shopName) shopAddrToName;
@@ -31,34 +28,11 @@ contract ShopHandler {
         string shopName; // Name of the shop.
         string shopType; // Coffeehouse / Clothes / Restaurant / etc...
         uint shopBalance; // Balance of tokens.
-        uint256 requestedTokensToRedeem; // Amount of tokens the recycler wishes to redeem. ----!!!---
-        uint256 redeemedTokens; // Amount of tokens redeemed.   ---!!!---
-        bool status;
+        bool status; // Status of shop's registration.
     }
 
     // Array of all shops using the Shop struct
     Shop[] public shops;
-
-    // Perhaps can be deleted.
-    // /**
-    //  * @notice   Checks if an address is a registered shop. Used to prevent random users to pretend to be a shop and fool recyclers from depositing tokens to them.
-    //  * @dev     .
-    //  */
-    // modifier isRegisteredShop() {
-    //     string memory _shopName = shopAddrToName[msg.sender];
-    //     if (
-    //         keccak256(abi.encodePacked(_shopName)) ==
-    //         keccak256(abi.encodePacked(""))
-    //     ) {
-    //         revert ShopHandler__ShopNotRegistered(); // If the name of the shop equals nothing == no shop registered at this address.
-    //     } else {
-    //         _; // If the shop has a name == it is registered; continue.
-    //     }
-    // }
-
-    // mapping of Rolers' addresses and their request in string; i.e. (0X1234..., "verifier").
-    //? Can I delete this?
-    // mapping (address => string) requestedRoles;
 
     /**
      * @notice  Main function for shops to register themselves.
@@ -84,8 +58,6 @@ contract ShopHandler {
                 _name,
                 _type,
                 ecoCoin.balanceOf(_shopAddress),
-                0,
-                0,
                 false
             )
         );
@@ -193,33 +165,6 @@ contract ShopHandler {
     ) public view returns (string memory) {
         // Gets the shop's name by its address; used for checking if address is registered shop.
         return shopAddrToName[_shopAddress];
-    }
-
-    function updateRequestedTokensToRedeem(
-        uint256 _tokensToRedeemAmt
-    ) external returns (bool) {
-        // Updates the requested amount of tokens to redeem in the `shops` array.
-        // require(msg.sender == _recyAddr, "Only the owner of the account can request to redeem tokens!");  // Prevent users to modify other users' request to redeem tokens.
-        uint64 _shopIndex = shopAddrToID[msg.sender]; // This allows only to update only the functions caller's request of tokens.
-        shops[_shopIndex].requestedTokensToRedeem = _tokensToRedeemAmt; // This will override any data currently there.
-        return true;
-    }
-
-    function updateRedeemedTokens(
-        uint64 _shopIndex,
-        uint256 _redeemedTokens
-    ) external returns (bool) {
-        string memory _role = management.getRole(msg.sender); // Get the role of the msg.sender.
-
-        // Updates the amount of redeemed tokens approved by the redeemer.
-        // TODO - Change to a custom error message (or modifier) & to machine, not redeemer.
-        require(
-            keccak256(abi.encodePacked(_role)) ==
-                keccak256(abi.encodePacked("Redeemer")),
-            "Only a redeemer can approve a redemption!"
-        ); // Only allow a redeemer to approve redemption of tokens.
-        shops[_shopIndex].redeemedTokens = _redeemedTokens; // This will override any data currently there.
-        return true;
     }
 
     /**
