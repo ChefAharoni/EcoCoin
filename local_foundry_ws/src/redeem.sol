@@ -1,3 +1,25 @@
+// Layout of Contract:
+// version
+// imports
+// errors
+// interfaces, libraries, contracts
+// Type declarations: structs, enums
+// State variables
+// Events
+// Modifiers
+// Functions
+
+// Layout of Functions:
+// constructor
+// receive function (if exists)
+// fallback function (if exists)
+// external
+// public
+// internal
+// private
+// internal & private view & pure functions
+// external & public view & pure functions
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 import {EcoCoin} from "./EcoToken.sol";
@@ -14,26 +36,11 @@ import {ShopHandler} from "./ShopHandler.sol";
  * @notice  Contract that handles the redemption of tokens owned by shops.
  */
 
-contract Redeemer {
+contract Redeem {
     EcoCoin ecoCoin = new EcoCoin();
     Management management = new Management();
     Depositor depositor = new Depositor();
     ShopHandler shopHandler = new ShopHandler();
-
-    //? Should this change to a modifier?
-    // function _isRegisteredShop(
-    //     address _shopAddress
-    // ) private view returns (bool) {
-    //     string memory _shopName = shopReg._getShopName(_shopAddress);
-    //     if (
-    //         keccak256(abi.encodePacked(_shopName)) ==
-    //         keccak256(abi.encodePacked(""))
-    //     ) {
-    //         return false; // If the name of the shop equals nothing == no shop registered.
-    //     } else {
-    //         return true; // Otherwise - it is a shop.
-    //     }
-    // }
 
     /**
      * @notice  Checks if an address is a registered shop. Used to prevent random users to pretend to be a shop and fool recyclers from depositing tokens to them.
@@ -60,7 +67,7 @@ contract Redeemer {
      */
     // TODO - Add a modifier to check if the function caller is a registered shop.
     // TODO - Change the require to if and create a custom error.
-    // TODO - Test if this workflow works with a machine instead of a human.
+    // TODO - Change this workflow to machine.
     function requestRedeem(
         uint64 _tokensAmount
     ) public isRegisteredShop(msg.sender) returns (bool) {
@@ -89,6 +96,7 @@ contract Redeemer {
         bool _decision
     ) public returns (bool) {
         string memory _role = management.getRole(msg.sender); // Get the role of the function caller, should be "Redeemer".
+        // TODO - Change to a custom error message (or modifier).
         require(
             keccak256(abi.encodePacked(_role)) ==
                 keccak256(abi.encodePacked("Redeemer")),
@@ -96,16 +104,12 @@ contract Redeemer {
         ); // Only allow a redeemer to approve redemption of tokens.
 
         uint64 _shopIndex = shopHandler._getIndexByID(_shopID); // Get the recycler's index from his ID.
-        address _shopAddress = management.getShops()[_shopIndex].shopAddress; // Get the recycler's Address from his index.
+        address _shopAddress = shopHandler.getShops()[_shopIndex].shopAddress; // Get the recycler's Address from his index.
         uint256 _tokensToRedeemAmt = shopHandler
         .getShops()[_shopIndex].requestedTokensToRedeem; // Get the amount of tokens the recycler has requested to redeem.
         if (_decision == true) {
             shopHandler.updateRedeemedTokens(_shopIndex, _tokensToRedeemAmt); // Update the redeemed tokens in the recyclers (greeners) array.
-            ecoCoin.transferFunds(
-                _shopAddress,
-                address(this),
-                _tokensToRedeemAmt
-            ); // Transfer the redeemed coins to the address of this contract; will be burnt manually later by owner.
+            ecoCoin._transfer(_shopAddress, address(this), _tokensToRedeemAmt); // Transfer the redeemed coins to the address of this contract; will be burnt manually later by owner.
             return true;
         } else {
             // Error occured; could I enter an error message here? (revert?)

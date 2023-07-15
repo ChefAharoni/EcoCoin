@@ -18,8 +18,7 @@ contract DeployEcoToken is Script {
             ,
             ,
 
-        ) = // address MachineAddress // Address of the machine. - use later
-            helperConfig.activeNetworkConfig();
+        ) = helperConfig.activeNetworkConfig();
 
         vm.startBroadcast();
         EcoCoin ecoCoin = new EcoCoin();

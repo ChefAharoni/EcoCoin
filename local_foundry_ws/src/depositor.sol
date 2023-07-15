@@ -6,8 +6,6 @@ import {Machine} from "./Machine.sol";
 
 // TODO - add more error and revert messages instead of require, to save gas.
 
-error Depositor__RecyclerNotRegistered(string message); // Error to throw when the caller is not registered.
-
 /**
  * @author  ChefAharoni
  * @title   Contract of the deposition of bottles.
@@ -15,6 +13,8 @@ error Depositor__RecyclerNotRegistered(string message); // Error to throw when t
  * @notice  Manages the deposition of bottles.
  */
 contract Depositor {
+    error Depositor__RecyclerNotRegistered(); // Error to throw when the caller is not registered.
+
     EcoCoin ecoCoin = new EcoCoin();
     Management management = new Management();
 
@@ -29,7 +29,8 @@ contract Depositor {
     }
 
     Recylcer[] public greeners;
-    mapping(address recycler => uint64 bottlesAmt) public recyclerBottles; // Mapping of addresses and their deposited bottles; added only when their bottles are confirmed.
+    // mapping(address recycler => uint64 bottlesAmt) public recyclerBottles; // Mapping of addresses and their deposited bottles; added only when their bottles are confirmed. - 0713 update: maybe I don't need this mapping anymore?
+    // Since the machine auto-approves the amount of bottles.
     mapping(address recycler => uint64 recyID) public recyclerToID; // Mapping of addresses and their ID's.
 
     /**
@@ -69,9 +70,7 @@ contract Depositor {
         }
         if (!isRegistered) {
             // Gaswise Chepear than require.
-            revert Depositor__RecyclerNotRegistered(
-                "You must be registered in order to perform actions!"
-            );
+            revert Depositor__RecyclerNotRegistered();
         }
         _;
     }
@@ -194,4 +193,12 @@ contract Depositor {
         );
         return true;
     }
+
+    // Deprecate?
+    // function updateRecyclerBottles(
+    //     address _recyAddr,
+    //     uint64 _bottles
+    // ) external {
+    //     recyclerBottles[_recyAddr] = _bottles;
+    // }
 }

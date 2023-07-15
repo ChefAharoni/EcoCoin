@@ -11,6 +11,9 @@ import {EcoCoin} from "./EcoToken.sol";
  */
 
 contract ShopHandler {
+    /* Errors */
+    // error ShopHandler__ShopNotRegistered(); // Error to throw when the caller is not registered.
+
     EcoCoin ecoCoin = new EcoCoin();
     Management management = new Management();
 
@@ -36,6 +39,23 @@ contract ShopHandler {
     // Array of all shops using the Shop struct
     Shop[] public shops;
 
+    // Perhaps can be deleted.
+    // /**
+    //  * @notice   Checks if an address is a registered shop. Used to prevent random users to pretend to be a shop and fool recyclers from depositing tokens to them.
+    //  * @dev     .
+    //  */
+    // modifier isRegisteredShop() {
+    //     string memory _shopName = shopAddrToName[msg.sender];
+    //     if (
+    //         keccak256(abi.encodePacked(_shopName)) ==
+    //         keccak256(abi.encodePacked(""))
+    //     ) {
+    //         revert ShopHandler__ShopNotRegistered(); // If the name of the shop equals nothing == no shop registered at this address.
+    //     } else {
+    //         _; // If the shop has a name == it is registered; continue.
+    //     }
+    // }
+
     // mapping of Rolers' addresses and their request in string; i.e. (0X1234..., "verifier").
     //? Can I delete this?
     // mapping (address => string) requestedRoles;
@@ -56,7 +76,7 @@ contract ShopHandler {
     ) public returns (address, string memory, string memory) {
         // Add a check/modification so string will be lowercase.
         address _shopAddress = msg.sender;
-        uint64 _shopRegisterID = uint64(shops.length + 1);
+        uint64 _shopRegisterID = uint64(shops.length);
         shops.push(
             Shop(
                 _shopRegisterID,
@@ -192,6 +212,7 @@ contract ShopHandler {
         string memory _role = management.getRole(msg.sender); // Get the role of the msg.sender.
 
         // Updates the amount of redeemed tokens approved by the redeemer.
+        // TODO - Change to a custom error message (or modifier) & to machine, not redeemer.
         require(
             keccak256(abi.encodePacked(_role)) ==
                 keccak256(abi.encodePacked("Redeemer")),
@@ -199,5 +220,18 @@ contract ShopHandler {
         ); // Only allow a redeemer to approve redemption of tokens.
         shops[_shopIndex].redeemedTokens = _redeemedTokens; // This will override any data currently there.
         return true;
+    }
+
+    /**
+     * @notice  Gets the shop's ID by his address.
+     * @dev     Used for external contracts.
+     * @param   _shopAddress  Address of the shop.
+     * @return  uint64  ID of the shop.
+     */
+    function getIdByAddress(
+        address _shopAddress
+    ) external view returns (uint64) {
+        // For external contracts, extract the recycler's ID from his address.
+        return shopAddrToID[_shopAddress];
     }
 }

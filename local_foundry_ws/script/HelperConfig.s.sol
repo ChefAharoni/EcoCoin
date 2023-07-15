@@ -22,6 +22,7 @@ contract HelperConfig is Script {
     }
 
     constructor() {
+        // Checks what network we're in, gets the relevant information accordingly.
         if (block.chainid == SEPOLIA_CHAIN_ID) {
             activeNetworkConfig = getSepoliaNetConfig();
         } else if (block.chainid == GANACHE_CHAIN_ID) {

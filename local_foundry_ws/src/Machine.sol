@@ -5,11 +5,7 @@ pragma solidity ^0.8.19;
 import {Muni, MuniData} from "./Municipality.sol";
 import {IEcoCoin} from "./IEcoCoin.sol"; // EcoCoin Interface
 import {Depositor} from "./Depositor.sol";
-
-error Machine__CallerIsNotMachine();
-error Machine__BottlesNumberToDepositMustBeGreaterThanZero();
-error Machine__CannotDepositMoreThan200BottlesAtOnce();
-error Machine__CoolDownTimerHasntPassed();
+import {ShopHandler} from "./ShopHandler.sol";
 
 contract Machine is MuniData {
     // What will the machine do?
@@ -28,6 +24,17 @@ contract Machine is MuniData {
             e. Burn tokens
     */
 
+    /* Errors */
+    error Depositor__RecyclerNotRegistered();
+    error ShopHandler__ShopNotRegisteredOrApproved(); // Error to throw when the caller is not registered.
+    error Machine__CallerIsNotMachine();
+    error Machine__BottlesNumberToDepositMustBeGreaterThanZero();
+    error Machine__CannotDepositMoreThan200BottlesAtOnce();
+    error Machine__CoolDownTimerHasntPassed();
+    error Machine__RedeemedTokensMustBeGreaterThanZero();
+    error Machine__CannotRedeemMoreThan9999TokensAtOnce();
+    error Machine__InsufficientTokensBalanceToRedeem();
+
     struct exchangeMachine {
         uint64 exMachineID; // ID of machines, starts at 1.
         string exMachineZipCode; // Zip code of the Municipality, even if the machine is not in the same exact zip code of the municipality.
@@ -44,6 +51,7 @@ contract Machine is MuniData {
 
     IEcoCoin private immutable ecoCoin; // Calling the interface of the EcoCoin contract.
     Depositor depositor = new Depositor();
+    ShopHandler shopHandler = new ShopHandler();
 
     /**
      * @notice  Modifier that lets only a machine to act.
@@ -132,34 +140,37 @@ contract Machine is MuniData {
         }
 
         address _recyAddr = msg.sender;
-        // Checks if recycler is registered.
-        if (depositor.recyclerToID[_recyAddr] == 0) {
-            revert depositor.Depositor__NotRegistered();
-        }
-        // Enter here check of last deposited time to allow deposits in at least one hour cool down.
+
         // Maybe let user in front end to make some kind of verification, to add some fake security to the process.
-        uint64 _recyID = depositor.recyclerToID[_recyAddr]; // Get the recycler's ID from the corresponding mapping, using his address; will receive a real address, otherwise it will indicate that the recycler is not registered.
+        uint64 _recyID = depositor.getIdByAddress(_recyAddr);
+
+        // Checks if recycler is registered.
+        if (_recyID == 0) {
+            revert Depositor__RecyclerNotRegistered();
+        }
+
         uint64 _recyIndex = uint64(depositor._getGreenerIndexByID(_recyID));
         uint256 recyLastTimeStamp = depositor
-            .greeners[_recyIndex]
-            .lastTimeStamp;
+        .getGreeners()[_recyIndex].lastTimeStamp;
         // Check here if enough time has passed since the last recycler's deposition.
         if ((block.timestamp - recyLastTimeStamp) < i_CoolDownInterval) {
             revert Machine__CoolDownTimerHasntPassed();
         }
 
-        depositor.greeners[_recyIndex].bottlesDepo = _bottles; // Update the number of bottles requested to deposit in the greeners array; (note - this is NOT approved bottles).
+        depositor.getGreeners()[_recyIndex].bottlesDepo = _bottles; // Update the number of bottles requested to deposit in the greeners array; (note - this is NOT approved bottles).
         // Do some clever checks here to verify the deposition; after verification, set the status of the deposition in greeners to 'true'.
         /*
             Saved space for validating the number of bottles.
         */
-        depositor.greeners[_recyIndex].status = true; // Change the status of tthe deposition in the array to true (meaning approved).
+        depositor.getGreeners()[_recyIndex].status = true; // Change the status of tthe deposition in the array to true (meaning approved).
 
         // After deposition was verified, update the recycler's last deposition time.
-        depositor.greeners[_recyIndex].lastTimeStamp = block.timestamp;
+        depositor.getGreeners()[_recyIndex].lastTimeStamp = block.timestamp;
 
-        depositor.recyclerBottles[_recyAddr] = _bottles; // Only here the bottles are added to the mapping object.
-        depositor.greeners[_recyIndex].recyBalance = ecoCoin.balanceOf(
+        // depositor.updateRecyclerBottles(_recyAddr, _bottles);  - Deprecate?
+
+        // depositor.recyclerBottles(_recyAddr) = _bottles; // Only here the bottles are added to the mapping object;   - Deprecate?
+        depositor.getGreeners()[_recyIndex].recyBalance = ecoCoin.balanceOf(
             _recyAddr
         ); // Set the balance in the greeners array to the tokens balance of the account.
         address _exMachineAddress = exMachineIDToAddress[_exMachineID];
@@ -174,5 +185,70 @@ contract Machine is MuniData {
             depositor.greeners[_recyIndex].status = false;
             return (false, "Denied ;(");
         */
+    }
+
+    /**
+     * @notice  Allows shops to redeem their tokens.
+     * @dev     We are assuming the machine is encyrtped and trusted, so we're automating the process of redeeming tokens.
+     * @param   _exMachineID  ID of the exchange machine to be used.
+     * @param   _tokensAmt  Amount of tokens to redeem.
+     * @return  bool  True if successfully deposited, false otherwise.
+     */
+    function redeemTokens(
+        uint64 _exMachineID,
+        uint64 _tokensAmt
+    ) public returns (bool) {
+        /* 
+            1. Check if tokens amount is bigger than 0. V
+            2. Check if tokens amount is less than 9999. V
+            3. Check if the shop is registered and approved. V
+            4. Check if the shop has enough tokens to redeem. V
+            6. Check if the machine has enough real money (RM) to redeem. ?
+            7. Burn the tokens from the shop. V
+            8. Send the real money (RM) to the shop. V
+        */
+        /* Checks */
+        // Check requested tokens to redeem is bigger than 0.
+        if (_tokensAmt <= 0) {
+            revert Machine__RedeemedTokensMustBeGreaterThanZero();
+        }
+
+        if (_tokensAmt > 9999) {
+            revert Machine__CannotRedeemMoreThan9999TokensAtOnce();
+        }
+
+        address _shopAddress = msg.sender;
+        uint64 _shopID = shopHandler.getIdByAddress(_shopAddress);
+        // Checks if sender is a registered and approved shop.
+        if (_shopID == 0) {
+            revert ShopHandler__ShopNotRegisteredOrApproved();
+        }
+
+        // Checks that the shop has enough tokens to redeem.
+        if (ecoCoin.balanceOf(_shopAddress) < _tokensAmt) {
+            revert Machine__InsufficientTokensBalanceToRedeem();
+        }
+
+        ecoCoin._transfer(msg.sender, address(this), _tokensAmt); // Transfer the tokens from the shop to the machine.
+
+        ecoCoin._burn(address(this), _tokensAmt); // Burn the tokens from the machine.
+        // The process of transferring the tokens and then burning them might be redundant, but I think this might be more secure.
+
+        transferRealMoney(_exMachineID, _shopAddress, _tokensAmt); // Transfer the real money (RM) to the shop.
+    }
+
+    function transferRealMoney(
+        uint64 _exMachineID,
+        address _shopAddress,
+        uint64 _tokensAmt
+    ) private returns (string memory) {
+        /*
+            For now, this function **imitates** the action of transferring real money from the machine to the shop that redeems tokens.
+            
+            In future versions, connect this function to CashApp's API to transfer money to the shop.
+            
+            Enter a calculation for the amount of real money (RM) to transfer to the shop, according to the amount of tokens redeemed.
+        */
+        return "Real money transferred to shop!";
     }
 }
