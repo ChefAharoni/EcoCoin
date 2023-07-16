@@ -37,6 +37,6 @@ contract EcoCoinTest is StdCheats, Test {
     }
 
     function testAddMuni() external {
-        vm.prank(ecoCoin.genMunicipality);
+        // vm.prank(ecoCoin.genMunicipality);
     }
 }

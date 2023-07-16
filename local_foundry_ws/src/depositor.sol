@@ -53,25 +53,6 @@ contract Depositor {
     }
 
     /**
-     * @notice  Checks if user has registered to the system; otherwise he won't be able to perform certain actions, such as request deposition of bottles.
-     * @dev     .
-     */
-    modifier registered() {
-        bool isRegistered = false;
-        for (uint256 i = 0; i < greeners.length; i++) {
-            if (greeners[i].recyAddr == msg.sender) {
-                isRegistered = true;
-                break;
-            }
-        }
-        if (!isRegistered) {
-            // Gaswise Chepear than require.
-            revert Depositor__RecyclerNotRegistered();
-        }
-        _;
-    }
-
-    /**
      * @notice  Gets the index of the array by its ID.
      * @dev     .
      * @param   searchID  ID of the array to search for.

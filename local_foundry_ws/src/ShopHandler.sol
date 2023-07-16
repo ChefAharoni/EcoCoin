@@ -27,6 +27,7 @@ contract ShopHandler is Municipality {
         address shopAddress; // Address of the shop.
         string shopName; // Name of the shop.
         string shopType; // Coffeehouse / Clothes / Restaurant / etc...
+        string shopZipCode; // Zip code of the shop.
         uint shopBalance; // Balance of tokens.
         bool status; // Status of shop's registration.
     }
@@ -46,23 +47,25 @@ contract ShopHandler is Municipality {
      */
     function registerShop(
         string memory _name,
-        string memory _type
-    ) public returns (address, string memory, string memory) {
+        string memory _type,
+        string memory _zipCode
+    ) public returns (address, string memory, string memory, string memory) {
         // Add a check/modification so string will be lowercase.
         address _shopAddress = msg.sender;
         uint64 _shopRegisterID = uint64(shops.length);
         shops.push(
-            Shop(
-                _shopRegisterID,
-                _shopAddress,
-                _name,
-                _type,
-                ecoCoin.balanceOf(_shopAddress),
-                false
-            )
+            Shop({
+                shopID: _shopRegisterID,
+                shopAddress: _shopAddress,
+                shopName: _name,
+                shopType: _type,
+                shopZipCode: _zipCode,
+                shopBalance: ecoCoin.balanceOf(_shopAddress),
+                status: false
+            })
         );
 
-        return (_shopAddress, _name, _type);
+        return (_shopAddress, _name, _type, _zipCode);
     }
 
     /**

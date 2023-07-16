@@ -77,8 +77,8 @@ contract Machine is Municipality {
      * @return  uint256  ID of the new exchange machine.
      */
     function createMachine(
-        string memory _exMZip,
-        address _exMAddress
+        address _exMAddress,
+        string memory _exMZip
     ) public muniOnly returns (uint256) {
         exchangeMachine memory newMachine = exchangeMachine({
             exMachineID: uint64(exchangeMachines.length),
