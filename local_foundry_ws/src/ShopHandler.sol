@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
+
 import {EcoCoin} from "./EcoCoin.sol";
 import {Municipality} from "./Municipality.sol";
 
@@ -28,7 +29,7 @@ contract ShopHandler is Municipality {
         string shopName; // Name of the shop.
         string shopType; // Coffeehouse / Clothes / Restaurant / etc...
         string shopZipCode; // Zip code of the shop.
-        uint shopBalance; // Balance of tokens.
+        uint256 shopBalance; // Balance of tokens.
         bool status; // Status of shop's registration.
     }
 

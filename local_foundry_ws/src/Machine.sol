@@ -104,7 +104,7 @@ contract Machine is Municipality {
     function _depositTokens(
         address exMachineAddress,
         address _recyAddr,
-        uint _amtBottles
+        uint256 _amtBottles
     ) private returns (bool) {
         //? Is the process of minting to the machine and then transferring immediately redundant? Can I just mint directly to the recycler?
         uint256 _bottlesToTokens = _amtBottles * 2; // Each bottle is 2 coins.

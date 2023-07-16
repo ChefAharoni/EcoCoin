@@ -12,16 +12,13 @@ contract DeployEcoCoin is Script {
         HelperConfig helperConfig = new HelperConfig();
         (
             address GenesisMunicipalityAddress,
-            string memory GenesisMunicipalityZipCode,
+            string memory GenesisMunicipalityZipCode, // address RecyclerAddress, // address ShopAddress, // address MachineAddress,
             ,
             ,
             ,
             ,
 
-        ) = // address RecyclerAddress,
-            // address ShopAddress,
-            // address MachineAddress,
-            // address seondMunicipalityAddress,
+        ) = // address seondMunicipalityAddress,
             // string memory secondMunicipalityZipCode
             helperConfig.activeNetworkConfig();
 

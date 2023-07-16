@@ -17,6 +17,7 @@ library Muni {
 contract Municipality {
     // EcoCoin ecoCoin = new EcoCoin;
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
+
     mapping(address => string) public MuniAddrToZipCode; // Mapping of address to a municipality zip code.
 
     /**
@@ -27,7 +28,9 @@ contract Municipality {
         if (
             keccak256(abi.encodePacked(MuniAddrToZipCode[msg.sender])) ==
             keccak256(abi.encodePacked(""))
-        ) revert Municipality__NotMunicipality();
+        ) {
+            revert Municipality__NotMunicipality();
+        }
         _;
     }
 

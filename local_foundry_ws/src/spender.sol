@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 // import {EcoCoin} from "./EcoCoin.sol";
+
 import {IEcoCoin} from "./IEcoCoin.sol"; // EcoCoin Interface
 import {Depositor} from "./Depositor.sol";
 import {ShopHandler} from "./ShopHandler.sol";
@@ -38,7 +39,7 @@ contract Spender {
 
         uint64 _shopIndex = shopHandler._getIndexByID(shopID); // Get the index of the shop by its ID.
         address _shopAddress = shopHandler.getShops()[_shopIndex].shopAddress; // Get the address of the shop from its index.
-        uint _recyclerBalance = ecoCoin.balanceOf(msg.sender); // Get the balance of the spender (recycler).
+        uint256 _recyclerBalance = ecoCoin.balanceOf(msg.sender); // Get the balance of the spender (recycler).
 
         // Checks if the spender (recycler) has enough tokens in his account to spend.
         if (_recyclerBalance < _spendAmount) {
