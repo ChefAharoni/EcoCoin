@@ -17,11 +17,13 @@ import {EcoCoin} from "../src/EcoCoin.sol";
 import {HelperConfig} from "../script/HelperConfig.s.sol";
 import {DeployEcoCoin} from "../script/DeployEcoCoin.s.sol";
 import {Municipality, Muni} from "../src/Municipality.sol";
+import {Depositor} from "../src/Depositor.sol";
 
 contract EcoCoinTest is StdCheats, Test {
     EcoCoin public ecoCoin;
     HelperConfig public helperConfig;
     Municipality municipality = new Municipality();
+    Depositor depositor = new Depositor();
 
     address GenesisMunicipalityAddress;
     string GenesisMunicipalityZipCode;
@@ -59,4 +61,32 @@ contract EcoCoinTest is StdCheats, Test {
         );
         vm.stopPrank();
     }
+
+    /* Depositor Tests */
+    uint64 searchID;
+    uint64 greenerIndex;
+
+    function testRegisterDepositor() public {
+        vm.startPrank(RecyclerAddress);
+        depositor.registerRecycler("John Doe");
+        searchID = depositor.getIdByAddress(RecyclerAddress);
+        console.log("Search ID: ", searchID);
+        vm.stopPrank();
+    }
+
+    // function testGetIDByAddress() external {
+    //     // testRegisterDepositor();
+    //     vm.prank(RecyclerAddress);
+    //     depositor.registerRecycler("John Doe");
+
+    //     searchID = depositor.getIdByAddress(RecyclerAddress);
+    //     console.log("Search ID: ", searchID);
+    //     assert(searchID > 0);
+    // }
+
+    // function testGetGreenerIndexByID() external {
+    //     searchID = depositor.getIdByAddress(RecyclerAddress);
+    //     greenerIndex = depositor._getGreenerIndexByID(searchID);
+    //     console.log("Greener Index: ", greenerIndex);
+    // }
 }
