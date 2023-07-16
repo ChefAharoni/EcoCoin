@@ -68,7 +68,7 @@ contract Machine is Municipality {
         // Not sure whether it's more gas efficient to deploy the interface or the contract itself; a problem for future fixes.
         ecoCoin = IEcoCoin(_ecoCoinAddr); // Address of the EcoCoin contract.
         i_CoolDownInterval = 3600; // Should be one hour, MAKE SURE LATER
-        //! Make sure block.timestanp is in seconds.
+            //! Make sure block.timestanp is in seconds.
     }
 
     /**
@@ -76,10 +76,7 @@ contract Machine is Municipality {
      * @dev     Address of machine should be created prior to calling this function.
      * @return  uint256  ID of the new exchange machine.
      */
-    function createMachine(
-        address _exMAddress,
-        string memory _exMZip
-    ) public muniOnly returns (uint256) {
+    function createMachine(address _exMAddress, string memory _exMZip) public muniOnly returns (uint256) {
         exchangeMachine memory newMachine = exchangeMachine({
             exMachineID: uint64(exchangeMachines.length),
             exMachineZipCode: _exMZip,
@@ -101,11 +98,7 @@ contract Machine is Municipality {
      * @param   _amtBottles  Amount of bottles to deposit.
      * @return  bool  True if the operation was successful.
      */
-    function _depositTokens(
-        address exMachineAddress,
-        address _recyAddr,
-        uint256 _amtBottles
-    ) private returns (bool) {
+    function _depositTokens(address exMachineAddress, address _recyAddr, uint256 _amtBottles) private returns (bool) {
         //? Is the process of minting to the machine and then transferring immediately redundant? Can I just mint directly to the recycler?
         uint256 _bottlesToTokens = _amtBottles * 2; // Each bottle is 2 coins.
 
@@ -128,10 +121,7 @@ contract Machine is Municipality {
      * @return  bool  True if successfully deposited, false otherwise.
      * @return  string  String indication of success / failure.
      */
-    function depositBottles(
-        uint64 _exMachineID,
-        uint64 _bottles
-    ) public returns (bool, string memory) {
+    function depositBottles(uint64 _exMachineID, uint64 _bottles) public returns (bool, string memory) {
         if (_bottles <= 0) {
             revert Machine__BottlesNumberToDepositMustBeGreaterThanZero();
         }
@@ -150,8 +140,7 @@ contract Machine is Municipality {
         }
 
         uint64 _recyIndex = uint64(depositor._getGreenerIndexByID(_recyID));
-        uint256 recyLastTimeStamp = depositor
-        .getGreeners()[_recyIndex].lastTimeStamp;
+        uint256 recyLastTimeStamp = depositor.getGreeners()[_recyIndex].lastTimeStamp;
         // Check here if enough time has passed since the last recycler's deposition.
         if ((block.timestamp - recyLastTimeStamp) < i_CoolDownInterval) {
             revert Machine__CoolDownTimerHasntPassed();
@@ -170,15 +159,9 @@ contract Machine is Municipality {
         // depositor.updateRecyclerBottles(_recyAddr, _bottles);  - Deprecate?
 
         // depositor.recyclerBottles(_recyAddr) = _bottles; // Only here the bottles are added to the mapping object;   - Deprecate?
-        depositor.getGreeners()[_recyIndex].recyBalance = ecoCoin.balanceOf(
-            _recyAddr
-        ); // Set the balance in the greeners array to the tokens balance of the account.
+        depositor.getGreeners()[_recyIndex].recyBalance = ecoCoin.balanceOf(_recyAddr); // Set the balance in the greeners array to the tokens balance of the account.
         address _exMachineAddress = exMachineIDToAddress[_exMachineID];
-        _depositTokens({
-            exMachineAddress: _exMachineAddress,
-            _recyAddr: _recyAddr,
-            _amtBottles: _bottles
-        });
+        _depositTokens({exMachineAddress: _exMachineAddress, _recyAddr: _recyAddr, _amtBottles: _bottles});
         return (true, "Desposited!");
         /*
             After creating the verification, if the verification has failed, return false and set the status to false as well.
@@ -194,11 +177,10 @@ contract Machine is Municipality {
      * @param   _tokensAmt  Amount of tokens to redeem.
      * @return  bool  True if successfully deposited, false otherwise.
      */
-    function redeemTokens(
-        uint64 _exMachineID,
-        string memory _cashAppUsername,
-        uint64 _tokensAmt
-    ) public returns (bool) {
+    function redeemTokens(uint64 _exMachineID, string memory _cashAppUsername, uint64 _tokensAmt)
+        public
+        returns (bool)
+    {
         /* 
             1. Check if tokens amount is bigger than 0. V
             2. Check if tokens amount is less than 9999. V

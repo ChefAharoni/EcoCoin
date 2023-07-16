@@ -45,8 +45,10 @@ import {Muni, Municipality} from "./Municipality.sol";
  * @notice  0 Decimals, derives basic structure from OpenZeppelin's ERC20 contract.
  */
 
-contract EcoCoin is ERC20, Municipality, Ownable {
+contract EcoCoin is ERC20, Ownable {
     error EcoCoin__genMunicipalityIsSet(); // Error to throw when Genesis municipality is already set.
+
+    Municipality municipality = new Municipality();
 
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
 
@@ -63,21 +65,16 @@ contract EcoCoin is ERC20, Municipality, Ownable {
      * @param   _genMunicipalityAddr  Wallet address of the genesis municipality.
      * @param   _genMunicipalityZipCode  Zip code of the genesis municipality.
      */
-    function addGenMuni(
-        address _genMunicipalityAddr,
-        string memory _genMunicipalityZipCode
-    ) public onlyOwner {
+    function addGenMuni(address _genMunicipalityAddr, string memory _genMunicipalityZipCode) public onlyOwner {
         // Error if the genesis municipality is already set; should only be set once.
         if (i_genMunicipality.muniAddr != address(0)) {
             revert EcoCoin__genMunicipalityIsSet();
         }
-        i_genMunicipality = Muni.MunicipalityBase(
-            _genMunicipalityAddr,
-            _genMunicipalityZipCode
-        );
+        i_genMunicipality = Muni.MunicipalityBase(_genMunicipalityAddr, _genMunicipalityZipCode);
 
         // Because the function addMuni requires msg.sender to be a municipality, implementing the function here so it could be called once automatically without restrictions.
-        MuniAddrToZipCode[_genMunicipalityAddr] = _genMunicipalityZipCode;
+        // MuniAddrToZipCode[_genMunicipalityAddr] = _genMunicipalityZipCode;
+        municipality.updateMuniZipCode(_genMunicipalityAddr, _genMunicipalityZipCode);
     }
 
     /**

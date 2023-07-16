@@ -25,10 +25,7 @@ contract Municipality {
      * @dev   .
      */
     modifier muniOnly() {
-        if (
-            keccak256(abi.encodePacked(MuniAddrToZipCode[msg.sender])) ==
-            keccak256(abi.encodePacked(""))
-        ) {
+        if (keccak256(abi.encodePacked(MuniAddrToZipCode[msg.sender])) == keccak256(abi.encodePacked(""))) {
             revert Municipality__NotMunicipality();
         }
         _;
@@ -44,11 +41,21 @@ contract Municipality {
      * @return  address   Address of the municipality added.
      */
     // mapping(address => Municipality) storage municipalities, // Not needed for testing
-    function addMuni(
-        address _municipalityAddr,
-        string memory _municipalityZipCode
-    ) public muniOnly returns (address) {
+    function addMuni(address _municipalityAddr, string memory _municipalityZipCode)
+        public
+        muniOnly
+        returns (string memory)
+    {
         MuniAddrToZipCode[_municipalityAddr] = _municipalityZipCode;
-        return _municipalityAddr;
+        return MuniAddrToZipCode[_municipalityAddr];
+    }
+
+    // Update MuniAddrToZipCode mapping
+    function updateMuniZipCode(address _municipalityAddr, string memory _municipalityZipCode)
+        external
+        returns (string memory)
+    {
+        MuniAddrToZipCode[_municipalityAddr] = _municipalityZipCode;
+        return MuniAddrToZipCode[_municipalityAddr];
     }
 }

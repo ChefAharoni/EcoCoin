@@ -11,6 +11,7 @@
 pragma solidity ^0.8.19;
 
 import {Test} from "forge-std/Test.sol";
+import {console} from "forge-std/Console.sol";
 import {StdCheats} from "forge-std/StdCheats.sol";
 import {EcoCoin} from "../src/EcoCoin.sol";
 import {HelperConfig} from "../script/HelperConfig.s.sol";
@@ -22,21 +23,40 @@ contract EcoCoinTest is StdCheats, Test {
     HelperConfig public helperConfig;
     Municipality municipality = new Municipality();
 
+    address GenesisMunicipalityAddress;
+    string GenesisMunicipalityZipCode;
+    address RecyclerAddress;
+    address ShopAddress;
+    address MachineAddress;
+    address secondMunicipalityAddress;
+    string secondMunicipalityZipCode;
+
     function setUp() external {
         DeployEcoCoin deployer = new DeployEcoCoin();
         (ecoCoin, helperConfig) = deployer.run();
-        // (
-        //     GenesisMunicipalityAddress,
-        //     GenesisMunicipalityZipCode,
-        //     RecyclerAddress,
-        //     ShopAddress,
-        //     MachineAddress,
-        //     seondMunicipalityAddress,
-        //     secondMunicipalityZipCode
-        // ) = helperConfig.activeNetworkConfig();
+        (
+            GenesisMunicipalityAddress,
+            GenesisMunicipalityZipCode,
+            RecyclerAddress,
+            ShopAddress,
+            MachineAddress,
+            secondMunicipalityAddress,
+            secondMunicipalityZipCode
+        ) = helperConfig.activeNetworkConfig();
     }
 
     function testAddMuni() external {
-        // vm.prank(ecoCoin.genMunicipality);
+        // Not municipality error
+        console.log("Genesis muni address: ", GenesisMunicipalityAddress);
+        console.log(
+            "Zip Code of genesis municipality: ",
+            municipality.MuniAddrToZipCode(GenesisMunicipalityAddress)
+        );
+        vm.startPrank(GenesisMunicipalityAddress);
+        municipality.addMuni(
+            secondMunicipalityAddress,
+            secondMunicipalityZipCode
+        );
+        vm.stopPrank();
     }
 }

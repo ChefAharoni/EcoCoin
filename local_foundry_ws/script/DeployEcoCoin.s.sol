@@ -17,17 +17,14 @@ contract DeployEcoCoin is Script {
             ,
             ,
             ,
-
         ) = // address seondMunicipalityAddress,
-            // string memory secondMunicipalityZipCode
-            helperConfig.activeNetworkConfig();
+        // string memory secondMunicipalityZipCode
+         helperConfig.activeNetworkConfig();
 
         vm.startBroadcast();
         EcoCoin ecoCoin = new EcoCoin();
-        ecoCoin.addGenMuni(
-            GenesisMunicipalityAddress,
-            GenesisMunicipalityZipCode
-        );
+        // Contract deployer adds the genesis municipality.
+        ecoCoin.addGenMuni(GenesisMunicipalityAddress, GenesisMunicipalityZipCode);
         vm.stopBroadcast();
 
         return (ecoCoin, helperConfig);

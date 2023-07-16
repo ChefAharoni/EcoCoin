@@ -21,10 +21,7 @@ contract Spender {
         ecoCoin = IEcoCoin(_ecoCoinAddr); // Address of the EcoCoin contract.
     }
 
-    function purchaseGoods(
-        uint64 shopID,
-        uint256 _spendAmount
-    ) public returns (bool) {
+    function purchaseGoods(uint64 shopID, uint256 _spendAmount) public returns (bool) {
         // In the front-end app, display all the approved shops with their IDs.
 
         address _recyAddr = msg.sender;
@@ -46,10 +43,7 @@ contract Spender {
             revert Spender__InsufficientFunds();
         }
         ecoCoin.transferFrom(msg.sender, _shopAddress, _spendAmount); // Transfer the tokens from the spender to the shop.
-        shopHandler.updateShopBalance(
-            _shopIndex = _shopIndex,
-            _shopAddress = _shopAddress
-        ); // Updates the shopBalance of the shops array to the current balance of the shop.
+        shopHandler.updateShopBalance(_shopIndex = _shopIndex, _shopAddress = _shopAddress); // Updates the shopBalance of the shops array to the current balance of the shop.
         // Add here function that updates the recycler balance in the greeners array.
         return true; // If operation was successful, return true.
     }

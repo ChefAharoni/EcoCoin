@@ -59,9 +59,7 @@ contract Depositor {
      * @param   searchID  ID of the array to search for.
      * @return  uint64  Index of the array in the greeners array.
      */
-    function _getGreenerIndexByID(
-        uint64 searchID
-    ) public view returns (uint64) {
+    function _getGreenerIndexByID(uint64 searchID) public view returns (uint64) {
         // Finds an array's index by its ID; should be internal, doesn't work for some reason (maybe because I'm inherting this contract as instance and not with "is").
         // I had to create another duplicate of the function because I couldn't define an array as the function's parameter.
         // Setting it public so it can be used in spender contract as well. (maybe not?)
@@ -101,9 +99,7 @@ contract Depositor {
      */
     function updateRecyBalance(uint64 _recyID) public returns (bool) {
         uint64 _recyIndex = uint64(_getGreenerIndexByID(_recyID));
-        greeners[_recyIndex].recyBalance = ecoCoin.balanceOf(
-            greeners[_recyIndex].recyAddr
-        );
+        greeners[_recyIndex].recyBalance = ecoCoin.balanceOf(greeners[_recyIndex].recyAddr);
         return true;
     }
 }
