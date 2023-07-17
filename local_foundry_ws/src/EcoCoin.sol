@@ -54,7 +54,9 @@ contract EcoCoin is ERC20, Ownable {
 
     Muni.MunicipalityBase private i_genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
 
-    constructor() ERC20("EcoCoin", "ECC") Ownable(msg.sender) {}
+    // Ownable in future versions will require a constructor to be called, and the constructor will set the owner to the msg.sender.
+    // When updating forge via `forge update` - it corrupts the openzeppelin-contracts package, and git is getting mashed up.
+    constructor() ERC20("EcoCoin", "ECC") Ownable() {}
 
     /**
      * @notice  Adds the genesis municipality.
