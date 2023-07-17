@@ -46,10 +46,11 @@ contract ShopHandler is Municipality {
      * @return  string  Name of the shop.
      * @return  string  Type of the shop.
      */
-    function registerShop(string memory _name, string memory _type, string memory _zipCode)
-        public
-        returns (address, string memory, string memory, string memory)
-    {
+    function registerShop(
+        string memory _name,
+        string memory _type,
+        string memory _zipCode
+    ) public returns (address, string memory, string memory, string memory) {
         // Add a check/modification so string will be lowercase.
         address _shopAddress = msg.sender;
         uint64 _shopRegisterID = uint64(shops.length);
@@ -92,7 +93,10 @@ contract ShopHandler is Municipality {
      * @return  bool  True if approved, false if denied.
      * @return  string  Message of approval/denial.
      */
-    function _approveShop(uint64 _shopRegisterID, bool _decision) public muniOnly returns (bool, string memory) {
+    function _approveShop(
+        uint64 _shopRegisterID,
+        bool _decision
+    ) public muniOnly returns (bool, string memory) {
         // Click on 'shops' array button to see the request number, and approve by it.
         uint64 _shopIndex = _getIndexByID(_shopRegisterID); // Get the index of the array using its ID.
         address _shopAddress = shops[_shopIndex].shopAddress;
@@ -115,7 +119,10 @@ contract ShopHandler is Municipality {
      * @return  bool  True if approved, false if denied.
      * @return  string Message of approval/denial.
      */
-    function _removeShop(uint64 _shopRmvID, bool _decision) public muniOnly returns (bool, string memory) {
+    function _removeShop(
+        uint64 _shopRmvID,
+        bool _decision
+    ) public muniOnly returns (bool, string memory) {
         // Click on 'shops' array button to see the request number, and approve by it.
         uint64 _shopRmvIndex = _getIndexByID(_shopRmvID); // Get the index of the array using its ID.
         address _reqRmvAddress = shops[_shopRmvIndex].shopAddress;
@@ -138,12 +145,17 @@ contract ShopHandler is Municipality {
         return shops;
     }
 
-    function updateShopBalance(uint64 _shopIndex, address _shopAddress) external {
+    function updateShopBalance(
+        uint64 _shopIndex,
+        address _shopAddress
+    ) external {
         // Updates the balance of a requested shop according to its balance as written in the blockchain.
         shops[_shopIndex].shopBalance = ecoCoin.balanceOf(_shopAddress);
     }
 
-    function _getShopName(address _shopAddress) public view returns (string memory) {
+    function _getShopName(
+        address _shopAddress
+    ) public view returns (string memory) {
         // Gets the shop's name by its address; used for checking if address is registered shop.
         return shopAddrToName[_shopAddress];
     }
@@ -154,7 +166,9 @@ contract ShopHandler is Municipality {
      * @param   _shopAddress  Address of the shop.
      * @return  uint64  ID of the shop.
      */
-    function getIdByAddress(address _shopAddress) external view returns (uint64) {
+    function getIdByAddress(
+        address _shopAddress
+    ) external view returns (uint64) {
         // For external contracts, extract the recycler's ID from his address.
         return shopAddrToID[_shopAddress];
     }
