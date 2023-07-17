@@ -28,7 +28,7 @@ The token will be deployed on the Ethereum blockchain, most probably on a testne
 
 - Special thanks to [@PatrickAlphaC](https://github.com/PatrickAlphaC/PatrickAlphaC) for his amazing tutorials on smart contracts developments, especially his latest [course using Foundry!](https://github.com/Cyfrin/foundry-full-course-f23) <br>
 - Thanks to [Cryptozombies](https://cryptozombies.io/) for their great lessons about Solidity language. <br>
-- Lastly, many thanks to @OZ for his great help and support throughout the project; he helped me a lot in fixing bugs, finding security issues, and explaining concepts I haven't understood. <br>
+- Lastly, many thanks to [@0xOZ](https://github.com/0x0OZ) for his great help and support throughout the project; he helped me a lot in fixing bugs, finding security issues, and explaining concepts I haven't understood. <br>
 # Creator #
 
 @ChefAharoni
