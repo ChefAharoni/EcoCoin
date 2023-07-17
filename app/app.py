@@ -9,23 +9,23 @@ def home():
     return "../htmls/index.html"
 
 
-@app.route("/deposit")
-def deposit():
+@app.route("/recycler")
+def recycler():
     # Deposit Bottles
-    return "../htmls/deposit.html"
+    return "../htmls/recycler.html"
 
 
-@app.route("/spend")
-def spend():
+@app.route("/municipality")
+def municipality():
     # Spend the earned coins at a shop
-    return "../htmls/spend.html"
+    return "../htmls/municipality.html"
 
 
-@app.route("/manage")
-def manage():
+@app.route("/shop")
+def shop():
     # This page should be available only to managers
     # Used for managing users, approving verifiers, shops, etc...
-    return "../htmls/manage.html"
+    return "../htmls/shop.html"
 
 
 if __name__ == "__main__":
