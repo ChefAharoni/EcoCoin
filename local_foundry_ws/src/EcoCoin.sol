@@ -27,9 +27,6 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Muni, Municipality} from "./Municipality.sol";
 
-// import "./openzeppelin-contracts/contracts/access/Ownable.sol"; // Doesn't work for some reason, implement in the future.
-
-// error EcoCoin__NotMunicipality(string errorMsg); // Error to throw when the caller is not the i_tokenOwner.
 
 // TODO - add more error and revert messages instead of require, to save gas.
 // TODO - add s_ prefix to variables saved in storage.
@@ -48,7 +45,7 @@ import {Muni, Municipality} from "./Municipality.sol";
 contract EcoCoin is ERC20, Ownable {
     error EcoCoin__genMunicipalityIsSet(); // Error to throw when Genesis municipality is already set.
 
-    Municipality municipality = new Municipality();
+    Municipality public municipality = new Municipality();
 
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
 

@@ -2,7 +2,6 @@
 pragma solidity ^0.8.19;
 
 import {EcoCoin} from "./EcoCoin.sol";
-import {Machine} from "./Machine.sol";
 
 /**
  * @author  ChefAharoni

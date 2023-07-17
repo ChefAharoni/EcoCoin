@@ -23,8 +23,9 @@ import {Spender} from "../src/Spender.sol";
 contract EcoCoinTest is StdCheats, Test {
     EcoCoin public ecoCoin;
     HelperConfig public helperConfig;
-    Municipality municipality = new Municipality();
-    Depositor depositor = new Depositor();
+    Municipality public municipality;
+    Depositor public depositor;
+    // Depositor depositor = new Depositor();
     Machine machine = new Machine(address(ecoCoin));
     Spender spender = new Spender(address(ecoCoin));
 
@@ -48,37 +49,32 @@ contract EcoCoinTest is StdCheats, Test {
             secondMunicipalityAddress,
             secondMunicipalityZipCode
         ) = helperConfig.activeNetworkConfig();
-        console.log("Set Up address: ", address(this));
-        console.log("EcoCoin address: ", address(ecoCoin));
-        console.log("Deployer address: ", address(deployer));
-        console.log("Helper Config address: ", address(helperConfig));
+        municipality = ecoCoin.municipality();
     }
-
-    // ACC_9_ADDRESS=0xa0Ee7A142d267C1f36714E4a8F75612F20a79720 - Deployer
-
-    // (07/17) tried deploying directly from the test, but it didn't work.
-    // address GenesisMunicipalityAddress = makeAddr("genMunicipality");
-    // string GenesisMunicipalityZipCode = "70535";
-    // address secondMunicipalityAddress = makeAddr("secondMunicipality");
-    // string secondMunicipalityZipCode = "70501";
-    // address RecyclerAddress = makeAddr("recycler");
-
-    // address contractDeployer = makeAddr("deployer");
-
-    // function setUp() external {
-    //     vm.startBroadcast(contractDeployer);
-    //     ecoCoin = new EcoCoin();
-    //     ecoCoin.addGenMuni(
-    //         GenesisMunicipalityAddress,
-    //         GenesisMunicipalityZipCode
-    //     );
-    //     vm.stopBroadcast();
-    // }
 
     /* EcoCoin Tests */
 
+    function testHasGenesisMunicipalityAdded() external view {
+        assert(
+            keccak256(
+                abi.encodePacked(
+                    municipality.MuniAddrToZipCode(GenesisMunicipalityAddress)
+                )
+            ) == keccak256(abi.encodePacked(GenesisMunicipalityZipCode))
+        );
+    }
+
+    function testGenesisMunicipalityIsNotEmpty() external view {
+        assert(
+            keccak256(
+                abi.encodePacked(
+                    municipality.MuniAddrToZipCode(GenesisMunicipalityAddress)
+                )
+            ) != keccak256(abi.encodePacked(""))
+        );
+    }
+
     function testAddMuni() external {
-        // Not municipality error
         console.log("Genesis muni address: ", GenesisMunicipalityAddress);
         console.log(
             "Zip Code of genesis municipality: ",
@@ -92,7 +88,17 @@ contract EcoCoinTest is StdCheats, Test {
         vm.stopPrank();
     }
 
-    function caller() public view {
+    function testSecondMunicipalityAdded() external view {
+        assert(
+            keccak256(
+                abi.encodePacked(
+                    municipality.MuniAddrToZipCode(secondMunicipalityAddress)
+                )
+            ) == keccak256(abi.encodePacked(secondMunicipalityZipCode))
+        );
+    }
+
+    function caller() external view {
         console.log("Caller: ", msg.sender);
     }
 
@@ -100,14 +106,12 @@ contract EcoCoinTest is StdCheats, Test {
         // vm.startPrank() isn't working for some reason.
         console.log("This testCallerMunicipality address:", address(this));
         console.log("Genesis muni address: ", GenesisMunicipalityAddress);
-        console.log("Sender: ", msg.sender);
+        this.caller();
         vm.startPrank(address(0));
         console.log("Pranking GenesisMunicipalityAddress....");
-        caller();
-        caller();
-        caller();
-        console.log("Genesis muni address: ", GenesisMunicipalityAddress);
-        console.log("Sender: ", msg.sender);
+        this.caller();
+        this.caller();
+        this.caller();
         vm.stopPrank();
         console.log("Pranking stopped.");
         console.log("Genesis muni address: ", GenesisMunicipalityAddress);
@@ -123,6 +127,7 @@ contract EcoCoinTest is StdCheats, Test {
     function testRegisterDepositor() external {
         // Not working
         vm.startPrank(RecyclerAddress);
+        this.caller();
         console.log("Sender: ", msg.sender);
         depositor.registerRecycler("John Doe");
         searchID = depositor.getIdByAddress(RecyclerAddress);
