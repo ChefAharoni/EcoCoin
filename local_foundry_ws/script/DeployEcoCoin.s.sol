@@ -35,9 +35,7 @@ contract DeployEcoCoin is Script {
             GenesisMunicipalityAddress,
             GenesisMunicipalityZipCode
         );
-        // console.log("This deployer address: ", address(this));
         console.log("Checking if genesis municipality was set correctly....");
-        // Doesn't return anythin in the console log below == meaning it's not set correctly.
         console.log(
             "Genesis municipality address: ",
             municipality.MuniAddrToZipCode(GenesisMunicipalityAddress)

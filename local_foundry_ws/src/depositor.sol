@@ -36,7 +36,7 @@ contract Depositor {
      */
     function registerRecycler(string memory _name) public {
         address _recyAddr = msg.sender;
-        uint64 _recyID = uint64(greeners.length); // uint64 must be declared at the end because it is by default uint256.
+        uint64 _recyID = uint64(greeners.length + 1); // uint64 must be declared at the end because it is by default uint256.
         recyclerToID[_recyAddr] = _recyID; // Add the ID of the recycler to associate with his address.
 
         greeners.push(

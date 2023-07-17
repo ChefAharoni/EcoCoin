@@ -53,7 +53,7 @@ contract ShopHandler is Municipality {
     ) public returns (address, string memory, string memory, string memory) {
         // Add a check/modification so string will be lowercase.
         address _shopAddress = msg.sender;
-        uint64 _shopRegisterID = uint64(shops.length);
+        uint64 _shopRegisterID = uint64(shops.length + 1);
         shops.push(
             Shop({
                 shopID: _shopRegisterID,

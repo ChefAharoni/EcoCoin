@@ -27,7 +27,6 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Muni, Municipality} from "./Municipality.sol";
 
-
 // TODO - add more error and revert messages instead of require, to save gas.
 // TODO - add s_ prefix to variables saved in storage.
 // TODO - optimize for loops that read from storage every time to read from storage only once.

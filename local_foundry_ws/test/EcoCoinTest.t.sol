@@ -29,6 +29,8 @@ contract EcoCoinTest is StdCheats, Test {
     Machine machine = new Machine(address(ecoCoin));
     Spender spender = new Spender(address(ecoCoin));
 
+    address contractDeployer = 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
+
     address GenesisMunicipalityAddress;
     string GenesisMunicipalityZipCode;
     address RecyclerAddress;
@@ -38,6 +40,7 @@ contract EcoCoinTest is StdCheats, Test {
     string secondMunicipalityZipCode;
 
     function setUp() external {
+        depositor = new Depositor();
         DeployEcoCoin deployer = new DeployEcoCoin();
         (ecoCoin, helperConfig) = deployer.run();
         (
@@ -53,6 +56,31 @@ contract EcoCoinTest is StdCheats, Test {
     }
 
     /* EcoCoin Tests */
+
+    function testFailAddGenesisMuni_MuniAlreadyAdded() external {
+        // Should fail since the genesis municipality is already added.
+        // Should get: EcoCoin__GenesisMunicipalityAlreadyAdded
+        vm.prank(contractDeployer);
+        ecoCoin.addGenMuni(
+            GenesisMunicipalityAddress,
+            GenesisMunicipalityZipCode
+        );
+    }
+
+    function testFailAddGenesisMuni_CallerIsNotOwner() external {
+        // Should fail since the caller is not the deployer.
+        // Should get: Ownable: caller is not the owner
+        vm.startPrank(RecyclerAddress);
+        ecoCoin.addGenMuni(
+            GenesisMunicipalityAddress,
+            GenesisMunicipalityZipCode
+        );
+        vm.stopPrank();
+    }
+
+    function testDecimalsEqualToZero() external view {
+        assert(ecoCoin.decimals() == 0);
+    }
 
     function testHasGenesisMunicipalityAdded() external view {
         assert(
@@ -73,6 +101,8 @@ contract EcoCoinTest is StdCheats, Test {
             ) != keccak256(abi.encodePacked(""))
         );
     }
+
+    /* Municipality Tests */
 
     function testAddMuni() external {
         console.log("Genesis muni address: ", GenesisMunicipalityAddress);
@@ -98,26 +128,15 @@ contract EcoCoinTest is StdCheats, Test {
         );
     }
 
-    function caller() external view {
-        console.log("Caller: ", msg.sender);
-    }
+    address thirdMunicipalityAddress = makeAddr("thirdMunicipality");
+    string thirdMunicipalityZipCode = "70502";
 
-    function testCallerMunicipality() external {
-        // vm.startPrank() isn't working for some reason.
-        console.log("This testCallerMunicipality address:", address(this));
-        console.log("Genesis muni address: ", GenesisMunicipalityAddress);
-        this.caller();
-        vm.startPrank(address(0));
-        console.log("Pranking GenesisMunicipalityAddress....");
-        this.caller();
-        this.caller();
-        this.caller();
-        vm.stopPrank();
-        console.log("Pranking stopped.");
-        console.log("Genesis muni address: ", GenesisMunicipalityAddress);
-        console.log("Sender: ", msg.sender);
-        vm.prank(address(1));
-        console.log("Sender: ", msg.sender);
+    function testSecondMuniAddsThirdMuni() external {
+        vm.prank(secondMunicipalityAddress);
+        municipality.addMuni(
+            thirdMunicipalityAddress,
+            thirdMunicipalityZipCode
+        );
     }
 
     /* Depositor Tests */
@@ -127,8 +146,6 @@ contract EcoCoinTest is StdCheats, Test {
     function testRegisterDepositor() external {
         // Not working
         vm.startPrank(RecyclerAddress);
-        this.caller();
-        console.log("Sender: ", msg.sender);
         depositor.registerRecycler("John Doe");
         searchID = depositor.getIdByAddress(RecyclerAddress);
         vm.stopPrank();

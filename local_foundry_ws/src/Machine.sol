@@ -81,7 +81,7 @@ contract Machine is Municipality {
         string memory _exMZip
     ) public muniOnly returns (uint256) {
         exchangeMachine memory newMachine = exchangeMachine({
-            exMachineID: uint64(exchangeMachines.length),
+            exMachineID: uint64(exchangeMachines.length + 1),
             exMachineZipCode: _exMZip,
             exMachineAddress: _exMAddress,
             exMachineRMBalance: ecoCoin.balanceOf(_exMAddress) // Should get the balance from the wallet's address.
