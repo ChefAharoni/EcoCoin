@@ -191,7 +191,6 @@ contract EcoCoinTest is StdCheats, Test {
     }
 
     // Test cool down timer.
-    
 
     function testFailDepositMoreThan200Bottles() external {
         // Should fail since the recycler can't deposit more than 200 bottles at once.
