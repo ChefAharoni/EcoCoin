@@ -17,12 +17,16 @@ import {HelperConfig} from "../script/HelperConfig.s.sol";
 import {DeployEcoCoin} from "../script/DeployEcoCoin.s.sol";
 import {Municipality, Muni} from "../src/Municipality.sol";
 import {Depositor} from "../src/Depositor.sol";
+import {Machine} from "../src/Machine.sol";
+import {Spender} from "../src/Spender.sol";
 
 contract EcoCoinTest is StdCheats, Test {
     EcoCoin public ecoCoin;
     HelperConfig public helperConfig;
     Municipality municipality = new Municipality();
     Depositor depositor = new Depositor();
+    Machine machine = new Machine(address(ecoCoin));
+    Spender spender = new Spender(address(ecoCoin));
 
     address GenesisMunicipalityAddress;
     string GenesisMunicipalityZipCode;
@@ -49,6 +53,8 @@ contract EcoCoinTest is StdCheats, Test {
         console.log("Deployer address: ", address(deployer));
         console.log("Helper Config address: ", address(helperConfig));
     }
+
+    // ACC_9_ADDRESS=0xa0Ee7A142d267C1f36714E4a8F75612F20a79720 - Deployer
 
     // (07/17) tried deploying directly from the test, but it didn't work.
     // address GenesisMunicipalityAddress = makeAddr("genMunicipality");
@@ -120,8 +126,10 @@ contract EcoCoinTest is StdCheats, Test {
         console.log("Sender: ", msg.sender);
         depositor.registerRecycler("John Doe");
         searchID = depositor.getIdByAddress(RecyclerAddress);
-        console.log("Search ID: ", searchID);
         vm.stopPrank();
+        console.log("Search ID: ", searchID);
+
+        assert(searchID != 0);
     }
 
     function testGetIDByAddress() external {
@@ -132,6 +140,7 @@ contract EcoCoinTest is StdCheats, Test {
 
         searchID = depositor.getIdByAddress(RecyclerAddress);
         console.log("Search ID: ", searchID);
+        // User's ID starts at 1.
         assert(searchID > 0);
     }
 
@@ -140,5 +149,122 @@ contract EcoCoinTest is StdCheats, Test {
         searchID = depositor.getIdByAddress(RecyclerAddress);
         greenerIndex = depositor._getGreenerIndexByID(searchID);
         console.log("Greener Index: ", greenerIndex);
+    }
+
+    /* Machine Tests */
+
+    function testCreateEuniceMachine() external {
+        vm.prank(GenesisMunicipalityAddress);
+        machine.createMachine(MachineAddress, GenesisMunicipalityZipCode);
+    }
+
+    // Setting a mock address for the second machine.
+    address secondMachineAddress = makeAddr("secondMachine");
+
+    function testCreateLafayetteMachine() external {
+        vm.prank(secondMunicipalityAddress);
+        machine.createMachine(secondMachineAddress, secondMunicipalityZipCode);
+    }
+
+    function testFailCreateMachine() external {
+        vm.prank(RecyclerAddress);
+        machine.createMachine(MachineAddress, GenesisMunicipalityZipCode);
+    }
+
+    address randomUser = makeAddr("randomUser");
+
+    function testFailCreateAnotherMachine() external {
+        vm.prank(randomUser);
+        machine.createMachine(MachineAddress, GenesisMunicipalityZipCode);
+    }
+
+    function testDepositBottles() external {
+        // Error - recycler not registered
+        vm.prank(RecyclerAddress);
+        machine.depositBottles(1, 10);
+    }
+
+    function testTokensEqualsTwoTimesBottlesDeposited() external {
+        vm.prank(RecyclerAddress);
+        machine.depositBottles(1, 20);
+        assert(ecoCoin.balanceOf(RecyclerAddress) == 40);
+    }
+
+    // Test cool down timer.
+    
+
+    function testFailDepositMoreThan200Bottles() external {
+        // Should fail since the recycler can't deposit more than 200 bottles at once.
+        // Should get: Machine__CannotDepositMoreThan200BottlesAtOnce
+        vm.prank(RecyclerAddress);
+        machine.depositBottles(1, 201);
+    }
+
+    function testFailDepositZeroBottles() external {
+        // Should fail since the recycler can't deposit zero bottles.
+        // Should get: Machine__BottlesNumberToDepositMustBeGreaterThanZero
+        vm.prank(RecyclerAddress);
+        machine.depositBottles(1, 0);
+    }
+
+    function testFailRandomUserDepositBottles() external {
+        // Should fail since the random user is not registered.
+        vm.prank(randomUser);
+        machine.depositBottles(1, 10);
+    }
+
+    function testSpendTokensAtShop() external {
+        // Depositor__RecyclerNotRegistered
+        // Spend tokens at the shop so we can test that the shop can redeem tokens.
+        vm.prank(RecyclerAddress);
+        // Does the recycler have tokens from previous functions? Or should we give him tokens at the start of this function?
+        spender.purchaseGoods(1, 10);
+    }
+
+    function testFailSpendTokensAtShops() external {
+        vm.prank(randomUser);
+        spender.purchaseGoods(1, 10);
+    }
+
+    string shopCashAppUserName = "CafeMosaic";
+
+    function testRedeemTokens() external {
+        vm.prank(ShopAddress);
+        machine.redeemTokens(1, shopCashAppUserName, 10);
+    }
+
+    function testFailShopRedeemsTokensBiggerThanBalance() external {
+        // Should fail since the shop doesn't have enough tokens to redeem.
+        // Should get: Machine__InsufficientTokensBalanceToRedeem
+        vm.prank(ShopAddress);
+        machine.redeemTokens(1, shopCashAppUserName, 1000);
+    }
+
+    function testFailShopRedeemsTokensMoreThan9999() external {
+        // Should fail since the shop can't redeem more than 9999 tokens.
+        // Should get: Machine__CannotRedeemMoreThan9999TokensAtOnce
+        vm.prank(ShopAddress);
+        machine.redeemTokens(1, shopCashAppUserName, 10000);
+    }
+
+    function testFailShopRedeemsZeroTokens() external {
+        // Should fail since the shop can't redeem zero tokens.
+        // Should get: Machine__RedeemedTokensMustBeGreaterThanZero
+        vm.prank(ShopAddress);
+        machine.redeemTokens(1, shopCashAppUserName, 0);
+    }
+
+    function testFailRandomUserRedeemTokens() external {
+        // Should fail since only registered shop can redeem tokens.
+        // Should get: ShopHandler__ShopNotRegisteredOrApproved
+        vm.prank(randomUser);
+        machine.redeemTokens(1, shopCashAppUserName, 10);
+    }
+
+    function testFailRecyclerRedeemTokens() external {
+        // Should fail since only registered shop can redeem tokens.
+        // Should get: ShopHandler__ShopNotRegisteredOrApproved
+        vm.prank(RecyclerAddress);
+        machine.redeemTokens(1, "Bad Hacker", 100);
     }
 }

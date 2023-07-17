@@ -54,7 +54,7 @@ contract EcoCoin is ERC20, Ownable {
 
     Muni.MunicipalityBase private i_genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
 
-    constructor() ERC20("EcoCoin", "ECC") {}
+    constructor() ERC20("EcoCoin", "ECC") Ownable(msg.sender) {}
 
     /**
      * @notice  Adds the genesis municipality.
@@ -65,16 +65,25 @@ contract EcoCoin is ERC20, Ownable {
      * @param   _genMunicipalityAddr  Wallet address of the genesis municipality.
      * @param   _genMunicipalityZipCode  Zip code of the genesis municipality.
      */
-    function addGenMuni(address _genMunicipalityAddr, string memory _genMunicipalityZipCode) public onlyOwner {
+    function addGenMuni(
+        address _genMunicipalityAddr,
+        string memory _genMunicipalityZipCode
+    ) public onlyOwner {
         // Error if the genesis municipality is already set; should only be set once.
         if (i_genMunicipality.muniAddr != address(0)) {
             revert EcoCoin__genMunicipalityIsSet();
         }
-        i_genMunicipality = Muni.MunicipalityBase(_genMunicipalityAddr, _genMunicipalityZipCode);
+        i_genMunicipality = Muni.MunicipalityBase(
+            _genMunicipalityAddr,
+            _genMunicipalityZipCode
+        );
 
         // Because the function addMuni requires msg.sender to be a municipality, implementing the function here so it could be called once automatically without restrictions.
         // MuniAddrToZipCode[_genMunicipalityAddr] = _genMunicipalityZipCode;
-        municipality.updateMuniZipCode(_genMunicipalityAddr, _genMunicipalityZipCode);
+        municipality.updateMuniZipCode(
+            _genMunicipalityAddr,
+            _genMunicipalityZipCode
+        );
     }
 
     /**
