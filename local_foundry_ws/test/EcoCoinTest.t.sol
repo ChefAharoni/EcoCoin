@@ -19,15 +19,19 @@ import {Municipality, Muni} from "../src/Municipality.sol";
 import {Depositor} from "../src/Depositor.sol";
 import {Machine} from "../src/Machine.sol";
 import {Spender} from "../src/Spender.sol";
+import {ShopHandler} from "../src/ShopHandler.sol";
 
 contract EcoCoinTest is StdCheats, Test {
     EcoCoin public ecoCoin;
     HelperConfig public helperConfig;
     Municipality public municipality;
     Depositor public depositor;
+    Machine public machine;
+    Spender public spender;
+    ShopHandler public shopHandler;
     // Depositor depositor = new Depositor();
-    Machine machine = new Machine(address(ecoCoin));
-    Spender spender = new Spender(address(ecoCoin));
+    // Machine machine = new Machine(address(ecoCoin));
+    // Spender spender = new Spender(address(ecoCoin));
 
     address contractDeployer = 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
 
@@ -42,7 +46,15 @@ contract EcoCoinTest is StdCheats, Test {
     function setUp() external {
         depositor = new Depositor();
         DeployEcoCoin deployer = new DeployEcoCoin();
-        (ecoCoin, helperConfig) = deployer.run();
+        (
+            ecoCoin,
+            helperConfig,
+            depositor,
+            machine,
+            spender,
+            shopHandler
+        ) = deployer.run();
+
         (
             GenesisMunicipalityAddress,
             GenesisMunicipalityZipCode,
@@ -57,9 +69,9 @@ contract EcoCoinTest is StdCheats, Test {
 
     /* EcoCoin Tests */
 
-    function testFailAddGenesisMuni_MuniAlreadyAdded() external {
+    function testRevertAddGenesisMuni_MuniAlreadyAdded() external {
         // Should fail since the genesis municipality is already added.
-        // Should get: EcoCoin__GenesisMunicipalityAlreadyAdded
+        vm.expectRevert(EcoCoin.EcoCoin__genMunicipalityIsSet.selector);
         vm.prank(contractDeployer);
         ecoCoin.addGenMuni(
             GenesisMunicipalityAddress,
@@ -67,9 +79,10 @@ contract EcoCoinTest is StdCheats, Test {
         );
     }
 
-    function testFailAddGenesisMuni_CallerIsNotOwner() external {
+    function testRevertAddGenesisMuni_CallerIsNotOwner() external {
         // Should fail since the caller is not the deployer.
         // Should get: Ownable: caller is not the owner
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
         vm.startPrank(RecyclerAddress);
         ecoCoin.addGenMuni(
             GenesisMunicipalityAddress,
@@ -82,7 +95,7 @@ contract EcoCoinTest is StdCheats, Test {
         assert(ecoCoin.decimals() == 0);
     }
 
-    function testHasGenesisMunicipalityAdded() external view {
+    function testHasGenesisMunicipalityAddedProperly() external view {
         assert(
             keccak256(
                 abi.encodePacked(
@@ -99,6 +112,23 @@ contract EcoCoinTest is StdCheats, Test {
                     municipality.MuniAddrToZipCode(GenesisMunicipalityAddress)
                 )
             ) != keccak256(abi.encodePacked(""))
+        );
+    }
+
+    // function testi_genMunicipalityIsNotAddressZero() external {
+        // Not working - Error (9582): Member "muniAddr" not found or not visible after argument-dependent lookup in tuple(address,string memory).
+    //     assert(ecoCoin.i_genMunicipality().muniAddr() != address(0));
+    // }
+
+    function testTokenNameIsCorrect() external view {
+        assert(
+            keccak256(abi.encodePacked(ecoCoin.name())) == keccak256("EcoCoin")
+        );
+    }
+
+    function testTokenSymbolIsCorrect() external view {
+        assert(
+            keccak256(abi.encodePacked(ecoCoin.symbol())) == keccak256("ECC")
         );
     }
 

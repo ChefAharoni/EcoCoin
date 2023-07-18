@@ -15,8 +15,6 @@ contract ShopHandler is Municipality {
 
     EcoCoin ecoCoin = new EcoCoin();
 
-    // TODO - Declare events here.
-
     // Address and name of shop; only approved shops
     mapping(address shop => string shopName) shopAddrToName;
 
@@ -35,6 +33,42 @@ contract ShopHandler is Municipality {
 
     // Array of all shops using the Shop struct
     Shop[] public shops;
+
+    /* Events */
+    event ShopRegistered(
+        address indexed shopAddress,
+        uint64 indexed shopID,
+        string indexed shopName,
+        string shopType,
+        string shopZipCode
+    );
+
+    event ShopApproved(
+        address indexed approverAddress,
+        address indexed shopAddress,
+        uint64 indexed shopID,
+        string shopName,
+        string shopType,
+        string shopZipCode
+    );
+
+    event ShopDenied(
+        address indexed denierAddress,
+        address indexed shopAddress,
+        uint64 indexed shopID,
+        string shopName,
+        string shopType,
+        string shopZipCode
+    );
+
+    event ShopRemoved(
+        address indexed removerAddress,
+        address indexed shopAddress,
+        uint64 indexed shopID,
+        string shopName,
+        string shopType,
+        string shopZipCode
+    );
 
     /**
      * @notice  Main function for shops to register themselves.
@@ -64,6 +98,14 @@ contract ShopHandler is Municipality {
                 shopBalance: ecoCoin.balanceOf(_shopAddress),
                 status: false
             })
+        );
+
+        emit ShopRegistered(
+            _shopAddress,
+            _shopRegisterID,
+            _name,
+            _type,
+            _zipCode
         );
 
         return (_shopAddress, _name, _type, _zipCode);
@@ -104,9 +146,29 @@ contract ShopHandler is Municipality {
             shops[_shopIndex].status = true;
             shopAddrToName[_shopAddress] = shops[_shopIndex].shopName;
             shopAddrToID[_shopAddress] = shops[_shopIndex].shopID;
+
+            emit ShopApproved(
+                msg.sender,
+                _shopAddress,
+                _shopRegisterID,
+                shops[_shopIndex].shopName,
+                shops[_shopIndex].shopType,
+                shops[_shopIndex].shopZipCode
+            );
+
             return (true, "Approved!");
         } else {
             shops[_shopIndex].status = false;
+
+            emit ShopDenied(
+                msg.sender,
+                _shopAddress,
+                _shopRegisterID,
+                shops[_shopIndex].shopName,
+                shops[_shopIndex].shopType,
+                shops[_shopIndex].shopZipCode
+            );
+
             return (false, "Denied ;(");
         }
     }
@@ -131,6 +193,16 @@ contract ShopHandler is Municipality {
             shops[_shopRmvIndex].status = false;
             shopAddrToName[_reqRmvAddress] = "";
             shopAddrToID[_reqRmvAddress] = 0; // Zero will never be an ID since it starts from one.
+
+            emit ShopRemoved(
+                msg.sender,
+                _reqRmvAddress,
+                _shopRmvID,
+                shops[_shopRmvIndex].shopName,
+                shops[_shopRmvIndex].shopType,
+                shops[_shopRmvIndex].shopZipCode
+            );
+
             return (false, "Shop removed.");
         } else {
             return (false, "Invalid command.");

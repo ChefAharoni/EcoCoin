@@ -48,7 +48,15 @@ contract EcoCoin is ERC20, Ownable {
 
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
 
-    Muni.MunicipalityBase private i_genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
+    Muni.MunicipalityBase public i_genMunicipality; // Genesis municipality, will be able to assign other municipalities and assign roles; should be immutable
+
+    /* Events */
+    // You can have up to three indexed parameters; each indexed parameter is called a topic. Much easier to query for indexed parameters.
+    event AddedMunicipality(
+        address indexed municipalityAddr,
+        string indexed municipalityZipCode,
+        address indexed addedBy
+    );
 
     // Ownable in future versions will require a constructor to be called, and the constructor will set the owner to the msg.sender.
     // When updating forge via `forge update` - it corrupts the openzeppelin-contracts package, and git is getting mashed up.
@@ -71,6 +79,13 @@ contract EcoCoin is ERC20, Ownable {
         if (i_genMunicipality.muniAddr != address(0)) {
             revert EcoCoin__genMunicipalityIsSet();
         }
+
+        emit AddedMunicipality(
+            _genMunicipalityAddr,
+            _genMunicipalityZipCode,
+            msg.sender
+        );
+
         i_genMunicipality = Muni.MunicipalityBase(
             _genMunicipalityAddr,
             _genMunicipalityZipCode

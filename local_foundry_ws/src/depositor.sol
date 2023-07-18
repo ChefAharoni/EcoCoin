@@ -29,6 +29,13 @@ contract Depositor {
     // Since the machine auto-approves the amount of bottles.
     mapping(address recycler => uint64 recyID) public recyclerToID; // Mapping of addresses and their ID's.
 
+    /* Events */
+    event RecyclerRegistered(
+        address indexed recyAddr,
+        uint64 indexed recyID,
+        string indexed recyName
+    );
+
     /**
      * @notice  Registers the recycler to the system.
      * @dev     .
@@ -38,6 +45,8 @@ contract Depositor {
         address _recyAddr = msg.sender;
         uint64 _recyID = uint64(greeners.length + 1); // uint64 must be declared at the end because it is by default uint256.
         recyclerToID[_recyAddr] = _recyID; // Add the ID of the recycler to associate with his address.
+
+        emit RecyclerRegistered(_recyAddr, _recyID, _name);
 
         greeners.push(
             Recylcer({
@@ -94,7 +103,7 @@ contract Depositor {
 
     /**
      * @notice  Update the balance of the recycler in the greeners array.
-     * @dev     .
+     * @dev     Update of tokens is deriven by the EcoCoin contract, and cannot be set manually.
      * @param   _recyID  ID of the recycler.
      * @return  bool  True if the operation was successful.
      */

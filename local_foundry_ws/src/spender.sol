@@ -16,6 +16,14 @@ contract Spender {
     Depositor depositor = new Depositor();
     ShopHandler shopHandler = new ShopHandler();
 
+    /* Events */
+    event GoodsPurchased(
+        uint64 indexed shopID,
+        address shopAddress,
+        address indexed recyAddr,
+        uint256 indexed spendAmount
+    );
+
     constructor(address _ecoCoinAddr) {
         // Not sure whether it's more gas efficient to deploy the interface or the contract itself; a problem for future fixes.
         ecoCoin = IEcoCoin(_ecoCoinAddr); // Address of the EcoCoin contract.
@@ -50,7 +58,10 @@ contract Spender {
             _shopIndex = _shopIndex,
             _shopAddress = _shopAddress
         ); // Updates the shopBalance of the shops array to the current balance of the shop.
-        // Add here function that updates the recycler balance in the greeners array.
+
+        depositor.updateRecyBalance(_recyID); // Updates the recycler balance in the greeners array.
+
+        emit GoodsPurchased(shopID, _shopAddress, _recyAddr, _spendAmount); // Emit event of the purchase.
         return true; // If operation was successful, return true.
     }
 

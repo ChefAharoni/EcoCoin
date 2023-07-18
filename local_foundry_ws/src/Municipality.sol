@@ -21,6 +21,13 @@ contract Municipality {
 
     mapping(address => string) public MuniAddrToZipCode; // Mapping of address to a municipality zip code.
 
+    /* Events */
+    event AddedMunicipality(
+        address indexed municipalityAddr,
+        string indexed municipalityZipCode,
+        address indexed addedBy
+    );
+
     /**
      * @notice  Addition to functions so only municipalities can perform actions.
      * @dev   .
@@ -42,19 +49,29 @@ contract Municipality {
      * @dev i.e. municipalities.addMuni(_municipalityAddr, _municipalityZipCode) muniOnly().
      * @param _municipalityAddr  Address of the municipality to add.
      * @param _municipalityZipCode  Zip code of the municipality to add.
-     * @return  address   Address of the municipality added.
+     * @return  string   ZipCode of the municipality added.
      */
-    // mapping(address => Municipality) storage municipalities, // Not needed for testing
     function addMuni(
         address _municipalityAddr,
         string memory _municipalityZipCode
     ) public muniOnly returns (string memory) {
+        emit AddedMunicipality(
+            _municipalityAddr,
+            _municipalityZipCode,
+            msg.sender
+        );
         MuniAddrToZipCode[_municipalityAddr] = _municipalityZipCode;
         return MuniAddrToZipCode[_municipalityAddr];
     }
 
-    // Update MuniAddrToZipCode mapping
-    // //! Add a check that only an owner or a municipality can update the zip code.
+    /**
+     * @notice  Updated MuniAddrToZipCode mapping.
+     * @dev     Could be called only once, by the contract owner.
+     * @dev     There's no check for calling by an owner, but this function should be called when contract is deployed.
+     * @param   _municipalityAddr  Address of the municipality to add.
+     * @param   _municipalityZipCode  Zip code of the municipality to add.
+     * @return  string  ZipCode of the municipality added.
+     */
     function updateMuniZipCode(
         address _municipalityAddr,
         string memory _municipalityZipCode

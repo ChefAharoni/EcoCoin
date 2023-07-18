@@ -45,13 +45,43 @@ contract Machine is Municipality {
     // Array of all exchange machines using the exchangeMachine struct
     exchangeMachine[] public exchangeMachines;
     mapping(address => uint64) public exMachineAddressToID;
-    mapping(uint64 => address) private exMachineIDToAddress;
+    mapping(uint64 => address) public exMachineIDToAddress;
 
     uint256 private immutable i_CoolDownInterval; // Interval of cool down for time between deposits (1 hour).
 
     IEcoCoin private immutable ecoCoin; // Calling the interface of the EcoCoin contract.
     Depositor depositor = new Depositor();
     ShopHandler shopHandler = new ShopHandler();
+
+    /* Events */
+    event AddedExchangeMachine(
+        address indexed exMachineAddress,
+        string indexed exMachineZipCode,
+        address indexed addedBy
+    );
+
+    event DepositedBottles(
+        uint64 indexed exMachineID,
+        address exMachineAddress,
+        address indexed recyAddr,
+        uint64 recyID,
+        uint64 indexed bottles
+    );
+
+    event DepositedTokens(
+        address exMachineAddress,
+        uint64 indexed exMachineID,
+        address indexed recyAddress,
+        uint256 indexed tokens
+    );
+
+    event RedeemedTokens(
+        address exMachineAddress,
+        uint64 indexed exMachineID,
+        address indexed shopAddress,
+        uint256 indexed tokens,
+        string cashAppUsername
+    );
 
     /**
      * @notice  Modifier that lets only a machine to act.
@@ -88,6 +118,7 @@ contract Machine is Municipality {
         });
         exchangeMachines.push(newMachine); // Add the new machine to the array of all machine
         exMachineAddressToID[_exMAddress] = newMachine.exMachineID; // Add the new machine to the mapping of Machine's address and its ID.
+        emit AddedExchangeMachine(_exMAddress, _exMZip, msg.sender); // Emit event of the new machine.
         return newMachine.exMachineID;
     }
 
@@ -112,6 +143,12 @@ contract Machine is Municipality {
         ecoCoin._mint(exMachineAddress, _bottlesToTokens); // Mint the spent amount of tokens to the machine.
 
         ecoCoin._transfer(exMachineAddress, _recyAddr, _bottlesToTokens); // Transfer the tokens from the machine to the recycler.
+        emit DepositedTokens(
+            exMachineAddress,
+            exMachineAddressToID[exMachineAddress],
+            _recyAddr,
+            _bottlesToTokens
+        ); // Emit event for deposited tokens.
         return true;
         // Problematic that only machine can call this, because the recycler calls the deposit bottles function.
     }
@@ -167,9 +204,6 @@ contract Machine is Municipality {
         // After deposition was verified, update the recycler's last deposition time.
         depositor.getGreeners()[_recyIndex].lastTimeStamp = block.timestamp;
 
-        // depositor.updateRecyclerBottles(_recyAddr, _bottles);  - Deprecate?
-
-        // depositor.recyclerBottles(_recyAddr) = _bottles; // Only here the bottles are added to the mapping object;   - Deprecate?
         depositor.getGreeners()[_recyIndex].recyBalance = ecoCoin.balanceOf(
             _recyAddr
         ); // Set the balance in the greeners array to the tokens balance of the account.
@@ -179,6 +213,15 @@ contract Machine is Municipality {
             _recyAddr: _recyAddr,
             _amtBottles: _bottles
         });
+
+        emit DepositedBottles(
+            _exMachineID,
+            _exMachineAddress,
+            _recyAddr,
+            _recyID,
+            _bottles
+        ); // Emit event for deposited bottles.
+
         return (true, "Desposited!");
         /*
             After creating the verification, if the verification has failed, return false and set the status to false as well.
@@ -231,9 +274,10 @@ contract Machine is Municipality {
         }
 
         /* Redeem */
-        ecoCoin._transfer(msg.sender, address(this), _tokensAmt); // Transfer the tokens from the shop to the machine.
+        address _exMachineAddress = exMachineIDToAddress[_exMachineID];
+        ecoCoin._transfer(msg.sender, _exMachineAddress, _tokensAmt); // Transfer the tokens from the shop to the machine.
 
-        ecoCoin._burn(address(this), _tokensAmt); // Burn the tokens from the machine.
+        ecoCoin._burn(_exMachineAddress, _tokensAmt); // Burn the tokens from the machine.
         // The process of transferring the tokens and then burning them might be redundant, but I think this might be more secure.
 
         // Transfer the real money to the shop.
@@ -243,6 +287,14 @@ contract Machine is Municipality {
             _cashAppUsername: _cashAppUsername,
             _tokensAmt: _tokensAmt
         }); // Transfer the real money (RM) to the shop.
+
+        emit RedeemedTokens(
+            _exMachineAddress,
+            _exMachineID,
+            _shopAddress,
+            _tokensAmt,
+            _cashAppUsername
+        ); // Emit event for redeemed tokens.
 
         return true;
     }
