@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {EcoCoin} from "./EcoCoin.sol";
+import {IEcoCoin} from "./IEcoCoin.sol";
 import {Municipality} from "./Municipality.sol";
 
 /**
@@ -13,7 +13,7 @@ import {Municipality} from "./Municipality.sol";
 contract ShopHandler is Municipality {
     /* Errors */
 
-    EcoCoin ecoCoin = new EcoCoin();
+    IEcoCoin private immutable ecoCoin;
 
     // Address and name of shop; only approved shops
     mapping(address shop => string shopName) shopAddrToName;
@@ -69,6 +69,10 @@ contract ShopHandler is Municipality {
         string shopType,
         string shopZipCode
     );
+
+    constructor(address _ecoCoinAddr) {
+        ecoCoin = IEcoCoin(_ecoCoinAddr);
+    }
 
     /**
      * @notice  Main function for shops to register themselves.

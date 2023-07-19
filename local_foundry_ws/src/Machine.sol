@@ -50,8 +50,8 @@ contract Machine is Municipality {
     uint256 private immutable i_CoolDownInterval; // Interval of cool down for time between deposits (1 hour).
 
     IEcoCoin private immutable ecoCoin; // Calling the interface of the EcoCoin contract.
-    Depositor depositor = new Depositor();
-    ShopHandler shopHandler = new ShopHandler();
+    Depositor depositor;
+    ShopHandler shopHandler;
 
     /* Events */
     event AddedExchangeMachine(
@@ -94,9 +94,15 @@ contract Machine is Municipality {
         _;
     }
 
-    constructor(address _ecoCoinAddr) {
+    constructor(
+        address _ecoCoinAddr,
+        address _depositorAddr,
+        address _shopHandlerAddr
+    ) {
         // Not sure whether it's more gas efficient to deploy the interface or the contract itself; a problem for future fixes.
         ecoCoin = IEcoCoin(_ecoCoinAddr); // Address of the EcoCoin contract.
+        depositor = Depositor(_depositorAddr);
+        shopHandler = ShopHandler(_shopHandlerAddr);
         i_CoolDownInterval = 3600; // Should be one hour, MAKE SURE LATER
         //! Make sure block.timestanp is in seconds.
     }

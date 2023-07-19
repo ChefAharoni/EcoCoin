@@ -44,7 +44,7 @@ contract EcoCoinTest is StdCheats, Test {
     string secondMunicipalityZipCode;
 
     function setUp() external {
-        depositor = new Depositor();
+        // depositor = new Depositor();
         DeployEcoCoin deployer = new DeployEcoCoin();
         (
             ecoCoin,
@@ -69,7 +69,20 @@ contract EcoCoinTest is StdCheats, Test {
 
     /* EcoCoin Tests */
 
+    function addGenesisMunicipality() private {
+        vm.prank(contractDeployer);
+        ecoCoin.addGenMuni(
+            GenesisMunicipalityAddress,
+            GenesisMunicipalityZipCode
+        );
+    }
+
+    function testAddGenesisMunicipality() external {
+        addGenesisMunicipality();
+    }
+
     function testRevertAddGenesisMuni_MuniAlreadyAdded() external {
+        addGenesisMunicipality();
         // Should fail since the genesis municipality is already added.
         vm.expectRevert(EcoCoin.EcoCoin__genMunicipalityIsSet.selector);
         vm.prank(contractDeployer);
@@ -82,6 +95,7 @@ contract EcoCoinTest is StdCheats, Test {
     function testRevertAddGenesisMuni_CallerIsNotOwner() external {
         // Should fail since the caller is not the deployer.
         // Should get: Ownable: caller is not the owner
+        addGenesisMunicipality();
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         vm.startPrank(RecyclerAddress);
         ecoCoin.addGenMuni(
@@ -95,7 +109,8 @@ contract EcoCoinTest is StdCheats, Test {
         assert(ecoCoin.decimals() == 0);
     }
 
-    function testHasGenesisMunicipalityAddedProperly() external view {
+    function testHasGenesisMunicipalityAddedProperly() external {
+        addGenesisMunicipality();
         assert(
             keccak256(
                 abi.encodePacked(
@@ -105,7 +120,8 @@ contract EcoCoinTest is StdCheats, Test {
         );
     }
 
-    function testGenesisMunicipalityIsNotEmpty() external view {
+    function testGenesisMunicipalityIsNotEmpty() external {
+        addGenesisMunicipality();
         assert(
             keccak256(
                 abi.encodePacked(
@@ -114,11 +130,6 @@ contract EcoCoinTest is StdCheats, Test {
             ) != keccak256(abi.encodePacked(""))
         );
     }
-
-    // function testi_genMunicipalityIsNotAddressZero() external {
-        // Not working - Error (9582): Member "muniAddr" not found or not visible after argument-dependent lookup in tuple(address,string memory).
-    //     assert(ecoCoin.i_genMunicipality().muniAddr() != address(0));
-    // }
 
     function testTokenNameIsCorrect() external view {
         assert(
@@ -132,23 +143,58 @@ contract EcoCoinTest is StdCheats, Test {
         );
     }
 
+    function testTokenTotalSupplyIsZero() external view {
+        assert(ecoCoin.totalSupply() == 0);
+    }
+
+    function testTokenBalanceOfDeployerIsZero() external view {
+        assert(ecoCoin.balanceOf(contractDeployer) == 0);
+    }
+
+    function testTokenBalanceOfGenesisMunicipalityIsZero() external view {
+        assert(ecoCoin.balanceOf(GenesisMunicipalityAddress) == 0);
+    }
+
+    event AddedMunicipality(
+        address indexed municipalityAddr,
+        string indexed municipalityZipCode,
+        address indexed addedBy
+    );
+
+    //TODO - Fix events testing.
+    function testEmitAddedMunicipalityEvent() external {
+        //! Event fails, fix later.
+        addGenesisMunicipality();
+        vm.expectEmit();
+        emit AddedMunicipality(
+            GenesisMunicipalityAddress,
+            GenesisMunicipalityZipCode,
+            contractDeployer
+        );
+    }
+
     /* Municipality Tests */
 
+    function addSecondMunicipality() private {
+        addGenesisMunicipality();
+        vm.prank(GenesisMunicipalityAddress);
+        municipality.addMuni(
+            secondMunicipalityAddress,
+            secondMunicipalityZipCode
+        );
+    }
+
     function testAddMuni() external {
+        addSecondMunicipality();
         console.log("Genesis muni address: ", GenesisMunicipalityAddress);
         console.log(
             "Zip Code of genesis municipality: ",
             municipality.MuniAddrToZipCode(GenesisMunicipalityAddress)
         );
-        vm.startPrank(GenesisMunicipalityAddress);
-        municipality.addMuni(
-            secondMunicipalityAddress,
-            secondMunicipalityZipCode
-        );
-        vm.stopPrank();
     }
 
-    function testSecondMunicipalityAdded() external view {
+    function testSecondMunicipalityAdded() external {
+        addSecondMunicipality();
         assert(
             keccak256(
                 abi.encodePacked(
@@ -162,8 +208,35 @@ contract EcoCoinTest is StdCheats, Test {
     string thirdMunicipalityZipCode = "70502";
 
     function testSecondMuniAddsThirdMuni() external {
+        addSecondMunicipality();
         vm.prank(secondMunicipalityAddress);
         municipality.addMuni(
+            thirdMunicipalityAddress,
+            thirdMunicipalityZipCode
+        );
+    }
+
+    function testRecyclerTriesToAddMuni() external {
+        // Should fail since the recycler is not a municipality.
+        // Should get: Municipality__NotMunicipality
+        addSecondMunicipality();
+        vm.prank(RecyclerAddress);
+        vm.expectRevert(Municipality.Municipality__NotMunicipality.selector);
+        municipality.addMuni(
+            secondMunicipalityAddress,
+            secondMunicipalityZipCode
+        );
+    }
+
+    function testRevertUpdateMuniZipCode() external {
+        addSecondMunicipality();
+        vm.prank(GenesisMunicipalityAddress);
+        vm.expectRevert(
+            Municipality
+                .Municipality__GenesisMunicipalityHasBeenSet_MappingIsNotEmpty
+                .selector
+        );
+        municipality.updateMuniZipCode(
             thirdMunicipalityAddress,
             thirdMunicipalityZipCode
         );
@@ -173,23 +246,22 @@ contract EcoCoinTest is StdCheats, Test {
     uint64 searchID;
     uint64 greenerIndex;
 
-    function testRegisterDepositor() external {
-        // Not working
-        vm.startPrank(RecyclerAddress);
+    function registerRecycler() private {
+        addSecondMunicipality();
+        vm.prank(RecyclerAddress);
         depositor.registerRecycler("John Doe");
+    }
+
+    function testRegisterRecycler() external {
+        registerRecycler();
         searchID = depositor.getIdByAddress(RecyclerAddress);
-        vm.stopPrank();
         console.log("Search ID: ", searchID);
 
         assert(searchID != 0);
     }
 
     function testGetIDByAddress() external {
-        // Not working
-        // testRegisterDepositor();
-        vm.prank(RecyclerAddress);
-        depositor.registerRecycler("John Doe");
-
+        registerRecycler();
         searchID = depositor.getIdByAddress(RecyclerAddress);
         console.log("Search ID: ", searchID);
         // User's ID starts at 1.
@@ -197,28 +269,72 @@ contract EcoCoinTest is StdCheats, Test {
     }
 
     function testGetGreenerIndexByID() external {
-        // Not working
+        registerRecycler();
         searchID = depositor.getIdByAddress(RecyclerAddress);
         greenerIndex = depositor._getGreenerIndexByID(searchID);
         console.log("Greener Index: ", greenerIndex);
     }
 
+    function testUpdateRecyBalance() external {
+        registerRecycler();
+        uint64 recyID = depositor.getIdByAddress(RecyclerAddress);
+        depositor.updateRecyBalance(recyID);
+    }
+
+    function testGetGreenersArray() external {
+        registerRecycler();
+        depositor.getGreeners();
+    }
+
+    function testGetGreeners_WithData() external {
+        registerRecycler();
+        uint64 recyID = depositor.getIdByAddress(RecyclerAddress);
+        uint64 recyIndex = depositor._getGreenerIndexByID(recyID);
+        uint256 lastTimeStamp = depositor
+        .getGreeners()[recyIndex].lastTimeStamp;
+        assertEq(lastTimeStamp, 0);
+    }
+
+    function testGetRecyclerAddresToID() external {
+        registerRecycler();
+        depositor.recyclerToID(RecyclerAddress);
+    }
+
+    // TODO - Add RecyclerRegistered event test.
+
     /* Machine Tests */
 
-    function testCreateEuniceMachine() external {
-        vm.prank(GenesisMunicipalityAddress);
+    function caller() external view {
+        console.log("Caller: ", msg.sender);
+    }
+
+    function createEuniceMachine() private {
+        // this.caller();
+        registerRecycler();
+        vm.startPrank(GenesisMunicipalityAddress);
+        console.log(municipality.MuniAddrToZipCode(GenesisMunicipalityAddress));
+        console.log(bytes(municipality.MuniAddrToZipCode(GenesisMunicipalityAddress)).length);
         machine.createMachine(MachineAddress, GenesisMunicipalityZipCode);
+        console.log("Genesis muni address: ", GenesisMunicipalityAddress);
+
+        vm.stopPrank();
+    }
+
+    function testCreateEuniceMachine() external {
+        createEuniceMachine();
     }
 
     // Setting a mock address for the second machine.
     address secondMachineAddress = makeAddr("secondMachine");
 
     function testCreateLafayetteMachine() external {
+        createEuniceMachine();
         vm.prank(secondMunicipalityAddress);
         machine.createMachine(secondMachineAddress, secondMunicipalityZipCode);
     }
 
     function testFailCreateMachine() external {
+        createEuniceMachine();
         vm.prank(RecyclerAddress);
         machine.createMachine(MachineAddress, GenesisMunicipalityZipCode);
     }
@@ -231,12 +347,13 @@ contract EcoCoinTest is StdCheats, Test {
     }
 
     function testDepositBottles() external {
-        // Error - recycler not registered
+        createEuniceMachine();
         vm.prank(RecyclerAddress);
         machine.depositBottles(1, 10);
     }
 
     function testTokensEqualsTwoTimesBottlesDeposited() external {
+        createEuniceMachine();
         vm.prank(RecyclerAddress);
         machine.depositBottles(1, 20);
         assert(ecoCoin.balanceOf(RecyclerAddress) == 40);
@@ -265,7 +382,7 @@ contract EcoCoinTest is StdCheats, Test {
     }
 
     function testSpendTokensAtShop() external {
-        // Depositor__RecyclerNotRegistered
+        createEuniceMachine();
         // Spend tokens at the shop so we can test that the shop can redeem tokens.
         vm.prank(RecyclerAddress);
         // Does the recycler have tokens from previous functions? Or should we give him tokens at the start of this function?
@@ -280,6 +397,7 @@ contract EcoCoinTest is StdCheats, Test {
     string shopCashAppUserName = "CafeMosaic";
 
     function testRedeemTokens() external {
+        // A shop needs to be registered and approved first.
         vm.prank(ShopAddress);
         machine.redeemTokens(1, shopCashAppUserName, 10);
     }

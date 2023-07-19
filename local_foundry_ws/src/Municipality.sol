@@ -2,8 +2,6 @@
 
 pragma solidity ^0.8.19;
 
-import {EcoCoin} from "./EcoCoin.sol";
-
 library Muni {
     // As for right now (07/15), I don't see what advantage for using a special struct for Municipality, if it's only used for the address and zip code.
     struct MunicipalityBase {
@@ -14,9 +12,8 @@ library Muni {
 
 contract Municipality {
     error Municipality__GenesisMunicipalityHasBeenSet_MappingIsNotEmpty();
-    error Municipality__NotMunicipality(); // Error to throw when the caller is not a municipality.
+    error Municipality__NotMunicipality(address); // Error to throw when the caller is not a municipality.
 
-    // EcoCoin ecoCoin = new EcoCoin;
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
 
     mapping(address => string) public MuniAddrToZipCode; // Mapping of address to a municipality zip code.
@@ -33,11 +30,8 @@ contract Municipality {
      * @dev   .
      */
     modifier muniOnly() {
-        if (
-            keccak256(abi.encodePacked(MuniAddrToZipCode[msg.sender])) ==
-            keccak256(abi.encodePacked(""))
-        ) {
-            revert Municipality__NotMunicipality();
+        if (bytes(MuniAddrToZipCode[msg.sender]).length == 0) {
+            revert Municipality__NotMunicipality(msg.sender);
         }
         _;
     }
@@ -77,6 +71,7 @@ contract Municipality {
         string memory _municipalityZipCode
     ) external returns (string memory) {
         // Let this function be called only once; checks if the mapping is empty.
+        //! Not sure this check is good.
         if (
             keccak256(abi.encodePacked(MuniAddrToZipCode[msg.sender])) !=
             keccak256(abi.encodePacked(""))

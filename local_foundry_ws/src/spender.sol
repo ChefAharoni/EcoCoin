@@ -13,8 +13,8 @@ contract Spender {
 
     // When a recycler wishes to spend his tokens in a local shop: Cafe, Restaurant, Clothes store, etc...
     IEcoCoin private immutable ecoCoin; // Calling the interface of the EcoCoin contract.
-    Depositor depositor = new Depositor();
-    ShopHandler shopHandler = new ShopHandler();
+    Depositor depositor;
+    ShopHandler shopHandler;
 
     /* Events */
     event GoodsPurchased(
@@ -24,9 +24,11 @@ contract Spender {
         uint256 indexed spendAmount
     );
 
-    constructor(address _ecoCoinAddr) {
+    constructor(address _ecoCoinAddr, address _depositorAddr, address _shopHandlerAddr) {
         // Not sure whether it's more gas efficient to deploy the interface or the contract itself; a problem for future fixes.
         ecoCoin = IEcoCoin(_ecoCoinAddr); // Address of the EcoCoin contract.
+        depositor = Depositor(_depositorAddr);
+        shopHandler = ShopHandler(_shopHandlerAddr);
     }
 
     function purchaseGoods(

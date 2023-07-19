@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {EcoCoin} from "./EcoCoin.sol";
+import {IEcoCoin} from "./IEcoCoin.sol"; // EcoCoin Interface
 
 /**
  * @author  ChefAharoni
@@ -12,7 +12,7 @@ import {EcoCoin} from "./EcoCoin.sol";
 contract Depositor {
     error Depositor__RecyclerNotRegistered(); // Error to throw when the caller is not registered.
 
-    EcoCoin ecoCoin = new EcoCoin();
+    IEcoCoin private immutable ecoCoin; // Calling the interface of the EcoCoin contract.
 
     struct Recylcer {
         uint64 ID; // Starts at 1; 64 bits to save on gas; perhaps in the future think of a better way to generate an ID.
@@ -35,6 +35,10 @@ contract Depositor {
         uint64 indexed recyID,
         string indexed recyName
     );
+
+    constructor(address _ecoCoinAddr) {
+        ecoCoin = IEcoCoin(_ecoCoinAddr); // Address of the EcoCoin contract.
+    }
 
     /**
      * @notice  Registers the recycler to the system.
