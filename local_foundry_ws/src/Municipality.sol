@@ -17,6 +17,7 @@ contract Municipality {
     using Muni for address; // Changed from Muni for *; to use the library only for addresses; if doesn't work, change back to Muni for *.
 
     mapping(address => string) public MuniAddrToZipCode; // Mapping of address to a municipality zip code.
+    uint256 public numMunicipalities = 0; // Number of municipalities in the system.
 
     /* Events */
     event AddedMunicipality(
@@ -26,7 +27,7 @@ contract Municipality {
     );
 
     /**
-     * @notice  Addition to functions so only municipalities can perform actions.
+     * @notice  Check in functions so only municipalities can perform actions.
      * @dev   .
      */
     modifier muniOnly() {
@@ -55,11 +56,12 @@ contract Municipality {
             msg.sender
         );
         MuniAddrToZipCode[_municipalityAddr] = _municipalityZipCode;
+        numMunicipalities += 1;
         return MuniAddrToZipCode[_municipalityAddr];
     }
 
     /**
-     * @notice  Updated MuniAddrToZipCode mapping.
+     * @notice  Updates MuniAddrToZipCode mapping.
      * @dev     Could be called only once, by the contract owner.
      * @dev     There's no check for calling by an owner, but this function should be called when contract is deployed.
      * @param   _municipalityAddr  Address of the municipality to add.
@@ -71,15 +73,15 @@ contract Municipality {
         string memory _municipalityZipCode
     ) external returns (string memory) {
         // Let this function be called only once; checks if the mapping is empty.
-        //! Not sure this check is good.
-        if (
-            keccak256(abi.encodePacked(MuniAddrToZipCode[msg.sender])) !=
-            keccak256(abi.encodePacked(""))
-        ) {
+        if (numMunicipalities != 0) {
             revert Municipality__GenesisMunicipalityHasBeenSet_MappingIsNotEmpty();
         }
 
         MuniAddrToZipCode[_municipalityAddr] = _municipalityZipCode;
         return MuniAddrToZipCode[_municipalityAddr];
+    }
+
+    function incrementNumMunicipalities() external {
+        numMunicipalities += 1;
     }
 }

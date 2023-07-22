@@ -13,7 +13,12 @@ interface IEcoCoin {
 
     function _burn(address account, uint256 amount) external;
 
-    function _mint(address _account, uint256 _amount) external;
+    function mint(address _account, uint256 _amount) external;
 
     function _transfer(address from, address to, uint256 amount) external;
+
+    function updateMachineAddressToID(
+        address _machineAddr,
+        uint64 _machineID
+    ) external;
 }

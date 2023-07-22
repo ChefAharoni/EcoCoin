@@ -52,7 +52,8 @@ contract EcoCoinTest is StdCheats, Test {
             depositor,
             machine,
             spender,
-            shopHandler
+            shopHandler,
+            municipality
         ) = deployer.run();
 
         (
@@ -64,7 +65,6 @@ contract EcoCoinTest is StdCheats, Test {
             secondMunicipalityAddress,
             secondMunicipalityZipCode
         ) = helperConfig.activeNetworkConfig();
-        municipality = ecoCoin.municipality();
     }
 
     /* EcoCoin Tests */
@@ -221,7 +221,12 @@ contract EcoCoinTest is StdCheats, Test {
         // Should get: Municipality__NotMunicipality
         addSecondMunicipality();
         vm.prank(RecyclerAddress);
-        vm.expectRevert(Municipality.Municipality__NotMunicipality.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Municipality.Municipality__NotMunicipality.selector,
+                RecyclerAddress
+            )
+        );
         municipality.addMuni(
             secondMunicipalityAddress,
             secondMunicipalityZipCode
@@ -242,6 +247,21 @@ contract EcoCoinTest is StdCheats, Test {
         );
     }
 
+    function testNumMunicipalityUpdated() external {
+        // Fails because EcoCoin doesn't add correctly the genesis municipality the the mapping.
+        addSecondMunicipality();
+        assertEq(municipality.numMunicipalities(), 2);
+    }
+
+    function testNumMunicipalitiesIsZero() external {
+        assertEq(municipality.numMunicipalities(), 0);
+    }
+
+    function testManualIncrementNumMunicipalities() external {
+        municipality.incrementNumMunicipalities();
+        assertEq(municipality.numMunicipalities(), 1);
+    }
+
     /* Depositor Tests */
     uint64 searchID;
     uint64 greenerIndex;
@@ -249,7 +269,7 @@ contract EcoCoinTest is StdCheats, Test {
     function registerRecycler() private {
         addSecondMunicipality();
         vm.prank(RecyclerAddress);
-        depositor.registerRecycler("John Doe");
+        depositor.registerRecycler("John Green");
     }
 
     function testRegisterRecycler() external {
@@ -313,7 +333,10 @@ contract EcoCoinTest is StdCheats, Test {
         registerRecycler();
         vm.startPrank(GenesisMunicipalityAddress);
         console.log(municipality.MuniAddrToZipCode(GenesisMunicipalityAddress));
-        console.log(bytes(municipality.MuniAddrToZipCode(GenesisMunicipalityAddress)).length);
+        console.log(
+            bytes(municipality.MuniAddrToZipCode(GenesisMunicipalityAddress))
+                .length
+        );
         machine.createMachine(MachineAddress, GenesisMunicipalityZipCode);
         console.log("Genesis muni address: ", GenesisMunicipalityAddress);
 
@@ -346,10 +369,14 @@ contract EcoCoinTest is StdCheats, Test {
         machine.createMachine(MachineAddress, GenesisMunicipalityZipCode);
     }
 
-    function testDepositBottles() external {
+    function recyclerDepositBottles() private {
         createEuniceMachine();
         vm.prank(RecyclerAddress);
         machine.depositBottles(1, 10);
+    }
+
+    function testDepositBottles() external {
+        recyclerDepositBottles();
     }
 
     function testTokensEqualsTwoTimesBottlesDeposited() external {

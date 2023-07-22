@@ -27,23 +27,32 @@ contract DeployEcoCoin is Script {
             Depositor,
             Machine,
             Spender,
-            ShopHandler
+            ShopHandler,
+            Municipality
         )
     {
         // StartBroadcat means that everything after this will be broadcasted to the blockchain and deployed.
         // Any other operations we that are not within the startBroadcat, will not cost any gas.
         vm.startBroadcast(ACC_9_PRIVATE_KEY);
         HelperConfig helperConfig = new HelperConfig();
-        EcoCoin ecoCoin = new EcoCoin(); // "new" keyword creates a new contract.
+        Municipality municipality = new Municipality();
+        EcoCoin ecoCoin = new EcoCoin(address(municipality)); // "new" keyword creates a new contract.
         // Contract deployer adds the genesis municipality.
 
         Depositor depositor = new Depositor(address(ecoCoin));
-        ShopHandler shopHandler = new ShopHandler(address(ecoCoin));
+
+        ShopHandler shopHandler = new ShopHandler(
+            address(ecoCoin),
+            address(municipality)
+        );
+
         Machine machine = new Machine(
             address(ecoCoin),
             address(depositor),
-            address(shopHandler)
+            address(shopHandler),
+            address(municipality)
         );
+
         Spender spender = new Spender(
             address(ecoCoin),
             address(depositor),
@@ -58,7 +67,8 @@ contract DeployEcoCoin is Script {
             depositor,
             machine,
             spender,
-            shopHandler
+            shopHandler,
+            municipality
         );
     }
 }

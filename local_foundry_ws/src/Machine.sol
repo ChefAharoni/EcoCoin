@@ -7,7 +7,7 @@ import {IEcoCoin} from "./IEcoCoin.sol"; // EcoCoin Interface
 import {Depositor} from "./Depositor.sol";
 import {ShopHandler} from "./ShopHandler.sol";
 
-contract Machine is Municipality {
+contract Machine {
     // What will the machine do?
     /*  1. Exchange bottles for tokens
             a. Receive bottles from recycler
@@ -34,6 +34,9 @@ contract Machine is Municipality {
     error Machine__RedeemedTokensMustBeGreaterThanZero();
     error Machine__CannotRedeemMoreThan9999TokensAtOnce();
     error Machine__InsufficientTokensBalanceToRedeem();
+    error Municipality__NotMunicipality(address);
+
+    /* Variables */
 
     struct exchangeMachine {
         uint64 exMachineID; // ID of machines, starts at 1.
@@ -52,6 +55,7 @@ contract Machine is Municipality {
     IEcoCoin private immutable ecoCoin; // Calling the interface of the EcoCoin contract.
     Depositor depositor;
     ShopHandler shopHandler;
+    Municipality municipality;
 
     /* Events */
     event AddedExchangeMachine(
@@ -83,8 +87,9 @@ contract Machine is Municipality {
         string cashAppUsername
     );
 
+    /* Modifiers */
     /**
-     * @notice  Modifier that lets only a machine to act.
+     * @notice  Modifier that lets only a machine to perform certain actions.
      * @dev     Checks if the machine exists in the exMachineAddresstoID mapping.
      */
     modifier machineOnly() {
@@ -94,10 +99,22 @@ contract Machine is Municipality {
         _;
     }
 
+    /**
+     * @notice  Check in functions so only municipalities can perform actions.
+     * @dev   .
+     */
+    modifier muniOnly() {
+        if (bytes(municipality.MuniAddrToZipCode(msg.sender)).length == 0) {
+            revert Municipality__NotMunicipality(msg.sender);
+        }
+        _;
+    }
+
     constructor(
         address _ecoCoinAddr,
         address _depositorAddr,
-        address _shopHandlerAddr
+        address _shopHandlerAddr,
+        address _municipalityAddr
     ) {
         // Not sure whether it's more gas efficient to deploy the interface or the contract itself; a problem for future fixes.
         ecoCoin = IEcoCoin(_ecoCoinAddr); // Address of the EcoCoin contract.
@@ -105,6 +122,7 @@ contract Machine is Municipality {
         shopHandler = ShopHandler(_shopHandlerAddr);
         i_CoolDownInterval = 3600; // Should be one hour, MAKE SURE LATER
         //! Make sure block.timestanp is in seconds.
+        municipality = Municipality(_municipalityAddr);
     }
 
     /**
@@ -124,6 +142,7 @@ contract Machine is Municipality {
         });
         exchangeMachines.push(newMachine); // Add the new machine to the array of all machine
         exMachineAddressToID[_exMAddress] = newMachine.exMachineID; // Add the new machine to the mapping of Machine's address and its ID.
+        exMachineIDToAddress[newMachine.exMachineID] = _exMAddress; // Add the new machine to the mapping of Machine's ID and its address.
         emit AddedExchangeMachine(_exMAddress, _exMZip, msg.sender); // Emit event of the new machine.
         return newMachine.exMachineID;
     }
@@ -143,12 +162,10 @@ contract Machine is Municipality {
         address _recyAddr,
         uint256 _amtBottles
     ) private returns (bool) {
-        //? Is the process of minting to the machine and then transferring immediately redundant? Can I just mint directly to the recycler?
         uint256 _bottlesToTokens = _amtBottles * 2; // Each bottle is 2 coins.
 
-        ecoCoin._mint(exMachineAddress, _bottlesToTokens); // Mint the spent amount of tokens to the machine.
+        ecoCoin.mint(_recyAddr, _bottlesToTokens); // Mint the spent amount of tokens to the machine.
 
-        ecoCoin._transfer(exMachineAddress, _recyAddr, _bottlesToTokens); // Transfer the tokens from the machine to the recycler.
         emit DepositedTokens(
             exMachineAddress,
             exMachineAddressToID[exMachineAddress],
@@ -196,7 +213,9 @@ contract Machine is Municipality {
         uint256 recyLastTimeStamp = depositor
         .getGreeners()[_recyIndex].lastTimeStamp;
         // Check here if enough time has passed since the last recycler's deposition.
-        if ((block.timestamp - recyLastTimeStamp) < i_CoolDownInterval) {
+        if (
+            (block.timestamp >= recyLastTimeStamp + i_CoolDownInterval)
+        ) {
             revert Machine__CoolDownTimerHasntPassed();
         }
 
@@ -281,10 +300,7 @@ contract Machine is Municipality {
 
         /* Redeem */
         address _exMachineAddress = exMachineIDToAddress[_exMachineID];
-        ecoCoin._transfer(msg.sender, _exMachineAddress, _tokensAmt); // Transfer the tokens from the shop to the machine.
-
-        ecoCoin._burn(_exMachineAddress, _tokensAmt); // Burn the tokens from the machine.
-        // The process of transferring the tokens and then burning them might be redundant, but I think this might be more secure.
+        ecoCoin._burn(msg.sender, _tokensAmt); // Burn the tokens from the machine.
 
         // Transfer the real money to the shop.
         transferRealMoney({

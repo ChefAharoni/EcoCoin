@@ -10,10 +10,14 @@ import {Municipality} from "./Municipality.sol";
  * @dev     .
  * @notice  Allows shops to register themselves. Used to prevent fraud by random users pretend to be shops and fool users into sending them tokens.
  */
-contract ShopHandler is Municipality {
+contract ShopHandler {
     /* Errors */
+    error Municipality__NotMunicipality(address);
+
+    /* Variables */
 
     IEcoCoin private immutable ecoCoin;
+    Municipality municipality;
 
     // Address and name of shop; only approved shops
     mapping(address shop => string shopName) shopAddrToName;
@@ -70,8 +74,20 @@ contract ShopHandler is Municipality {
         string shopZipCode
     );
 
-    constructor(address _ecoCoinAddr) {
+    /**
+     * @notice  Check in functions so only municipalities can perform actions.
+     * @dev   .
+     */
+    modifier muniOnly() {
+        if (bytes(municipality.MuniAddrToZipCode(msg.sender)).length == 0) {
+            revert Municipality__NotMunicipality(msg.sender);
+        }
+        _;
+    }
+
+    constructor(address _ecoCoinAddr, address _municipalityAddr) {
         ecoCoin = IEcoCoin(_ecoCoinAddr);
+        municipality = Municipality(_municipalityAddr);
     }
 
     /**
