@@ -448,6 +448,23 @@ contract EcoCoinTest is StdCheats, Test {
         spendTokensAtShop();
     }
 
+    function testRevertRecyclerTriesToPayMoreTokensThanBalance() external {
+        spendTokensAtShop();
+        vm.expectRevert(Spender.Spender__InsufficientFundsToSpend.selector);
+        vm.startPrank(RecyclerAddress);
+        spender.purchaseGoods(1, 100);
+        vm.stopPrank();
+    }
+
+    function testRevertRandomUserTriesToSpendTokens() external {
+        genMuniApprovesShopRegistration(1);
+        vm.startPrank(randomUser);
+        ecoCoin.approve(address(spender), 10);
+        vm.expectRevert(Spender.Depositor__RecyclerNotRegistered.selector);
+        spender.purchaseGoods(1, 10);
+        vm.stopPrank();
+    }
+
     function testShopBalanceEqualsTokensSent() external {
         spendTokensAtShop();
         assertEq(ecoCoin.balanceOf(ShopAddress), 10);
