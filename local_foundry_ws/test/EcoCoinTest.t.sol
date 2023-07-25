@@ -436,21 +436,24 @@ contract EcoCoinTest is StdCheats, Test {
         secondMuniApprovesShopRegistration(1);
     }
 
-    function caller() public view returns (address) {
-        return msg.sender;
+    function spendTokensAtShop() private {
+        genMuniApprovesShopRegistration(1);
+        vm.startPrank(RecyclerAddress);
+        ecoCoin.approve(address(spender), 10);
+        spender.purchaseGoods(1, 10);
+        vm.stopPrank();
     }
 
     function testSpendTokensAtShop() external {
-        genMuniApprovesShopRegistration(1);
-        // Spend tokens at the shop so we can test that the shop can redeem tokens.
-        console.log("Recycler's balance: ", ecoCoin.balanceOf(RecyclerAddress));
-        vm.startPrank(RecyclerAddress);
-        // Does the recycler have tokens from previous functions? Or should we give him tokens at the start of this function?
-        this.caller();
-        ecoCoin.balanceOf(RecyclerAddress);
-        spender.purchaseGoods(1, 1); // "ERC20: transfer amount exceeds balance"
-        vm.stopPrank();
+        spendTokensAtShop();
     }
+
+    function testShopBalanceEqualsTokensSent() external {
+        spendTokensAtShop();
+        assertEq(ecoCoin.balanceOf(ShopAddress), 10);
+    }
+
+    // Test events.
 
     function testFailSpendTokensAtShops() external {
         vm.prank(randomUser);

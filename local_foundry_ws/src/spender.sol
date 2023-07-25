@@ -5,6 +5,7 @@ pragma solidity ^0.8.19;
 import {IEcoCoin} from "./IEcoCoin.sol"; // EcoCoin Interface
 import {Depositor} from "./Depositor.sol";
 import {ShopHandler} from "./ShopHandler.sol";
+import {console} from "forge-std/Test.sol";
 
 contract Spender {
     /* Errors */
@@ -59,8 +60,11 @@ contract Spender {
         if (_recyclerBalance < _spendAmount) {
             revert Spender__InsufficientFundsToSpend();
         }
+
+        console.log("Caller in Spender contract: ", msg.sender);
+        // ecoCoin.approve(address(this), _spendAmount); // Approve the shop to spend the tokens.
         // ecoCoin.approve(_shopAddress, _spendAmount); // Approve the shop to spend the tokens.
-        ecoCoin.transfer(_shopAddress, _spendAmount); // Transfer the tokens from the spender to the shop.
+        ecoCoin.transferFrom(_recyAddr,_shopAddress, _spendAmount); // Transfer the tokens from the spender to the shop.
         shopHandler.updateShopBalance(
             _shopIndex = _shopIndex,
             _shopAddress = _shopAddress
@@ -70,10 +74,5 @@ contract Spender {
 
         emit GoodsPurchased(shopID, _shopAddress, _recyAddr, _spendAmount); // Emit event of the purchase.
         return true; // If operation was successful, return true.
-    }
-
-    function shopBalance(uint64 shopID) public view returns (uint256) {
-        uint64 _shopIndex = shopHandler._getIndexByID(shopID); // Get the index of the shop by its ID.
-        return shopHandler.getShops()[_shopIndex].shopBalance;
     }
 }

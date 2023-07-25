@@ -27,6 +27,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Muni, Municipality} from "./Municipality.sol";
 import {Machine} from "./Machine.sol";
+import {console} from "forge-std/Test.sol";
 
 // TODO - add s_ prefix to variables saved in storage.
 // TODO - optimize for loops that read from storage every time to read from storage only once.
@@ -134,5 +135,4 @@ contract EcoCoin is ERC20, Ownable {
     function mint(address to, uint256 amount) external virtual {
         _mint(to, amount);
     }
-
 }
