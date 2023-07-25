@@ -10,7 +10,9 @@ import {IEcoCoin} from "./IEcoCoin.sol"; // EcoCoin Interface
  * @notice  Manages the deposition of bottles.
  */
 contract Depositor {
+    /* Errors */
     error Depositor__RecyclerNotRegistered(); // Error to throw when the caller is not registered.
+    error Depositor__GreenerID_DoesNotExist();
 
     IEcoCoin private immutable ecoCoin; // Calling the interface of the EcoCoin contract.
 
@@ -82,7 +84,7 @@ contract Depositor {
                 return i;
             }
         }
-        revert("ID not found");
+        revert Depositor__GreenerID_DoesNotExist();
     }
 
     /**

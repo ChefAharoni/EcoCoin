@@ -5,7 +5,7 @@ pragma solidity ^0.8.19;
 interface IEcoCoin {
     function balanceOf(address _account) external view returns (uint256);
 
-    function _burn(address account, uint256 amount) external;
+    function burn(address account, uint256 amount) external;
 
     function mint(address _account, uint256 _amount) external;
 

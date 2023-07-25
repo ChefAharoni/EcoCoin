@@ -13,6 +13,7 @@ import {Municipality} from "./Municipality.sol";
 contract ShopHandler {
     /* Errors */
     error Municipality__NotMunicipality(address);
+    error ShopHandler__InvalidCommand();
 
     /* Variables */
 
@@ -201,14 +202,14 @@ contract ShopHandler {
      * @return  bool  True if approved, false if denied.
      * @return  string Message of approval/denial.
      */
-    function _removeShop(
+    function removeShop(
         uint64 _shopRmvID,
         bool _decision
     ) public muniOnly returns (bool, string memory) {
         // Click on 'shops' array button to see the request number, and approve by it.
         uint64 _shopRmvIndex = _getIndexByID(_shopRmvID); // Get the index of the array using its ID.
         address _reqRmvAddress = shops[_shopRmvIndex].shopAddress;
-        if (_decision == false) {
+        if (_decision == true) {
             // If the shop is removed
             shops[_shopRmvIndex].status = false;
             shopAddrToName[_reqRmvAddress] = "";
@@ -223,9 +224,9 @@ contract ShopHandler {
                 shops[_shopRmvIndex].shopZipCode
             );
 
-            return (false, "Shop removed.");
+            return (true, "Shop removed.");
         } else {
-            return (false, "Invalid command.");
+            revert ShopHandler__InvalidCommand();
         }
     }
 
@@ -245,7 +246,7 @@ contract ShopHandler {
         shops[_shopIndex].shopBalance = ecoCoin.balanceOf(_shopAddress);
     }
 
-    function _getShopName(
+    function getShopName(
         address _shopAddress
     ) public view returns (string memory) {
         // Gets the shop's name by its address; used for checking if address is registered shop.

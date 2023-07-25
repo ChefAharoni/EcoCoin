@@ -126,15 +126,6 @@ contract Machine {
     }
 
     /* Functions */
-    /**
-     * @notice  Mints tokens to the specified address.
-     * @dev     No restrictions on who can mint tokens.
-     * @param   to  Address to mint tokens to.
-     * @param   amount  Amount of tokens to mint.
-     */
-    function mint(address to, uint256 amount) external muniOnly {
-        ecoCoin.mint(to, amount);
-    }
 
     /**
      * @notice  Create a new exchange machine.
@@ -309,7 +300,7 @@ contract Machine {
 
         /* Redeem */
         address _exMachineAddress = exMachineIDToAddress[_exMachineID];
-        ecoCoin._burn(msg.sender, _tokensAmt); // Burn the tokens from the machine.
+        ecoCoin.burn(msg.sender, _tokensAmt); // Burn the tokens from the machine.
 
         // Transfer the real money to the shop.
         transferRealMoney({

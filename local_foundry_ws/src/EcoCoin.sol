@@ -132,7 +132,19 @@ contract EcoCoin is ERC20, Ownable {
      * @param   to  Address to mint tokens to.
      * @param   amount  Amount of tokens to mint.
      */
-    function mint(address to, uint256 amount) external virtual {
+    function mint(address to, uint256 amount) external {
+        //! Security flaw - anyone can burn tokens.
         _mint(to, amount);
+    }
+
+    /**
+     * @notice  Burns tokens to the specified address.
+     * @dev     No restrictions on who can burn tokens.
+     * @param   account  Address to burn tokens from
+     * @param   amount  Amount of tokens to burn.
+     */
+    function burn(address account, uint256 amount) external {
+        //! Security flaw - anyone can burn tokens.
+        _burn(account, amount);
     }
 }

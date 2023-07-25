@@ -29,9 +29,6 @@ contract EcoCoinTest is StdCheats, Test {
     Machine public machine;
     Spender public spender;
     ShopHandler public shopHandler;
-    // Depositor depositor = new Depositor();
-    // Machine machine = new Machine(address(ecoCoin));
-    // Spender spender = new Spender(address(ecoCoin));
 
     address contractDeployer = 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
 
@@ -44,7 +41,6 @@ contract EcoCoinTest is StdCheats, Test {
     string secondMunicipalityZipCode;
 
     function setUp() external {
-        // depositor = new Depositor();
         DeployEcoCoin deployer = new DeployEcoCoin();
         (
             ecoCoin,
@@ -262,6 +258,32 @@ contract EcoCoinTest is StdCheats, Test {
         assertEq(municipality.numMunicipalities(), 1);
     }
 
+    function testRemoveShop() external {
+        genMuniApprovesShopRegistration(1);
+        vm.prank(secondMunicipalityAddress);
+        shopHandler.removeShop(1, true);
+    }
+
+    function testInvalidRemoveShopDecision() external {
+        genMuniApprovesShopRegistration(1);
+        vm.prank(secondMunicipalityAddress);
+        vm.expectRevert(ShopHandler.ShopHandler__InvalidCommand.selector);
+        shopHandler.removeShop(1, false);
+    }
+
+    function testGetArraysAndData() external {
+        genMuniApprovesShopRegistration(1);
+        shopHandler.printShopName();
+        shopHandler.getShops();
+        shopHandler.getShopName(ShopAddress);
+    }
+
+    function testUpdateShopBalanceEqualsItsBalance() external {
+        genMuniApprovesShopRegistration(1);
+        shopHandler.updateShopBalance(0, ShopAddress);
+        assertEq(shopHandler.getShops()[0].shopBalance, ecoCoin.balanceOf(ShopAddress));
+    }
+
     /* Depositor Tests */
     uint64 searchID;
     uint64 greenerIndex;
@@ -313,6 +335,12 @@ contract EcoCoinTest is StdCheats, Test {
         uint256 lastTimeStamp = depositor
         .getGreeners()[recyIndex].lastTimeStamp;
         assertEq(lastTimeStamp, 0);
+    }
+
+    function testRevertGreenerIndexByID_DNE() external {
+        registerRecycler();
+        vm.expectRevert(Depositor.Depositor__GreenerID_DoesNotExist.selector);
+        depositor._getGreenerIndexByID(100);
     }
 
     function testGetRecyclerAddresToID() external {
@@ -468,6 +496,39 @@ contract EcoCoinTest is StdCheats, Test {
     function testShopBalanceEqualsTokensSent() external {
         spendTokensAtShop();
         assertEq(ecoCoin.balanceOf(ShopAddress), 10);
+    }
+
+    function shopRedeemsTokens() private {
+        spendTokensAtShop();
+        vm.prank(ShopAddress);
+        machine.redeemTokens(1, "CafeMosaic", 10);
+    }
+
+    function testShopCanRedeemTokens() external {
+        shopRedeemsTokens();
+    }
+
+    function testShopBalanceLessTokensRedeemed() external {
+        shopRedeemsTokens();
+        assertEq(ecoCoin.balanceOf(ShopAddress), 0);
+    }
+
+    function testRevertShopTriesToRedeemMoreTokensThanBalance() external {
+        shopRedeemsTokens();
+        vm.expectRevert(
+            Machine.Machine__InsufficientTokensBalanceToRedeem.selector
+        );
+        vm.prank(ShopAddress);
+        machine.redeemTokens(1, "CafeMosaic", 12);
+    }
+
+    function testRandomUserTriesToRedeemTokens() external {
+        shopRedeemsTokens();
+        vm.prank(randomUser);
+        vm.expectRevert(
+            Machine.ShopHandler__ShopNotRegisteredOrApproved.selector
+        );
+        machine.redeemTokens(1, "CafeMosaic", 10);
     }
 
     // Test events.
