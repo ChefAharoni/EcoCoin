@@ -125,6 +125,17 @@ contract Machine {
         municipality = Municipality(_municipalityAddr);
     }
 
+    /* Functions */
+    /**
+     * @notice  Mints tokens to the specified address.
+     * @dev     No restrictions on who can mint tokens.
+     * @param   to  Address to mint tokens to.
+     * @param   amount  Amount of tokens to mint.
+     */
+    function mint(address to, uint256 amount) external muniOnly {
+        ecoCoin.mint(to, amount);
+    }
+
     /**
      * @notice  Create a new exchange machine.
      * @dev     Address of machine should be created prior to calling this function.
@@ -213,9 +224,7 @@ contract Machine {
         uint256 recyLastTimeStamp = depositor
         .getGreeners()[_recyIndex].lastTimeStamp;
         // Check here if enough time has passed since the last recycler's deposition.
-        if (
-            (block.timestamp >= recyLastTimeStamp + i_CoolDownInterval)
-        ) {
+        if ((block.timestamp >= recyLastTimeStamp + i_CoolDownInterval)) {
             revert Machine__CoolDownTimerHasntPassed();
         }
 

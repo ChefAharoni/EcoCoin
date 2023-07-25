@@ -43,6 +43,7 @@ import {Machine} from "./Machine.sol";
 contract EcoCoin is ERC20, Ownable {
     /* Errors */
     error EcoCoin__genMunicipalityIsSet(); // Error to throw when Genesis municipality is already set.
+    error Machine__SenderNotMachine(address);
 
     /* Contracts */
     Municipality municipality;
@@ -62,6 +63,14 @@ contract EcoCoin is ERC20, Ownable {
         string indexed municipalityZipCode,
         address indexed addedBy
     );
+
+    /* Modifiers */
+    modifier onlyMachine() {
+        if (msg.sender != address(machine)) {
+            revert Machine__SenderNotMachine(msg.sender);
+        }
+        _;
+    }
 
     // Ownable in future versions will require a constructor to be called, and the constructor will set the owner to the msg.sender.
     // When updating forge via `forge update` - it corrupts the openzeppelin-contracts package, and git is getting mashed up.
@@ -122,7 +131,7 @@ contract EcoCoin is ERC20, Ownable {
      * @param   to  Address to mint tokens to.
      * @param   amount  Amount of tokens to mint.
      */
-    function mint(address to, uint256 amount) external {
+    function mint(address to, uint256 amount) external virtual {
         _mint(to, amount);
     }
 

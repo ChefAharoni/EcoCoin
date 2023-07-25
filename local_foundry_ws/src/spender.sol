@@ -8,7 +8,7 @@ import {ShopHandler} from "./ShopHandler.sol";
 
 contract Spender {
     /* Errors */
-    error Spender__InsufficientFunds(); // Error to throw when the spender doesn't have enough tokens to spend.
+    error Spender__InsufficientFundsToSpend(); // Error to throw when the spender doesn't have enough tokens to spend.
     error Depositor__RecyclerNotRegistered(); // Error to throw when the recycler is not registered.
 
     // When a recycler wishes to spend his tokens in a local shop: Cafe, Restaurant, Clothes store, etc...
@@ -24,7 +24,11 @@ contract Spender {
         uint256 indexed spendAmount
     );
 
-    constructor(address _ecoCoinAddr, address _depositorAddr, address _shopHandlerAddr) {
+    constructor(
+        address _ecoCoinAddr,
+        address _depositorAddr,
+        address _shopHandlerAddr
+    ) {
         // Not sure whether it's more gas efficient to deploy the interface or the contract itself; a problem for future fixes.
         ecoCoin = IEcoCoin(_ecoCoinAddr); // Address of the EcoCoin contract.
         depositor = Depositor(_depositorAddr);
@@ -53,9 +57,10 @@ contract Spender {
 
         // Checks if the spender (recycler) has enough tokens in his account to spend.
         if (_recyclerBalance < _spendAmount) {
-            revert Spender__InsufficientFunds();
+            revert Spender__InsufficientFundsToSpend();
         }
-        ecoCoin.transferFrom(msg.sender, _shopAddress, _spendAmount); // Transfer the tokens from the spender to the shop.
+        // ecoCoin.approve(_shopAddress, _spendAmount); // Approve the shop to spend the tokens.
+        ecoCoin.transfer(_shopAddress, _spendAmount); // Transfer the tokens from the spender to the shop.
         shopHandler.updateShopBalance(
             _shopIndex = _shopIndex,
             _shopAddress = _shopAddress

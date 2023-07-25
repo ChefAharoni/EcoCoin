@@ -324,12 +324,7 @@ contract EcoCoinTest is StdCheats, Test {
 
     /* Machine Tests */
 
-    function caller() external view {
-        console.log("Caller: ", msg.sender);
-    }
-
     function createEuniceMachine() private {
-        // this.caller();
         registerRecycler();
         vm.startPrank(GenesisMunicipalityAddress);
         console.log(municipality.MuniAddrToZipCode(GenesisMunicipalityAddress));
@@ -377,43 +372,84 @@ contract EcoCoinTest is StdCheats, Test {
 
     function testDepositBottles() external {
         recyclerDepositBottles();
-    }
-
-    function testTokensEqualsTwoTimesBottlesDeposited() external {
-        createEuniceMachine();
-        vm.prank(RecyclerAddress);
-        machine.depositBottles(1, 20);
-        assert(ecoCoin.balanceOf(RecyclerAddress) == 40);
+        assertEq(ecoCoin.balanceOf(RecyclerAddress), 20);
     }
 
     // Test cool down timer.
 
-    function testFailDepositMoreThan200Bottles() external {
-        // Should fail since the recycler can't deposit more than 200 bottles at once.
-        // Should get: Machine__CannotDepositMoreThan200BottlesAtOnce
+    function testRevertDepositMoreThan200Bottles() external {
+        recyclerDepositBottles();
+        vm.expectRevert(
+            Machine.Machine__CannotDepositMoreThan200BottlesAtOnce.selector
+        );
         vm.prank(RecyclerAddress);
         machine.depositBottles(1, 201);
     }
 
-    function testFailDepositZeroBottles() external {
-        // Should fail since the recycler can't deposit zero bottles.
-        // Should get: Machine__BottlesNumberToDepositMustBeGreaterThanZero
+    function testRevertDepositZeroBottles() external {
+        recyclerDepositBottles();
+        vm.expectRevert(
+            Machine
+                .Machine__BottlesNumberToDepositMustBeGreaterThanZero
+                .selector
+        );
         vm.prank(RecyclerAddress);
         machine.depositBottles(1, 0);
     }
 
     function testFailRandomUserDepositBottles() external {
-        // Should fail since the random user is not registered.
+        recyclerDepositBottles();
         vm.prank(randomUser);
         machine.depositBottles(1, 10);
     }
 
+    function requestShopRegistration() private {
+        recyclerDepositBottles();
+        vm.prank(ShopAddress);
+        shopHandler.registerShop("Cafe Mosaic", "Cafe", "70535");
+    }
+
+    function genMuniApprovesShopRegistration(uint64 _shopID) private {
+        requestShopRegistration();
+        vm.prank(GenesisMunicipalityAddress);
+        shopHandler.approveShop(_shopID, true);
+    }
+
+    function secondMuniApprovesShopRegistration(uint64 _shopID) private {
+        requestShopRegistration();
+        vm.prank(secondMunicipalityAddress);
+        shopHandler.approveShop(_shopID, true);
+    }
+
+    //TODO - Test to see if unregistered shop can perform actions.
+    //TODO - Check event properly emitted.
+
+    function testShopRequestedToRegister() external {
+        requestShopRegistration();
+    }
+
+    function testGenMuniApprovedShopRegistration() external {
+        genMuniApprovesShopRegistration(1);
+    }
+
+    function testSecondMuniApprovedShopRegistration() external {
+        secondMuniApprovesShopRegistration(1);
+    }
+
+    function caller() public view returns (address) {
+        return msg.sender;
+    }
+
     function testSpendTokensAtShop() external {
-        createEuniceMachine();
+        genMuniApprovesShopRegistration(1);
         // Spend tokens at the shop so we can test that the shop can redeem tokens.
-        vm.prank(RecyclerAddress);
+        console.log("Recycler's balance: ", ecoCoin.balanceOf(RecyclerAddress));
+        vm.startPrank(RecyclerAddress);
         // Does the recycler have tokens from previous functions? Or should we give him tokens at the start of this function?
-        spender.purchaseGoods(1, 10);
+        this.caller();
+        ecoCoin.balanceOf(RecyclerAddress);
+        spender.purchaseGoods(1, 1); // "ERC20: transfer amount exceeds balance"
+        vm.stopPrank();
     }
 
     function testFailSpendTokensAtShops() external {

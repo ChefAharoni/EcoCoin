@@ -155,7 +155,7 @@ contract ShopHandler {
      * @return  bool  True if approved, false if denied.
      * @return  string  Message of approval/denial.
      */
-    function _approveShop(
+    function approveShop(
         uint64 _shopRegisterID,
         bool _decision
     ) public muniOnly returns (bool, string memory) {
