@@ -61,7 +61,7 @@ contract Depositor {
                 recyAddr: _recyAddr,
                 bottlesDepo: 0,
                 recyBalance: ecoCoin.balanceOf(_recyAddr),
-                lastTimeStamp: 3601,
+                lastTimeStamp: block.timestamp, // 1
                 status: false
             })
         );

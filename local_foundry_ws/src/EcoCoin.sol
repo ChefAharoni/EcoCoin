@@ -115,7 +115,7 @@ contract EcoCoin is ERC20, Ownable {
             _genMunicipalityAddr,
             _genMunicipalityZipCode
         );
-        municipality.incrementNumMunicipalities;
+        municipality.incrementNumMunicipalities();
     }
 
     /**
@@ -133,7 +133,7 @@ contract EcoCoin is ERC20, Ownable {
      * @param   amount  Amount of tokens to mint.
      */
     function mint(address to, uint256 amount) external {
-        //! Security flaw - anyone can burn tokens.
+        //! Security flaw - anyone can mint tokens.
         _mint(to, amount);
     }
 

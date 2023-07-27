@@ -215,7 +215,8 @@ contract Machine {
         uint256 recyLastTimeStamp = depositor
         .getGreeners()[_recyIndex].lastTimeStamp;
         // Check here if enough time has passed since the last recycler's deposition.
-        if ((block.timestamp >= recyLastTimeStamp + i_CoolDownInterval)) {
+        // User must wait at least 1 hour from initial registration to deposit, and 1 hour between each deposit.
+        if ((block.timestamp <= recyLastTimeStamp + i_CoolDownInterval)) {
             revert Machine__CoolDownTimerHasntPassed();
         }
 
