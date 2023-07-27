@@ -41,6 +41,10 @@ The token will be deployed on the Ethereum blockchain, most probably on a testne
 
 <!--- ![EcoCoinLogo V2 6](https://github.com/ChefAharoni/EcoCoin/assets/4399057/bccc051d-656d-48a6-91ca-739301ad3f78) --->
 
+<!--- My wallet address:
+0xe91693e48EFAEaFb4afDe0942b62BDE460E62423
+ --->
+
 
 <!-- ### How do I get set up? ###
 
