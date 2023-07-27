@@ -43,6 +43,9 @@ The token will be deployed on the Ethereum blockchain, most probably on a testne
 
 <!--- My wallet address:
 0xe91693e48EFAEaFb4afDe0942b62BDE460E62423
+
+Second wallet:
+0x7703656253121D9b7a91d930fcFBE3117B1844eB
  --->
 
 
