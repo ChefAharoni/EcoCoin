@@ -31,7 +31,7 @@ The token will be deployed on the Ethereum blockchain, most probably on a testne
 - Lastly, many thanks to [@0xOZ](https://github.com/0x0OZ) for his great help and support throughout the project; he helped me a lot in fixing bugs, finding security issues, and explaining concepts I haven't understood. <br>
 # Creator #
 
-@ChefAharoni
+[@ChefAharoni](https://github.com/ChefAharoni)
 
 <p align="center">
   <img src="https://github.com/ChefAharoni/EcoCoin/assets/4399057/bccc051d-656d-48a6-91ca-739301ad3f78" />
