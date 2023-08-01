@@ -30,8 +30,6 @@ contract EcoCoinTest is StdCheats, Test {
     Spender public spender;
     ShopHandler public shopHandler;
 
-    address contractDeployer = 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
-
     address ContractOwner;
     address GenesisMunicipalityAddress;
     string GenesisMunicipalityZipCode;
@@ -39,7 +37,7 @@ contract EcoCoinTest is StdCheats, Test {
     address ShopAddress;
     address MachineAddress;
     address secondMunicipalityAddress;
-    string secondMunicipalityZipCode;
+    string constant secondMunicipalityZipCode = "70501";
 
     function setUp() external {
         DeployEcoCoin deployer = new DeployEcoCoin();
@@ -60,15 +58,14 @@ contract EcoCoinTest is StdCheats, Test {
             RecyclerAddress,
             ShopAddress,
             MachineAddress,
-            secondMunicipalityAddress,
-            secondMunicipalityZipCode
+            secondMunicipalityAddress
         ) = helperConfig.activeNetworkConfig();
     }
 
     /* EcoCoin Tests */
 
     function addGenesisMunicipality() private {
-        vm.prank(contractDeployer);
+        vm.prank(ContractOwner);
         ecoCoin.addGenMuni(
             GenesisMunicipalityAddress,
             GenesisMunicipalityZipCode
@@ -83,7 +80,7 @@ contract EcoCoinTest is StdCheats, Test {
         addGenesisMunicipality();
         // Should fail since the genesis municipality is already added.
         vm.expectRevert(EcoCoin.EcoCoin__genMunicipalityIsSet.selector);
-        vm.prank(contractDeployer);
+        vm.prank(ContractOwner);
         ecoCoin.addGenMuni(
             GenesisMunicipalityAddress,
             GenesisMunicipalityZipCode
@@ -151,7 +148,7 @@ contract EcoCoinTest is StdCheats, Test {
     }
 
     function testTokenBalanceOfDeployerIsZero() external view {
-        assert(ecoCoin.balanceOf(contractDeployer) == 0);
+        assert(ecoCoin.balanceOf(ContractOwner) == 0);
     }
 
     function testTokenBalanceOfGenesisMunicipalityIsZero() external view {

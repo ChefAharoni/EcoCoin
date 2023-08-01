@@ -19,7 +19,7 @@ contract HelperConfig is Script {
         address ShopAddress; // Address of the shops.
         address MachineAddress; // Address of the machine.
         address secondMunicipalityAddress; // Address of the second municipality.
-        string secondMunicipalityZipCode; // Zip code location of the second municipality, used to test if the genesis municipality can add a new municipality.
+        // string secondMunicipalityZipCode; // Zip code location of the second municipality, used to test if the genesis municipality can add a new municipality.
     }
 
     constructor() {
@@ -56,8 +56,7 @@ contract HelperConfig is Script {
                 RecyclerAddress: address(recycler),
                 ShopAddress: address(shop),
                 MachineAddress: address(machine),
-                secondMunicipalityAddress: address(secondMunicipality),
-                secondMunicipalityZipCode: LAFAYETTE_ZIP_CODE
+                secondMunicipalityAddress: address(secondMunicipality)
             });
     }
 
@@ -91,8 +90,7 @@ contract HelperConfig is Script {
                 ),
                 secondMunicipalityAddress: address(
                     0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65
-                ),
-                secondMunicipalityZipCode: LAFAYETTE_ZIP_CODE
+                )
             });
     }
 
@@ -117,8 +115,7 @@ contract HelperConfig is Script {
                 ),
                 secondMunicipalityAddress: address(
                     0xd984ba179fb11A8c3aa22552018a4086101cFE1D
-                ),
-                secondMunicipalityZipCode: LAFAYETTE_ZIP_CODE
+                )
             });
     }
 }

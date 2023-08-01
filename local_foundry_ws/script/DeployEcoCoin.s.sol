@@ -48,8 +48,7 @@ contract DeployEcoCoin is Script {
             RecyclerAddress,
             ShopAddress,
             MachineAddress,
-            secondMunicipalityAddress,
-            secondMunicipalityZipCode
+            secondMunicipalityAddress
         ) = helperConfig.activeNetworkConfig();
 
         vm.startBroadcast(ContractOwner);
