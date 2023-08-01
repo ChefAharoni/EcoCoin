@@ -12,6 +12,7 @@ contract HelperConfig is Script {
     string constant LAFAYETTE_ZIP_CODE = "70501";
 
     struct NetworkConfig {
+        address ContractOwner;
         address GenesisMunicipalityAddress; // Address of the municipality.
         string GenesisMunicipalityZipCode; // Zip code location of the genesis municipality; string so it can handle long zip codes and non-us zipcodes as well.
         address RecyclerAddress; // Address of the recycler.
@@ -38,6 +39,7 @@ contract HelperConfig is Script {
      * @return  NetworkConfig  .
      */
     function getSepoliaNetConfig() public returns (NetworkConfig memory) {
+        // address contractOwner = makeAddr("ContractOwnerPrivateKey");
         address genesisMunicipality = makeAddr("genMunicipality");
         address recycler = makeAddr("recycler");
         address shop = makeAddr("shop");
@@ -46,6 +48,9 @@ contract HelperConfig is Script {
 
         return
             NetworkConfig({
+                ContractOwner: address(
+                    0x7703656253121D9b7a91d930fcFBE3117B1844eB // Account 2.
+                ),
                 GenesisMunicipalityAddress: address(genesisMunicipality),
                 GenesisMunicipalityZipCode: EUNICE_ZIP_CODE,
                 RecyclerAddress: address(recycler),
@@ -68,6 +73,9 @@ contract HelperConfig is Script {
 
         return
             NetworkConfig({
+                ContractOwner: address(
+                    0xa0Ee7A142d267C1f36714E4a8F75612F20a79720
+                ),
                 GenesisMunicipalityAddress: address(
                     0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
                 ),
@@ -91,6 +99,9 @@ contract HelperConfig is Script {
     function getGanacheNetConfig() public pure returns (NetworkConfig memory) {
         return
             NetworkConfig({
+                ContractOwner: address(
+                    0xE27538de1f5d7b71ddA1017f91B9D7EF6F1C2e89
+                ),
                 GenesisMunicipalityAddress: address(
                     0xc3b0360670CE81F91cE4529C22b9a0e97D96D171
                 ),

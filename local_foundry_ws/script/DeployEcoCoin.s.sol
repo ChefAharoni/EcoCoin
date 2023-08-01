@@ -15,9 +15,17 @@ import {ShopHandler} from "../src/ShopHandler.sol";
 contract DeployEcoCoin is Script {
     // Municipality municipality = new Municipality();
 
-    // Anvil private key for account 9; nothing risky to show.
-    uint256 ACC_9_PRIVATE_KEY =
-        0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6;
+    address ContractOwner;
+    address GenesisMunicipalityAddress;
+    string GenesisMunicipalityZipCode;
+    address RecyclerAddress;
+    address ShopAddress;
+    address MachineAddress;
+    address secondMunicipalityAddress;
+    string secondMunicipalityZipCode;
+
+    HelperConfig helperConfig = new HelperConfig();
+
 
     function run()
         external
@@ -33,8 +41,18 @@ contract DeployEcoCoin is Script {
     {
         // StartBroadcat means that everything after this will be broadcasted to the blockchain and deployed.
         // Any other operations we that are not within the startBroadcat, will not cost any gas.
-        vm.startBroadcast(ACC_9_PRIVATE_KEY);
-        HelperConfig helperConfig = new HelperConfig();
+        (
+            ContractOwner,
+            GenesisMunicipalityAddress,
+            GenesisMunicipalityZipCode,
+            RecyclerAddress,
+            ShopAddress,
+            MachineAddress,
+            secondMunicipalityAddress,
+            secondMunicipalityZipCode
+        ) = helperConfig.activeNetworkConfig();
+
+        vm.startBroadcast(ContractOwner);
         Municipality municipality = new Municipality();
         EcoCoin ecoCoin = new EcoCoin(address(municipality)); // "new" keyword creates a new contract.
         // Contract deployer adds the genesis municipality.
