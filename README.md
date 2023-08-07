@@ -4,7 +4,8 @@ A college based, independent research project, that focuses on the development o
 
 The concept of the token is based on a decentralized platform that incentivizes individuals to recycle bottles and spend their earnings at local shops. Participants will receive digital credits for each bottle they recycle. These credits can then be exchanged for goods and services or converted into traditional currency.
 
-The token will be deployed on the Ethereum blockchain, most probably on a testnet to avoid security issues that might end up users losing all their funds.
+The token will be deployed on the Ethereum blockchain, on a testnet in order to avoid security issues that might end up users losing all their funds.
+While developing the token, a few security issues were found, and will stay unpatched for the sake of the research. Part of the issues come from the fact there is no physical machine to scan the bottles, and the user enters the amount of bottles he recycles - resulting in a loophole that allows minting infinite tokes.
 <br> <br>
 
 # Workflow #
