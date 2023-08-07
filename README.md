@@ -10,7 +10,7 @@ While developing the token, a few security issues were found, and will stay unpa
 
 # Workflow #
 
-![Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/AppDiagramV2.svg)
+![Workflow Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/AppDiagramV2.1.svg)
 
 <br><br>
 
