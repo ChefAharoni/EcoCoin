@@ -1,5 +1,8 @@
 {
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.2"
+    "@openzeppelin/contracts": "^4.9.2",
+    "alchemy-sdk": "^2.9.2",
+    "ethers": "^6.7.0",
+    "uniq": "^1.0.1"
   }
 }
