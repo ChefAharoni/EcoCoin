@@ -1,0 +1,11 @@
+# Summary
+- [Home](README.md)
+# src
+  - [Depositor](src/Depositor.sol/contract.Depositor.md)
+  - [EcoCoin](src/EcoCoin.sol/contract.EcoCoin.md)
+  - [IEcoCoin](src/IEcoCoin.sol/interface.IEcoCoin.md)
+  - [Machine](src/Machine.sol/contract.Machine.md)
+  - [Muni](src/Municipality.sol/library.Muni.md)
+  - [Municipality](src/Municipality.sol/contract.Municipality.md)
+  - [ShopHandler](src/ShopHandler.sol/contract.ShopHandler.md)
+  - [Spender](src/Spender.sol/contract.Spender.md)
