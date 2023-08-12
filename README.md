@@ -1,4 +1,4 @@
-# EcoCoin # 
+# EcoCoin
 
 A college based, independent research project, that focuses on the development of a green blockchain token. The aim is to create an environmentally friendly digital currency that can be earned by participating in recycling programs.
 
@@ -8,36 +8,35 @@ The token will be deployed on the Ethereum blockchain, on a testnet in order to 
 While developing the token, a few security issues were found, and will stay unpatched for the sake of the research. Part of the issues come from the fact there is no physical machine to scan the bottles, and the user enters the amount of bottles he recycles - resulting in a loophole that allows minting infinite tokes.
 <br> <br>
 
+# Roles
 
-# Roles #f
-![Roles](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Roles.svg)
+<!-- ![Roles](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Roles.svg) -->
 
-  - Contract is deployed with an address of the first (genesis) municipality.
-  - Gensis municipality assigns other municipalities; every municipality owns the same permissions as the genesis, and can assign other municipalites.
-  - Each municipality will register machines and shops; recyclers doesn't require approval.
+- Contract is deployed with an address of the first (genesis) municipality.
+- Gensis municipality assigns other municipalities; every municipality owns the same permissions as the genesis, and can assign other municipalites.
+- Each municipality will register machines and shops; recyclers doesn't require approval.
 
 <br><br>
 
-# Workflow #
+# Workflow
 
 ![Workflow Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Flowchart.svg)
 
 <br><br>
 
-# Acknowledgments #
+# Acknowledgments
 
 - Special thanks to [@PatrickAlphaC](https://github.com/PatrickAlphaC/PatrickAlphaC) for his amazing tutorials on smart contracts developments, especially his latest [course using Foundry!](https://github.com/Cyfrin/foundry-full-course-f23) <br>
 - Thanks to [Cryptozombies](https://cryptozombies.io/) for their great lessons about Solidity language. <br>
 - Lastly, many thanks to [@0xOZ](https://github.com/0x0OZ) for his great help and support throughout the project; he helped me a lot in fixing bugs, finding security issues, and explaining concepts I haven't understood. <br>
-# Creator #
+
+# Creator
 
 [@ChefAharoni](https://github.com/ChefAharoni)
 
 <p align="center">
   <img src="https://github.com/ChefAharoni/EcoCoin/assets/4399057/bccc051d-656d-48a6-91ca-739301ad3f78" />
 </p>
-
-
 
 <!--- ![EcoCoinLogo V2 6](https://github.com/ChefAharoni/EcoCoin/assets/4399057/bccc051d-656d-48a6-91ca-739301ad3f78) --->
 
@@ -47,7 +46,6 @@ While developing the token, a few security issues were found, and will stay unpa
 Second wallet:
 0x7703656253121D9b7a91d930fcFBE3117B1844eB
  --->
-
 
 <!-- ### How do I get set up? ###
 
