@@ -8,20 +8,18 @@ The token will be deployed on the Ethereum blockchain, on a testnet in order to 
 While developing the token, a few security issues were found, and will stay unpatched for the sake of the research. Part of the issues come from the fact there is no physical machine to scan the bottles, and the user enters the amount of bottles he recycles - resulting in a loophole that allows minting infinite tokes.
 <br> <br>
 
-# Workflow #
-
-![Workflow Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/AppDiagramV2.1.svg)
-
-<br><br>
-
 # Roles #
-<p align="center">
-  <img width="805" alt="Roles Description" src="https://github.com/ChefAharoni/EcoCoin/assets/4399057/25d36cf4-18df-4bc6-a71b-fbb86b89ed0b" />
-</p>
+![Roles](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DAPP_Roles.svg)
 
   - Contract is deployed with an address of the first (genesis) municipality.
   - Gensis municipality assigns other municipalities; every municipality owns the same permissions as the genesis, and can assign other municipalites.
   - Each municipality will register machines and shops; recyclers doesn't require approval.
+
+<br><br>
+
+# Workflow #
+
+![Workflow Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Flowchart.svg)
 
 <br><br>
 
