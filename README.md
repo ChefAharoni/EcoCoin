@@ -9,7 +9,7 @@ While developing the token, a few security issues were found, and will stay unpa
 <br> <br>
 
 
-# Roles #
+# Roles #f
 ![Roles](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Roles.svg)
 
   - Contract is deployed with an address of the first (genesis) municipality.
