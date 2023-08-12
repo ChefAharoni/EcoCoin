@@ -10,7 +10,7 @@ While developing the token, a few security issues were found, and will stay unpa
 
 # Roles
 
-![Roles](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Roles.svg)
+![Roles](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Roles.svg) 
 
 - Contract is deployed with an address of the first (genesis) municipality.
 - Gensis municipality assigns other municipalities; every municipality owns the same permissions as the genesis, and can assign other municipalites.
