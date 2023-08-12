@@ -8,6 +8,7 @@ The token will be deployed on the Ethereum blockchain, on a testnet in order to 
 While developing the token, a few security issues were found, and will stay unpatched for the sake of the research. Part of the issues come from the fact there is no physical machine to scan the bottles, and the user enters the amount of bottles he recycles - resulting in a loophole that allows minting infinite tokes.
 <br> <br>
 
+
 # Roles #
 ![Roles](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Roles.svg)
 
