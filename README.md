@@ -1,41 +1,45 @@
-# EcoCoin
+# EcoCoin 🌱💰
 
-A college based, independent research project, that focuses on the development of a green blockchain token. The aim is to create an environmentally friendly digital currency that can be earned by participating in recycling programs.
+Welcome to EcoCoin, a college-based independent research project that aims to revolutionize recycling through blockchain technology. 🌍♻️ Earn an environmentally friendly digital currency by participating in recycling programs and contribute to a sustainable future.
 
-The concept of the token is based on a decentralized platform that incentivizes individuals to recycle bottles and spend their earnings at local shops. Participants will receive digital credits for each bottle they recycle. These credits can then be exchanged for goods and services or converted into traditional currency.
+## Concept 📝
 
-The token will be deployed on the Ethereum blockchain, on a testnet in order to avoid security issues that might end up users losing all their funds.
-While developing the token, a few security issues were found, and will stay unpatched for the sake of the research. Part of the issues come from the fact there is no physical machine to scan the bottles, and the user enters the amount of bottles he recycles - resulting in a loophole that allows minting infinite tokes.
-<br> <br>
+EcoCoin introduces a decentralized platform that incentivizes individuals to recycle plastic bottles. Here's how it works:
 
-# Roles
+1. **Recycling**: Participants recycle plastic bottles and receive digital credits for each bottle.
+2. **Rewards**: These credits can be exchanged for goods, services, or converted into traditional currency.
+3. **Local Impact**: By spending earnings at local shops, you support your community and promote eco-conscious choices.
 
-![Roles](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Roles.svg) 
+## How It Works 🔄
 
-- Contract is deployed with an address of the first (genesis) municipality.
-- Gensis municipality assigns other municipalities; every municipality owns the same permissions as the genesis, and can assign other municipalites.
-- Each municipality will register machines and shops; recyclers doesn't require approval.
+<p align="center">
+  <img src="https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Flowchart.svg" alt="Workflow Diagram" />
+</p>
 
-<br><br>
+## Roles and Permissions 👥
 
-# Workflow
+<p align="center">
+  <img src="https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Roles.svg" alt="Roles and Permissions" />
+</p>
 
-![Workflow Diagram](https://github.com/ChefAharoni/EcoCoin/blob/master/helpers/DApp_Flowchart.svg)
+- The contract is initially deployed by the genesis municipality.
+- Genesis municipality assigns other municipalities, which inherit the same permissions.
+- Municipalities register machines and shops; recyclers do not require approval.
 
-<br><br>
+## Acknowledgments 🙌
 
-# Acknowledgments
+We extend our gratitude to the following:
 
-- Special thanks to [@PatrickAlphaC](https://github.com/PatrickAlphaC/PatrickAlphaC) for his amazing tutorials on smart contracts developments, especially his latest [course using Foundry!](https://github.com/Cyfrin/foundry-full-course-f23) <br>
-- Thanks to [Cryptozombies](https://cryptozombies.io/) for their great lessons about Solidity language. <br>
-- Lastly, many thanks to [@0xOZ](https://github.com/0x0OZ) for his great help and support throughout the project; he helped me a lot in fixing bugs, finding security issues, and explaining concepts I haven't understood. <br>
+- [@PatrickAlphaC](https://github.com/PatrickAlphaC) for his insightful smart contract tutorials, including his [Foundry course](https://github.com/Cyfrin/foundry-full-course-f23).
+- [Cryptozombies](https://cryptozombies.io/) for their valuable lessons on the Solidity programming language.
+- [@0x0OZ](https://github.com/0x0OZ) for exceptional support in bug fixes, security issues, and clarifying complex concepts.
 
-# Creator
+## Creator 👨‍🍳
 
 [@ChefAharoni](https://github.com/ChefAharoni)
 
 <p align="center">
-  <img src="https://github.com/ChefAharoni/EcoCoin/assets/4399057/bccc051d-656d-48a6-91ca-739301ad3f78" />
+  <img src="https://github.com/ChefAharoni/EcoCoin/assets/4399057/bccc051d-656d-48a6-91ca-739301ad3f78" alt="EcoCoin Logo" />
 </p>
 
 <!--- ![EcoCoinLogo V2 6](https://github.com/ChefAharoni/EcoCoin/assets/4399057/bccc051d-656d-48a6-91ca-739301ad3f78) --->
