@@ -53,3 +53,6 @@ Thumbs.db
 
 # Diagram SVG
 # DiagramIntegration.svg
+
+# cDo NOT ignore the app dir
+!app/
