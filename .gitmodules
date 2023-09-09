@@ -8,5 +8,5 @@
 	path = local_foundry_ws/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts.git
 [submodule "app/rainbowkit-frontend"]
-	path = rainbowkit-frontend
-	url = git@github.com:ChefAharoni/rainbowkit-frontend
+	path = app/rainbowkit-frontend
+	url = https://github.com/ChefAharoni/rainbowkit-frontend.git
